@@ -1,0 +1,21 @@
+{
+    "name": "ottiem/cruddy",
+    "description": "A powerful but simple CRUD builder for Laravel.",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Josh McCarty",
+            "email": "ottiemccarty@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Cruddy\\": "src/"
+        }
+    },
+    "require": {
+        "illuminate/support": "^8.0"
+    }
+}
