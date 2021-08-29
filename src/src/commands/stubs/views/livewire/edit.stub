@@ -1,0 +1,16 @@
+<x-layout>
+    <form action="{{ action }}" method="POST">
+        <h1>Edit</h1>
+        @csrf
+        @method('PUT')
+        {{ inputs }}
+    </form>
+
+    <form action="{{ action }}" method="POST">
+        @csrf
+        @method('DELETE')
+        <input type="hidden" value="{{ $foo->id }}">
+
+        <input type="submit" value="Delete" class="button submit-input">
+    </form>
+</x-layout>

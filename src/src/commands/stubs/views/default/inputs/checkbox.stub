@@ -1,0 +1,1 @@
+<label class="checkbox"><input type="checkbox" value="1" name="{{ name }}" class="my-2" {{ data }}>{{ name }}</label>

@@ -1,0 +1,61 @@
+<div>
+    <div class="row mb-4">
+        <div class="col-md-12">
+          <div class="float-right mt-5">
+              <input wire:model="search" class="form-control" type="text" placeholder="Search {{ class }}s...">
+          </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @if (${{ modelVariable }}s->count())
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <a wire:click.prevent="sortBy('name')" role="button" href="#">
+                            Name
+                            @include('includes.sort-icon', ['field' => 'name'])
+                        </a>
+                    </th>
+                    <th>
+                        Delete
+                    </th>
+                    <th>
+                        Edit
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (${{ modelVariable }}s as ${{ modelVariable }})
+                    <tr>
+                        <td>{{ ${{ modelVariable }}->name }}</td>
+                        <td>
+                            <button class="button is-danger">
+                            Delete
+                            </button>
+                        </td>
+                        <td>
+                            <button class="button is-secondary">
+                            Edit
+                            </button>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        @else
+            <div class="alert alert-warning">
+                Your query returned zero results.
+            </div>
+        @endif
+    </div>
+
+    <div class="row">
+        <div class="col">
+            {{ ${{ modelVariable }}s->links() }}
+        </div>
+    </div>
+</div>
+</body>
+</html>

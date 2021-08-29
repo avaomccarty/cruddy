@@ -1,0 +1,36 @@
+<template>
+    <x-layout>
+        <form action="{{ action }}" method="POST">
+            <h1>Create</h1>
+            @csrf
+            {{ inputs }}
+        </form>
+    </x-layout>
+</template>
+
+<script>
+export default {
+    name: '{{ component }}',
+    status: 'prototype',
+    release: '1.0.0',
+    components: {
+        ComponentName
+    },
+    props: {
+        name: {
+            type: Array,
+            default: () => []
+        }
+    },
+    data () {
+        return {
+
+        };
+    }
+};
+</script>
+
+<style scoped>
+
+</style>
+
