@@ -22,7 +22,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "ottiem\\cruddy\\src\\ServiceProvider"
+                "Ottiem\\Cruddy\\Src\\ServiceProvider"
             ]
         }
     }
