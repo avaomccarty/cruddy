@@ -19,19 +19,4 @@ class {{ class }} extends Model
     protected $fillable = [
         {{ inputs }}
     ];
-
-    // Note: This is for Livewire.
-    protected $casts = [
-        //
-    ];
-
-    // Note: This is for Livewire.
-    public static function search($query)
-    {
-        return empty($query) ? static::query()
-            : static::where(function($q) use ($query) {
-                    $q
-                        ->where('name', 'LIKE', '%' . $query . '%');
-                });
-    }
 }
