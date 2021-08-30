@@ -5,7 +5,7 @@ namespace Cruddy;
 use Illuminate\Database\Schema\Builder as BaseBuilder;
 use Closure;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Str
+use Illuminate\Support\Str;
 
 class Builder extends BaseBuilder
 {
