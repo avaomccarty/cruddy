@@ -5,6 +5,7 @@ namespace Cruddy;
 use Illuminate\Database\Schema\Builder as BaseBuilder;
 use Closure;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str
 
 class Builder extends BaseBuilder
 {
@@ -105,16 +106,6 @@ class Builder extends BaseBuilder
      */
     protected function getClassName(string $table)
     {
-        // Note: Seems like this should be a helper somewhere else.
-        // This is also in ViewMakeCommand so update there as well.
-        // I Think this is a helper already in Laravel. Something like Str::studlyCase()
-        $className = strtolower(trim($table));
-        $className = ucwords($className, '\_\-\ ');
-        $className = str_replace('_', '', $className);
-        $className = str_replace('-', '', $className);
-        $className = str_replace(' ', '', $className);
-        $className = substr($className, -1) !== 's' ?: substr($className, 0, strlen($className) - 1);
-
-        return ucfirst($className);
+        return Str::studly(trim($table));
     }
 }
