@@ -59,3 +59,9 @@ If these files do not already exist, then they will be created from running the 
 6) resources/views/foo/edit.blade.php
 7) resources/views/foo/index.blade.php
 8) resources/views/foo/show.blade.php
+
+This will be added to your routes/web.php file for the example above:
+```
+// Foo Resource
+Route::resource('foos', 'App\Http\Controllers\FooController');
+```
