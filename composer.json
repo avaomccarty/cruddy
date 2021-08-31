@@ -20,7 +20,7 @@
         "illuminate/console": "^8.0",
         "illuminate/routing": "^8.0",
         "illuminate/database": "^8.0",
-        "illuminate/foundation": "^8.0",
+        "illuminate/foundation": "^1.0",
         "symfony/console": "^5.0"
     },
     "extra": {
