@@ -4,10 +4,8 @@ namespace Cruddy\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Database\Schema\ColumnDefinition;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\Console\Input\InputArgument;
-use Illuminate\Support\Str;
 
 class RequestMakeCommand extends GeneratorCommand
 {

@@ -2,11 +2,8 @@
 
 namespace Cruddy\Commands;
 
-use Illuminate\Console\GeneratorCommand;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Foundation\Console\ModelMakeCommand as BaseModelMakeCommand;
-use Illuminate\Support\Str;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class ModelMakeCommand extends BaseModelMakeCommand

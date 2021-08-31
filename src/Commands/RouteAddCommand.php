@@ -4,7 +4,6 @@ namespace Cruddy\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 
 class RouteAddCommand extends Command
 {
