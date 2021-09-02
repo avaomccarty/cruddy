@@ -59,7 +59,7 @@ class ViewMakeCommand extends GeneratorCommand
     {
         $folder = Config::get('cruddy.default_frontend_scaffolding') ?? 'default';
 
-        return $this->resolveStubPath('/stubs/views/' . $folder  . '/' . $this->getType() . '.stub');
+        return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/views/' . $folder  . '/' . $this->getType() . '.stub');
     }
 
     /**
@@ -72,7 +72,7 @@ class ViewMakeCommand extends GeneratorCommand
     {
         $folder = Config::get('cruddy.default_frontend_scaffolding') ?? 'default';
 
-        return $this->resolveStubPath('/stubs/views/' . $folder  . '/inputs/' . $this->getInput($input) . '.stub');
+        return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/views/' . $folder  . '/inputs/' . $this->getInput($input) . '.stub');
     }
 
     /**

@@ -38,6 +38,11 @@ class ServiceProvider extends BaseServiceProvider
             __DIR__.'/../config/cruddy.php' => config_path('cruddy.php'),
         ]);
 
+        // Publish stub files
+        $this->publishes([
+            __DIR__.'/Commands/stubs/' => base_path('/stubs/cruddy/'),
+        ]);
+
         // Add new Cruddy database configuration to the config.
         // Note: This seems off. Won't this just cache this confguration? But then the driver would be removed if the cache is busted.
         Config::set('database.connections.cruddy', Config::get('cruddy.database.connections.cruddy'));

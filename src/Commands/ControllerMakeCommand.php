@@ -4,6 +4,7 @@ namespace Cruddy\Commands;
 
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Routing\Console\ControllerMakeCommand as BaseControllerMakeCommand;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\Console\Input\InputOption;
 
 class ControllerMakeCommand extends BaseControllerMakeCommand
@@ -37,10 +38,10 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     protected function getStub()
     {
         if ($this->option('api')) {
-            return $this->resolveStubPath('/stubs/controller.api.stub');
+            return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/controller.api.stub');
         }
 
-        return $this->resolveStubPath('/stubs/controller.stub');
+        return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/controller.stub');
     }
 
     /**

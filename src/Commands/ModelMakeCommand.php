@@ -4,6 +4,7 @@ namespace Cruddy\Commands;
 
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Foundation\Console\ModelMakeCommand as BaseModelMakeCommand;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\Console\Input\InputOption;
 
 class ModelMakeCommand extends BaseModelMakeCommand
@@ -22,7 +23,7 @@ class ModelMakeCommand extends BaseModelMakeCommand
      */
     protected function getStub()
     {
-        return $this->resolveStubPath('/stubs/model.stub');
+        return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/model.stub');
     }
 
     /**

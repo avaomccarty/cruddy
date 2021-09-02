@@ -47,7 +47,7 @@ class RequestMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return $this->resolveStubPath('/stubs/request.stub');
+        return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/request.stub');
     }
 
     /**

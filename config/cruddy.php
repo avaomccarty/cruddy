@@ -4,10 +4,10 @@ return [
 
     /**
      * This is the location of the folder that contains all stubs Cruddy should
-     * use when creating all forms.
+     * use when creating all forms. Do not include trailing slash.
      *
      */
-    'stubs_folder' => 'stubs',
+    'stubs_folder' => 'stubs/cruddy',
 
     /**
      * This flag indicates if the frontend views should be created. Set this variable to false
