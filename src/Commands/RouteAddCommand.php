@@ -4,6 +4,7 @@ namespace Cruddy\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class RouteAddCommand extends Command
 {
@@ -30,16 +31,6 @@ class RouteAddCommand extends Command
      */
     protected $name;
 
-    // /**
-    //  * Create a new command instance.
-    //  *
-    //  * @return void
-    //  */
-    // public function __construct()
-    // {
-    //     parent::__construct();
-    // }
-
     /**
      * Get new Cruddy resource route.
      *
@@ -47,9 +38,7 @@ class RouteAddCommand extends Command
      */
     protected function getResourceRoute()
     {
-        // Note: Check on how Laravel core pluralizes table names
-        // Note: Should probably check to make sure that there isn't already a resource route in the file.
-        $lowerName = strtolower($this->argument('name')) . 's';
+        $lowerName = Str::plural(strtolower($this->argument('name')));
         $ucFirstName = ucfirst($this->argument('name'));
         $routeString = "\n\n" .
                         "// $ucFirstName Resource\n" .
@@ -84,8 +73,14 @@ class RouteAddCommand extends Command
         $file = $this->option('api') ? 'api' : 'web';
 
         if (File::exists('routes/' . $file . '.php')) {
-            File::append('routes/' . $file . '.php', $resourceRoute);
-            echo "Cruddy resource routes added successfully!\n";
+            $routeFile = File::get('routes/' . $file . '.php');
+
+            if (strpos($routeFile, $resourceRoute) !== false) {
+                echo "No Cruddy resource routes were added.\n";
+            } else {
+                File::append('routes/' . $file . '.php', $resourceRoute);
+                echo "Cruddy resource routes added successfully!\n";
+            }
         } else {
             echo "No Cruddy resource routes were added.\n";
         }
