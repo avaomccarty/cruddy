@@ -32,7 +32,7 @@ class CreateFooTable extends Migration
      */
     public function up()
     {
-        Schema::connection('cruddy')->create('foo', function (Blueprint $table) {
+        Schema::connection('cruddy')->create('foos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('bar');
         });
@@ -45,7 +45,7 @@ class CreateFooTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('foo');
+        Schema::dropIfExists('foos');
     }
 }
 ```
