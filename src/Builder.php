@@ -106,6 +106,6 @@ class Builder extends BaseBuilder
      */
     protected function getClassName(string $table)
     {
-        return Str::studly(trim($table));
+        return Str::studly(Str::singular(trim($table)));
     }
 }
