@@ -79,7 +79,7 @@ class RouteAddCommand extends Command
                 echo "No Cruddy resource routes were added.\n";
             } else {
                 File::append('routes/' . $file . '.php', $resourceRoute);
-                echo "Cruddy resource routes added successfully!\n";
+                echo "Cruddy resource routes were added successfully!\n";
             }
         } else {
             echo "No Cruddy resource routes were added.\n";

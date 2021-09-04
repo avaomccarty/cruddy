@@ -57,7 +57,7 @@ class ViewMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        $folder = Config::get('cruddy.default_frontend_scaffolding') ?? 'default';
+        $folder = Config::get('cruddy.frontend_scaffolding') ?? 'default';
 
         return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/views/' . $folder  . '/' . $this->getType() . '.stub');
     }
@@ -364,16 +364,7 @@ class ViewMakeCommand extends GeneratorCommand
      */
     protected function getClassName()
     {
-        // Note: Seems like this should be a helper somewhere else.
-        // This is also used in the CruddyBuilder class. Update there as well.
         $table = $this->argument('table');
-        $className = strtolower(trim($table));
-        // $className = ucwords($className, '\_\-\ ');
-        // $className = str_replace('_', '', $className);
-        // $className = str_replace('-', '', $className);
-        $className = str_replace(' ', '', $className);
-        $className = substr($className, -1) !== 's' ?: substr($className, 0, strlen($className) - 1);
-
-        return $className;
+        return strtolower(Str::studly(Str::singular(trim($table))));
     }
 }

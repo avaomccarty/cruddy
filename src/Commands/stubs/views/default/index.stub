@@ -1,12 +1,12 @@
 <x-layout>
     <div class="container">
         <div class="row">
-            @if ($foos->count())
-            <a class="button is-primary m-2" href="/foos/create">Create</a>
+            @if (${{ modelVariable }}s->count())
+            <a class="button is-primary m-2" href="/{{ modelVariable }}s/create">Create</a>
             <table class="table is-striped is-narrow">
                 <thead>
                     <tr>
-                        @foreach ($foos->first()->toArray() as $key => $value)
+                        @foreach (${{ modelVariable }}s->first()->toArray() as $key => $value)
                             <th>
                                 {{ $key }}
                             </th>
@@ -17,19 +17,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($foos as $foo)
+                    @foreach (${{ modelVariable }}s as {{ modelVariable }})
                         <tr>
-                            @foreach ($foo->toArray() as $value)
+                            @foreach ({{ modelVariable }}->toArray() as $value)
                                 <td>{{ $value }}</td>
                             @endforeach
                             <td>
-                                <a class="button is-primary" href="/foos/{{ $foo->id }}">Show</a>
+                                <a class="button is-primary" href="/{{ modelVariable }}s/{{ {{ modelVariable }}->id }}">Show</a>
                             </td>
                             <td>
-                                <a class="button is-info" href="/foos/{{ $foo->id }}/edit">Edit</a>
+                                <a class="button is-info" href="/{{ modelVariable }}s/{{ {{ modelVariable }}->id }}/edit">Edit</a>
                             </td>
                             <td>
-                                <form action="/foos/{{ $foo->id }}" method="POST">
+                                <form action="/{{ modelVariable }}s/{{ {{ modelVariable }}->id }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <input type="submit" class="button is-danger" value="Delete">
@@ -42,13 +42,13 @@
             @else
                 <div>
                     <p class="is-size-3 is-centered">Your query returned zero results.</p>
-                    <a class="button is-primary m-2" href="/foos/create">Create</a>
+                    <a class="button is-primary m-2" href="/{{ modelVariable }}s/create">Create</a>
                 </div>
             @endif
         </div>
         <div class="row">
             <div class="col">
-                {{ $foos->links() }}
+                {{ ${{ modelVariable }}s->links() }}
             </div>
         </div>
     </div>

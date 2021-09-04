@@ -7,6 +7,8 @@ use Cruddy\Commands\ModelMakeCommand;
 use Cruddy\Commands\RequestMakeCommand;
 use Cruddy\Commands\RouteAddCommand;
 use Cruddy\Commands\ViewMakeCommand;
+use Cruddy\Commands\VueImportAddCommand;
+use Cruddy\Commands\VueViewMakeCommand;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
@@ -54,6 +56,8 @@ class ServiceProvider extends BaseServiceProvider
                 RequestMakeCommand::class,
                 RouteAddCommand::class,
                 ViewMakeCommand::class,
+                VueImportAddCommand::class,
+                VueViewMakeCommand::class,
                 ModelMakeCommand::class,
             ]);
         }

@@ -5,10 +5,23 @@ namespace Cruddy;
 use Illuminate\Database\Schema\Builder as BaseBuilder;
 use Closure;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
 class Builder extends BaseBuilder
 {
+    /**
+     * The console command signature.
+     *
+     * @var array
+     */
+    protected $views = [
+        'index',
+        'create',
+        'show',
+        'edit',
+    ];
+
     /**
      * Create a new table on the schema.
      *
@@ -37,7 +50,7 @@ class Builder extends BaseBuilder
             'name' => $className. 'Controller',
             '--resource' => true,
             '--model' => $className,
-            '--api' => config('cruddy.is_api'),
+            '--api' => Config::get('cruddy.is_api'),
             '--inputs' => $blueprint->getColumns(),
         ]);
 
@@ -58,42 +71,36 @@ class Builder extends BaseBuilder
         // Note: Commented out for testing. Needs to be updated to not keep inserting resource.
         Artisan::call('cruddy:route', [
             'name' => $className,
-            '--api' => config('cruddy.is_api'),
+            '--api' => Config::get('cruddy.is_api'),
         ]);
 
-        if (config('cruddy.needs_ui')) {
-            // Make index view
-            Artisan::call('cruddy:view', [
-                'name' => $className,
-                'table' => $table,
-                'type' => 'index',
-                'inputs' => $blueprint->getColumns(),
-            ]);
+        if (Config::get('cruddy.needs_ui')) {
+            foreach ($this->views as $view) {
+                if (! Config::get('cruddy.is_api') || $view !== 'edit') {
+                    // Make standard views
+                    Artisan::call('cruddy:view', [
+                        'name' => $className,
+                        'table' => $table,
+                        'type' => $view,
+                        'inputs' => $blueprint->getColumns(),
+                    ]);
+                }
 
-            // Make create view
-            Artisan::call('cruddy:view', [
-                'name' => $className,
-                'table' => $table,
-                'type' => 'create',
-                'inputs' => $blueprint->getColumns(),
-            ]);
+                if (Config::get('cruddy.frontend_scaffolding') === 'vue') {
+                    if (! Config::get('cruddy.is_api') || $view !== 'edit') {
+                        // Make Vue views
+                        Artisan::call('cruddy:vue-view', [
+                            'name' => $className,
+                            'table' => $table,
+                            'type' => $view,
+                        ]);
+                    }
 
-            // Make show view
-            Artisan::call('cruddy:view', [
-                'name' => $className,
-                'table' => $table,
-                'type' => 'show',
-                'inputs' => $blueprint->getColumns(),
-            ]);
-
-            if (! config('cruddy.is_api')) {
-                // Make edit view
-                Artisan::call('cruddy:view', [
-                    'name' => $className,
-                    'table' => $table,
-                    'type' => 'edit',
-                    'inputs' => $blueprint->getColumns(),
-                ]);
+                    Artisan::call('cruddy:vue-import', [
+                        'name' => $className,
+                        'type' => $view,
+                    ]);
+                }
             }
         }
     }

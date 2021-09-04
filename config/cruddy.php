@@ -27,16 +27,19 @@ return [
      * The frontend scaffolding used for all views.
      *
      */
-    'frontend_scaffolding' => [
-        'default' => []
-    ],
+    'frontend_scaffolding' => env('CRUDDY_FRONTEND_SCAFFOLDING', 'default'),
 
     /**
-     * The default frontend scaffolding used for all views. This can be overwritten to
-     * use any frontend_scaffolding option.
+     * This is the destination folder within the resources folder where Cruddy should place vue files.
      *
      */
-    'default_frontend_scaffolding' => env('CRUDDY_FRONTEND_SCAFFOLDING', 'default'),
+    'vue_folder' => 'js/components',
+
+    /**
+     * This is the file where Cruddy should place the vue imports.
+     *
+     */
+    'vue_import_file' => 'resources/js/bootstrap.js',
 
     /**
      * The default validation rules for all columns in the CuddyBlueprint. These validation rules

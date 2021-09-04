@@ -1,0 +1,6 @@
+<x-layout>
+    <h1 class="is-size-1">Show</h1>
+    {{ inputs }}
+    <a href="{{ editUrl }}" class="button is-primary my-2">Edit</a>
+    <a href="{{ cancelUrl }}" class="button is-danger my-2">Cancel</a>
+</x-layout>
