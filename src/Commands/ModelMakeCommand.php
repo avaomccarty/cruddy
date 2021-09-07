@@ -2,6 +2,7 @@
 
 namespace Cruddy\Commands;
 
+use Cruddy\Traits\CommandTrait;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Foundation\Console\ModelMakeCommand as BaseModelMakeCommand;
 use Illuminate\Support\Facades\Config;
@@ -9,6 +10,8 @@ use Symfony\Component\Console\Input\InputOption;
 
 class ModelMakeCommand extends BaseModelMakeCommand
 {
+    use CommandTrait;
+
     /**
      * The console command name.
      *
@@ -27,19 +30,6 @@ class ModelMakeCommand extends BaseModelMakeCommand
     }
 
     /**
-     * Resolve the fully-qualified path to the stub.
-     *
-     * @param  string  $stub
-     * @return string
-     */
-    protected function resolveStubPath($stub)
-    {
-        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
-            ? $customPath
-            : __DIR__.$stub;
-    }
-
-    /**
      * Build the class with the given name.
      *
      * @param  string  $name
@@ -51,7 +41,9 @@ class ModelMakeCommand extends BaseModelMakeCommand
     {
         $stub = $this->files->get($this->getStub());
 
-        return $this->replaceNamespace($stub, $name)->replaceInputs($stub)->replaceClass($stub, $name);
+        return $this->replaceNamespace($stub, $name)
+            ->replaceInputs($stub)
+            ->replaceClass($stub, $name);
     }
 
     /**

@@ -2,13 +2,17 @@
 
 namespace Cruddy\Commands;
 
+use Cruddy\Traits\CommandTrait;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\Console\Input\InputArgument;
+use Illuminate\Support\Str;
 
 class RequestMakeCommand extends GeneratorCommand
 {
+    use CommandTrait;
+
     /**
      * The console command signature.
      *
@@ -51,20 +55,6 @@ class RequestMakeCommand extends GeneratorCommand
     }
 
     /**
-     * Get the type of request being created.
-     *
-     * @return string
-     */
-    public function getType()
-    {
-        if (in_array($this->argument('type'), $this->types)) {
-            return $this->argument('type');
-        }
-
-        return $this->types[0];
-    }
-
-    /**
      * Build the class with the given name.
      *
      * @param  string  $name
@@ -75,8 +65,9 @@ class RequestMakeCommand extends GeneratorCommand
     protected function buildClass($name)
     {
         $stub = $this->files->get($this->getStub());
-
-        return $this->replaceNamespace($stub, $name)->replaceRules($stub)->replaceClass($stub, $name);
+        return $this->replaceNamespace($stub, $name)
+            ->replaceRules($stub)
+            ->replaceClass($stub, $name);
     }
 
     /**
@@ -86,43 +77,10 @@ class RequestMakeCommand extends GeneratorCommand
      */
     protected function getNameInput()
     {
-        $type = ucfirst(strtolower($this->argument('type')));
-        $newName = $type . $this->argument('name');
+        $type = Str::ucfirst(strtolower(trim($this->getType())));
+        $name = $this->argument('name') ?? '';
 
-        return trim($newName);
-    }
-
-    /**
-     * Replace the rules for the given stub.
-     *
-     * @param  string  $stub
-     * @return $this
-     */
-    protected function replaceRules(&$stub)
-    {
-        $rules = $this->argument('rules');
-
-        $hasRule = false;
-        $rulesString = '';
-
-        foreach ($rules as $rule) {
-            $hasRule = true;
-            if ($rule->name !== 'id') {
-                $validationRules = '';
-                $this->addDefaultValidationRules($rule->type, $validationRules);
-                $this->addColumnValidationRules($rule, $validationRules);
-
-                $rulesString .= "'$rule->name' => '$validationRules',\n\t\t\t";
-            }
-        }
-        if ($hasRule) {
-            // Remove extra line break and tabs
-            $rulesString = substr($rulesString, 0, -4);
-        }
-
-        $stub = str_replace(['DummyRules', '{{ rules }}', '{{rules}}'], $rulesString, $stub);
-
-        return $this;
+        return $type . $name;
     }
 
     /**
@@ -178,19 +136,6 @@ class RequestMakeCommand extends GeneratorCommand
 
             $validationRules .= Config::get('cruddy.validation_defaults.' . $type);
         }
-    }
-
-    /**
-     * Resolve the fully-qualified path to the stub.
-     *
-     * @param  string  $stub
-     * @return string
-     */
-    protected function resolveStubPath($stub)
-    {
-        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
-            ? $customPath
-            : __DIR__.$stub;
     }
 
     /**

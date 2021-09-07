@@ -2,6 +2,7 @@
 
 namespace Cruddy\Commands;
 
+use Cruddy\Traits\CommandTrait;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Routing\Console\ControllerMakeCommand as BaseControllerMakeCommand;
 use Illuminate\Support\Facades\Config;
@@ -9,6 +10,8 @@ use Symfony\Component\Console\Input\InputOption;
 
 class ControllerMakeCommand extends BaseControllerMakeCommand
 {
+    use CommandTrait;
+
     /**
      * The console command name.
      *
@@ -60,7 +63,10 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
             $this->replaceModel($stub, $name);
         }
 
-        return $this->replaceNamespace($stub, $name)->replaceResource($stub)->replaceInputs($stub)->replaceClass($stub, $name);
+        return $this->replaceNamespace($stub, $name)
+            ->replaceResource($stub)
+            ->replaceInputs($stub)
+            ->replaceClass($stub, $name);
     }
 
     /**

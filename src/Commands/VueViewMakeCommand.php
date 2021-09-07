@@ -2,6 +2,7 @@
 
 namespace Cruddy\Commands;
 
+use Cruddy\Traits\CommandTrait;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
@@ -9,6 +10,8 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class VueViewMakeCommand extends GeneratorCommand
 {
+    use CommandTrait;
+
     /**
      * The console command signature.
      *
@@ -31,18 +34,6 @@ class VueViewMakeCommand extends GeneratorCommand
     protected $type = 'Cruddy vue view';
 
     /**
-     * The acceptable types of views.
-     *
-     * @var array
-     */
-    protected $types = [
-        'index',
-        'create',
-        'show',
-        'edit',
-    ];
-
-    /**
      * Get the stub file for the generator.
      *
      * @return string
@@ -50,42 +41,6 @@ class VueViewMakeCommand extends GeneratorCommand
     protected function getStub()
     {
         return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/views/vue/page.stub');
-    }
-
-    /**
-     * Get the props string for the stub.
-     *
-     * @return String
-     */
-    public function getPropsString()
-    {
-        $table = $this->argument('table');
-        $type = $this->getType();
-
-        if ($type === 'index') {
-            $prop = strtolower(Str::studly(trim($table)));
-            return ' :prop-items="{{ json_encode($' . $prop . '->toArray()[\'data\']) }}"';
-        } else if ($type === 'show' || $type === 'edit') {
-            $table = $this->argument('table');
-            $prop = strtolower(Str::studly(Str::singular(trim($table))));
-            return ' :prop-item="{{ $' . $prop . ' }}"';
-        }
-
-        return '';
-    }
-
-    /**
-     * Get the type of request being created.
-     *
-     * @return string
-     */
-    public function getType()
-    {
-        if (in_array($this->argument('type'), $this->types)) {
-            return $this->argument('type');
-        }
-
-        return $this->types[0];
     }
 
     /**
@@ -108,56 +63,6 @@ class VueViewMakeCommand extends GeneratorCommand
     }
 
     /**
-     * Replace the props variable for the given stub.
-     *
-     * @param  string  $stub
-     * @return $this
-     */
-    protected function replaceProps(&$stub)
-    {
-        $stub = str_replace(['DummyProps', '{{ props }}', '{{props}}'], $this->getPropsString(), $stub);
-
-        return $this;
-    }
-
-    /**
-     * Replace the variable name for the given stub.
-     *
-     * @param  string  $stub
-     * @return $this
-     */
-    protected function replaceVariableName(&$stub)
-    {
-        $type = $this->getType();
-
-        if ($type === 'index') {
-            $variableName = strtolower(Str::pluralStudly($this->getClassName()));
-        } else {
-            $variableName = strtolower(Str::studly($this->getClassName()));
-        }
-
-        $stub = str_replace(['DummyVariableName', '{{ VariableName }}', '{{VariableName}}'], $variableName ?? '', $stub);
-
-        return $this;
-    }
-
-    /**
-     * Replace the model variable for the given stub.
-     *
-     * @param  string  $stub
-     * @return $this
-     */
-    protected function replaceComponentNameVariable(&$stub)
-    {
-        $kebabName = Str::kebab($this->argument('name'));
-        $componentName = $kebabName . '-' . $this->getType();
-
-        $stub = str_replace(['DummyComponentName', '{{ componentName }}', '{{componentName}}'], $componentName, $stub);
-
-        return $this;
-    }
-
-    /**
      * Get the destination class path.
      *
      * @param  string  $name
@@ -169,19 +74,6 @@ class VueViewMakeCommand extends GeneratorCommand
         $name = strtolower($name);
 
         return str_replace('\\', '/', $name) . '/' . $this->getType() . '.blade.php';
-    }
-
-    /**
-     * Resolve the fully-qualified path to the stub.
-     *
-     * @param  string  $stub
-     * @return string
-     */
-    protected function resolveStubPath($stub)
-    {
-        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
-            ? $customPath
-            : __DIR__.$stub;
     }
 
     /**

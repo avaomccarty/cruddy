@@ -2,12 +2,15 @@
 
 namespace Cruddy\Commands;
 
+use Cruddy\Traits\CommandTrait;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class RouteAddCommand extends Command
 {
+    use CommandTrait;
+
     /**
      * The name and signature of the console command.
      *
@@ -54,11 +57,17 @@ class RouteAddCommand extends Command
      */
     public function getResourceType()
     {
-        if ($this->option('api')) {
-            return 'apiResource';
-        }
+        return $this->option('api') ? 'apiResource' : 'resource';
+    }
 
-        return 'resource';
+    /**
+     * Get the route file type.
+     *
+     * @return string
+     */
+    public function getRouteFileType()
+    {
+        return $this->option('api') ? 'api' : 'web';
     }
 
     /**
@@ -70,7 +79,7 @@ class RouteAddCommand extends Command
     {
         $resourceRoute = $this->getResourceRoute();
 
-        $file = $this->option('api') ? 'api' : 'web';
+        $file = $this->getRouteFileType();
 
         if (File::exists('routes/' . $file . '.php')) {
             $routeFile = File::get('routes/' . $file . '.php');

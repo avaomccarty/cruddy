@@ -2,6 +2,7 @@
 
 namespace Cruddy\Commands;
 
+use Cruddy\Traits\CommandTrait;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
@@ -9,6 +10,8 @@ use Illuminate\Support\Str;
 
 class VueImportAddCommand extends Command
 {
+    use CommandTrait;
+
     /**
      * The name and signature of the console command.
      *
@@ -41,67 +44,6 @@ class VueImportAddCommand extends Command
         'Vue.component(',
         'const app = new Vue('
     ];
-
-    /**
-     * The acceptable types of views.
-     *
-     * @var array
-     */
-    protected $types = [
-        'index',
-        'create',
-        'show',
-        'edit',
-    ];
-
-
-    /**
-     * Get the type of request being created.
-     *
-     * @return string
-     */
-    public function getType()
-    {
-        if (in_array($this->argument('type'), $this->types)) {
-            return $this->argument('type');
-        }
-
-        return $this->types[0];
-    }
-
-    /**
-     * Get new Cruddy Vue import statement.
-     *
-     * @return string
-     */
-    protected function getImportStatement()
-    {
-        $lowerName = strtolower(Str::studly(Str::singular(trim($this->argument('name')))));
-        $studylyName = Str::studly($this->argument('name'));
-        $ucFirstName = Str::ucfirst($this->getType());
-        $importString = "import " . $studylyName . $ucFirstName . " from '@/components/" . $lowerName . "/" . $this->getType() . ".vue';\n";
-
-        return $importString;
-    }
-
-    /**
-     * Get new Cruddy Vue component statements.
-     *
-     * @return string
-     */
-    protected function getComponentStatement()
-    {
-        $studylyName = Str::studly($this->argument('name'));
-        $ucFirstName = Str::ucfirst($this->getType());
-        $componentStudlyName = $studylyName . $ucFirstName;
-
-        $kebabName = Str::kebab($this->argument('name'));
-        $componentKebabName = $kebabName . '-' . $this->getType();
-
-        $componentString = "Vue.component('$componentKebabName', $componentStudlyName);";
-
-        return $componentString . "\n";
-    }
 
     /**
      * Execute the console command.
