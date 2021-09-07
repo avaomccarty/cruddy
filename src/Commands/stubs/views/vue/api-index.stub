@@ -31,7 +31,7 @@
                                 <a class="button is-info" :href="'/{{ modelVariable }}s/' + item.id + '/edit'">Edit</a>
                             </td>
                             <td>
-                                <form @submit="deleteItem(item.id)">
+                                <form @submit.prevent="deleteItem(item.id)">
                                     <input type="submit" class="button is-danger" value="Delete">
                                 </form>
                             </td>
@@ -59,18 +59,25 @@ export default {
             {{ vueData }}
         };
     },
-    props: {
-        propItems: {
-            type: Array,
-            default: () => []
-        }
-    },
     mounted () {
-        this.items = this.propItems;
+        this.items = this.setData();
     },
     methods: {
+        setData () {
+            this.$axios.get('{{ modelVariable }}s')
+            .then(response => {
+                this.{{ modelVariable }}s = response.data.{{ modelVariable }}s;
+            })
+            .catch(error => {
+                if (error.response) {
+                    this.error = error.response.data.message;
+                }
+            });
+        },
         deleteItem (id) {
-            this.$axios.delete('/{{ modelVariable }}s/' + id)
+            console.log('Delete this ID: ' + id);
+            let route = '/foos/' + id;
+            this.$axios.delete(route)
             .then(response => {
                 this.items = this.items.filter(item => item.id !== id);
             })
@@ -83,5 +90,6 @@ export default {
     }
 };
 </script>
+
 
 

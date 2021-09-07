@@ -1,14 +1,50 @@
-<x-layout>
-    <form action="{{ action }}" method="POST">
-        <h1 class="is-size-1">Edit</h1>
-        @if(isset($errors) && count($errors) > 0)
-            @foreach($errors as $error)
-                <p class="is-danger">{{ $error }}</p>
-            @endforeach
-        @endif
-        @csrf
-        @method('PUT')
-        {{ inputs }}
-        <a href="{{ cancelUrl }}" class="button is-danger my-2">Cancel</a>
-    </form>
-</x-layout>
+<template>
+    <x-layout>
+        <form @submit="submit()">
+            <h1 class="is-size-1">Edit</h1>
+            <p v-if="error">{{ error }}</p>
+            {{ inputs }}
+            <a href="{{ cancelUrl }}" class="button is-danger my-2">Cancel</a>
+        </form>
+    </x-layout>
+</template>
+
+<script>
+export default {
+    name: '{{ componentName }}',
+    status: 'prototype',
+    release: '1.0.0',
+    data () {
+        return {
+            item: {},
+            error: null,
+        };
+    },
+    props: {
+        propItem: {
+            type: Object,
+            default: () => {}
+        }
+    },
+    mounted () {
+        this.item = this.propItem;
+    },
+    methods: {
+        submit () {
+            this.$axios.put({{ action }}, {
+                {{ vuePostData }}
+            })
+            .then(response => {
+                return window.location = {{ action }};
+            })
+            .catch(error => {
+                if (error.response) {
+                    this.error = error.response.data.message;
+                }
+            });
+        }
+    }
+};
+</script>
+
+

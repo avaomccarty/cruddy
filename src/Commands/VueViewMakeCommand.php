@@ -53,6 +53,28 @@ class VueViewMakeCommand extends GeneratorCommand
     }
 
     /**
+     * Get the props string for the stub.
+     *
+     * @return String
+     */
+    public function getPropsString()
+    {
+        $table = $this->argument('table');
+        $type = $this->getType();
+
+        if ($type === 'index') {
+            $prop = strtolower(Str::studly(trim($table)));
+            return ' :prop-items="{{ json_encode($' . $prop . '->toArray()[\'data\']) }}"';
+        } else if ($type === 'show' || $type === 'edit') {
+            $table = $this->argument('table');
+            $prop = strtolower(Str::studly(Str::singular(trim($table))));
+            return ' :prop-item="{{ $' . $prop . ' }}"';
+        }
+
+        return '';
+    }
+
+    /**
      * Get the type of request being created.
      *
      * @return string
@@ -79,8 +101,44 @@ class VueViewMakeCommand extends GeneratorCommand
         $stub = $this->files->get($this->getStub());
 
         return $this->replaceNamespace($stub, $name)
-            ->replaceModelVariable($stub)
+            ->replaceComponentNameVariable($stub)
+            ->replaceProps($stub)
+            ->replaceVariableName($stub)
             ->replaceClass($stub, $name);
+    }
+
+    /**
+     * Replace the props variable for the given stub.
+     *
+     * @param  string  $stub
+     * @return $this
+     */
+    protected function replaceProps(&$stub)
+    {
+        $stub = str_replace(['DummyProps', '{{ props }}', '{{props}}'], $this->getPropsString(), $stub);
+
+        return $this;
+    }
+
+    /**
+     * Replace the variable name for the given stub.
+     *
+     * @param  string  $stub
+     * @return $this
+     */
+    protected function replaceVariableName(&$stub)
+    {
+        $type = $this->getType();
+
+        if ($type === 'index') {
+            $variableName = strtolower(Str::pluralStudly($this->getClassName()));
+        } else {
+            $variableName = strtolower(Str::studly($this->getClassName()));
+        }
+
+        $stub = str_replace(['DummyVariableName', '{{ VariableName }}', '{{VariableName}}'], $variableName ?? '', $stub);
+
+        return $this;
     }
 
     /**
@@ -89,11 +147,12 @@ class VueViewMakeCommand extends GeneratorCommand
      * @param  string  $stub
      * @return $this
      */
-    protected function replaceModelVariable(&$stub)
+    protected function replaceComponentNameVariable(&$stub)
     {
-        $modelVariable = lcfirst(class_basename($this->argument('name')));
+        $kebabName = Str::kebab($this->argument('name'));
+        $componentName = $kebabName . '-' . $this->getType();
 
-        $stub = str_replace(['DummyModelVariable', '{{ modelVariable }}', '{{modelVariable}}'], $modelVariable, $stub);
+        $stub = str_replace(['DummyComponentName', '{{ componentName }}', '{{componentName}}'], $componentName, $stub);
 
         return $this;
     }

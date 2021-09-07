@@ -1,13 +1,8 @@
 <template>
     <x-layout>
-        <form action="{{ action }}" method="POST">
+        <form @submit.prevent="submit()">
             <h1 class="is-size-1">Create</h1>
-            @if(isset($errors) && count($errors) > 0)
-                @foreach($errors as $error)
-                    <p class="is-danger">{{ $error }}</p>
-                @endforeach
-            @endif
-            @csrf
+            <p v-if="error">{{ error }}</p>
             {{ inputs }}
             <a href="{{ cancelUrl }}" class="button is-danger my-2">Cancel</a>
         </form>
@@ -16,27 +11,29 @@
 
 <script>
 export default {
-    name: '{{ component }}',
+    name: '{{ componentName }}',
     status: 'prototype',
     release: '1.0.0',
-    components: {
-        ComponentName
-    },
-    props: {
-        name: {
-            type: Array,
-            default: () => []
-        }
-    },
     data () {
         return {
-
+            error: null,
+            {{ vueData }}
         };
+    },
+    methods: {
+        submit () {
+            this.$axios.post('{{ action }}', {
+                {{ vuePostData }}
+            })
+            .then(response => {
+                return window.location = '{{ action }}';
+            })
+            .catch(error => {
+                if (error.response) {
+                    this.error = error.response.data.message;
+                }
+            });
+        }
     }
 };
 </script>
-
-<style scoped>
-
-</style>
-

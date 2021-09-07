@@ -1,0 +1,11 @@
+@extends('layout.app')
+
+@section('main')
+
+@if (isset(${{ VariableName }}))
+    <{{ componentName }} {{ props }}/>
+@else
+    <{{ componentName }}/>
+@endif
+
+@endsection

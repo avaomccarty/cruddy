@@ -33,7 +33,7 @@ return [
      * This is the destination folder within the resources folder where Cruddy should place vue files.
      *
      */
-    'vue_folder' => 'js/components',
+    'vue_folder' => 'resources/js/components',
 
     /**
      * This is the file where Cruddy should place the vue imports.
