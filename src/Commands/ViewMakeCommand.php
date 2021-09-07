@@ -76,13 +76,7 @@ class ViewMakeCommand extends GeneratorCommand
      */
     protected function getClassName() : string
     {
-        $table = $this->getTable();
-
-        if (!empty($table)) {
-            return strtolower(Str::studly(Str::singular(trim($table))));
-        }
-
-        throw new Exception('Please provide a table.');
+        return $this->getStudlySingular($this->getTable()) ?? '';
     }
 
     /**

@@ -41,8 +41,8 @@ class RouteAddCommand extends Command
      */
     protected function getResourceRoute()
     {
-        $lowerName = Str::plural(strtolower($this->argument('name')));
-        $ucFirstName = ucfirst($this->argument('name'));
+        $lowerName = $this->getLowerPlural($this->argument('name'));
+        $ucFirstName = Str::ucfirst($this->argument('name'));
         $routeString = "\n\n" .
                         "// $ucFirstName Resource\n" .
                         "Route::" . $this->getResourceType() . "('$lowerName', 'App\Http\Controllers\\" . $ucFirstName . "Controller')";

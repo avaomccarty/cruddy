@@ -108,7 +108,6 @@ class VueViewMakeCommand extends GeneratorCommand
      */
     protected function getClassName()
     {
-        $table = $this->argument('table');
-        return strtolower(Str::studly(Str::singular(trim($table))));
+        return $this->getLowerSingular($this->argument('table'));
     }
 }

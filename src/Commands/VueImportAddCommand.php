@@ -6,7 +6,6 @@ use Cruddy\Traits\CommandTrait;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 
 class VueImportAddCommand extends Command
 {

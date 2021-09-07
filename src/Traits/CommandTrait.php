@@ -30,12 +30,40 @@ trait CommandTrait
     protected function getImportStatement() : string
     {
         if (method_exists(self::class, 'argument')) {
-            $lowerName = strtolower(Str::studly(Str::singular(trim($this->argument('name')))));
-            $studylyName = Str::studly($this->argument('name'));
-            $ucFirstName = Str::ucfirst($this->getType());
-            $importString = "import " . $studylyName . $ucFirstName . " from '@/components/" . $lowerName . "/" . $this->getType() . ".vue';\n";
+            $lowerName = $this->getLowerSingular($this->argument('name'));
+            $importString = "import " . $this->getComponent() . " from '@/components/" . $lowerName . "/" . $this->getType() . ".vue';\n";
 
             return $importString;
+        }
+
+        return '';
+    }
+
+    /**
+     * Get the lower singular version of the value.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    protected function getLowerSingular(string $value) : string
+    {
+        return strtolower(Str::studly(Str::singular(trim($value)))) ?? '';
+    }
+
+    /**
+     * Get new Cruddy Vue component name.
+     *
+     * @param  string|null  $style
+     * @return string
+     */
+    protected function getComponent(string $style = null) : string
+    {
+        if (method_exists(self::class, 'argument')) {
+            if ($style === 'kebab') {
+                return Str::kebab($this->argument('name')) . '-' . strtolower($this->getType());
+            } else {
+                return Str::studly($this->argument('name')) . Str::ucfirst($this->getType());
+            }
         }
 
         return '';
@@ -46,19 +74,10 @@ trait CommandTrait
      *
      * @return string
      */
-    protected function getComponentStatement()
+    protected function getComponentStatement() : string
     {
         if (method_exists(self::class, 'argument')) {
-            $studylyName = Str::studly($this->argument('name'));
-            $ucFirstName = Str::ucfirst($this->getType());
-            $componentStudlyName = $studylyName . $ucFirstName;
-
-            $kebabName = Str::kebab($this->argument('name'));
-            $componentKebabName = $kebabName . '-' . $this->getType();
-
-            $componentString = "Vue.component('$componentKebabName', $componentStudlyName);";
-
-            return $componentString . "\n";
+            return "Vue.component('" . $this->getComponent('kebab') . "', " . $this->getComponent() . ");\n";
         }
 
         return '';
@@ -324,7 +343,7 @@ trait CommandTrait
      * @param  string  $stub
      * @return $this
      */
-    protected function replaceRules(&$stub)
+    protected function replaceRules(&$stub) : self
     {
         $rules = $this->getRules();
 
@@ -438,9 +457,9 @@ trait CommandTrait
     /**
      * Get the props string for the stub.
      *
-     * @return String
+     * @return string
      */
-    public function getPropsString()
+    public function getPropsString() : string
     {
         if (method_exists(self::class, 'argument')) {
             $table = $this->getTable();
@@ -465,7 +484,7 @@ trait CommandTrait
      * @param  string  $stub
      * @return $this
      */
-    protected function replaceProps(&$stub)
+    protected function replaceProps(&$stub) : self
     {
         $stub = str_replace(['DummyProps', '{{ props }}', '{{props}}'], $this->getPropsString(), $stub);
 
@@ -478,7 +497,7 @@ trait CommandTrait
      * @param  string  $stub
      * @return $this
      */
-    protected function replaceVariableName(&$stub)
+    protected function replaceVariableName(&$stub) : self
     {
         $type = $this->getType();
 
@@ -499,7 +518,7 @@ trait CommandTrait
      * @param  string  $stub
      * @return $this
      */
-    protected function replaceComponentNameVariable(&$stub)
+    protected function replaceComponentNameVariable(&$stub) : self
     {
         if (method_exists(self::class, 'argument')) {
             $kebabName = Str::kebab($this->argument('name'));

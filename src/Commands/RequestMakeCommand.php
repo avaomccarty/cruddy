@@ -77,10 +77,7 @@ class RequestMakeCommand extends GeneratorCommand
      */
     protected function getNameInput()
     {
-        $type = Str::ucfirst(strtolower(trim($this->getType())));
-        $name = $this->argument('name') ?? '';
-
-        return $type . $name;
+        return $this->getStudlySingular($this->getType()) . $this->argument('name') ?? '';
     }
 
     /**
