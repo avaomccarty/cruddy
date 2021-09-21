@@ -40,6 +40,17 @@ trait CommandTrait
     }
 
     /**
+     * Get the lower plural version of the value.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    protected function getLowerPlural(string $value) : string
+    {
+        return strtolower(Str::pluralStudly($value)) ?? '';
+    }
+
+    /**
      * Get the lower singular version of the value.
      *
      * @param  string  $value
@@ -47,7 +58,18 @@ trait CommandTrait
      */
     protected function getLowerSingular(string $value) : string
     {
-        return strtolower(Str::studly(Str::singular(trim($value)))) ?? '';
+        return strtolower($this->getStudlySingular($value)) ?? '';
+    }
+
+    /**
+     * Get the studly singular version of the value.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    protected function getStudlySingular(string $value) : string
+    {
+        return Str::studly(Str::singular(trim($value))) ?? '';
     }
 
     /**

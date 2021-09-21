@@ -55,7 +55,7 @@ class RouteAddCommand extends Command
      *
      * @return string
      */
-    public function getResourceType()
+    protected function getResourceType()
     {
         return $this->option('api') ? 'apiResource' : 'resource';
     }
@@ -65,7 +65,7 @@ class RouteAddCommand extends Command
      *
      * @return string
      */
-    public function getRouteFileType()
+    protected function getRouteFileType()
     {
         return $this->option('api') ? 'api' : 'web';
     }
