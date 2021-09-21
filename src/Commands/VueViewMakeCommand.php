@@ -38,7 +38,7 @@ class VueViewMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    protected function getStub()
+    protected function getStub() : string
     {
         return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/views/vue/page.stub');
     }
@@ -51,7 +51,7 @@ class VueViewMakeCommand extends GeneratorCommand
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function buildClass($name)
+    protected function buildClass($name) : string
     {
         $stub = $this->files->get($this->getStub());
 
@@ -68,7 +68,7 @@ class VueViewMakeCommand extends GeneratorCommand
      * @param  string  $name
      * @return string
      */
-    protected function getPath($name)
+    protected function getPath($name) : string
     {
         $name = Str::replaceFirst($this->rootNamespace(), '', $name);
         $name = strtolower($name);
@@ -82,7 +82,7 @@ class VueViewMakeCommand extends GeneratorCommand
      * @param  string  $rootNamespace
      * @return string
      */
-    protected function getDefaultNamespace($rootNamespace)
+    protected function getDefaultNamespace($rootNamespace) : string
     {
         return $rootNamespace . '\resources\views';
     }
@@ -92,7 +92,7 @@ class VueViewMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments() : array
     {
         return [
             ['type', InputArgument::OPTIONAL, 'The type of view'],
@@ -106,7 +106,7 @@ class VueViewMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    protected function getClassName()
+    protected function getClassName() : string
     {
         return $this->getLowerSingular($this->argument('table'));
     }

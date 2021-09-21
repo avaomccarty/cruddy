@@ -49,7 +49,7 @@ class RequestMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    protected function getStub()
+    protected function getStub() : string
     {
         return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/request.stub');
     }
@@ -62,7 +62,7 @@ class RequestMakeCommand extends GeneratorCommand
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function buildClass($name)
+    protected function buildClass($name) : string
     {
         $stub = $this->files->get($this->getStub());
         return $this->replaceNamespace($stub, $name)
@@ -75,7 +75,7 @@ class RequestMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    protected function getNameInput()
+    protected function getNameInput() : string
     {
         return $this->getStudlySingular($this->getType()) . $this->argument('name') ?? '';
     }
@@ -83,11 +83,11 @@ class RequestMakeCommand extends GeneratorCommand
     /**
      * Add the specific column validation rules to the validationRules string.
      *
-     * @param  string  $column
+     * @param  ColumnDefinition  $column
      * @param  string  $validationRules
      * @return void
      */
-    public function addColumnValidationRules(ColumnDefinition $column, string &$validationRules = '')
+    protected function addColumnValidationRules(ColumnDefinition $column, string &$validationRules = '') : void
     {
         if ($column->unsigned) {
             if (strpos($validationRules, 'min:') === false) {
@@ -124,7 +124,7 @@ class RequestMakeCommand extends GeneratorCommand
      * @param  string  $validationRules
      * @return void
      */
-    public function addDefaultValidationRules(string $type = 'string', string &$validationRules = '')
+    protected function addDefaultValidationRules(string $type = 'string', string &$validationRules = '') : void
     {
         if (strlen(trim(Config::get('cruddy.validation_defaults.' . $type))) > 0) {
             if (strlen(trim($validationRules)) > 0) {
@@ -141,9 +141,9 @@ class RequestMakeCommand extends GeneratorCommand
      * @param  string  $rootNamespace
      * @return string
      */
-    protected function getDefaultNamespace($rootNamespace)
+    protected function getDefaultNamespace($rootNamespace) : string
     {
-        return $rootNamespace.'\Http\Requests';
+        return $rootNamespace . '\Http\Requests';
     }
 
     /**
@@ -151,7 +151,7 @@ class RequestMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments() : array
     {
         return [
             ['name', InputArgument::REQUIRED, 'The name of the class'],

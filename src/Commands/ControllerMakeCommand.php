@@ -38,7 +38,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      *
      * @return string
      */
-    protected function getStub()
+    protected function getStub() : string
     {
         if ($this->option('api')) {
             return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/controller.api.stub');
@@ -55,7 +55,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function buildClass($name)
+    protected function buildClass($name) : string
     {
         $stub = $this->files->get($this->getStub());
 
@@ -73,9 +73,9 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      * Replace the inputs for the given stub.
      *
      * @param  string  $stub
-     * @return $this
+     * @return self
      */
-    protected function replaceInputs(&$stub)
+    protected function replaceInputs(&$stub) : self
     {
         $inputs = $this->option('inputs');
 
@@ -103,10 +103,10 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      * @param  ColumnDefinition  $input
      * @return string
      */
-    public function getInputString(ColumnDefinition $input)
+    protected function getInputString(ColumnDefinition $input) : string
     {
         if ($input['name'] === 'id') {
-            return;
+            return '';
         }
 
         return "'" . $input['name'] . "'" . ' => $request->' . $input['name'] . ",\n\t\t\t\t";
@@ -117,7 +117,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      *
      * @return string
      */
-    public function getResource()
+    protected function getResource() : string
     {
         return str_ireplace('controller', '', $this->argument('name'));
     }
@@ -129,7 +129,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      * @param  array  $replace
      * @return array
      */
-    protected function buildModelReplacements(array $replace)
+    protected function buildModelReplacements(array $replace) : array
     {
         $modelClass = $this->parseModel($this->option('model'));
 
@@ -159,9 +159,9 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      * Replace the model for the given stub.
      *
      * @param  string  $stub
-     * @return $this
+     * @return self
      */
-    protected function replaceModel(&$stub)
+    protected function replaceModel(&$stub) : self
     {
         $modelClass = $this->parseModel($this->option('model'));
 
@@ -185,9 +185,9 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      * Replace the resource for the given stub.
      *
      * @param  string  $stub
-     * @return $this
+     * @return self
      */
-    protected function replaceResource(&$stub)
+    protected function replaceResource(&$stub) : self
     {
         $stub = str_replace(['DummyResource', '{{ resource }}', '{{resource}}'], $this->getResource(), $stub);
 
@@ -200,7 +200,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      * @param  string  $stub
      * @return string
      */
-    protected function resolveStubPath($stub)
+    protected function resolveStubPath($stub) : string
     {
         return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
             ? $customPath
@@ -213,9 +213,9 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      * @param  string  $rootNamespace
      * @return string
      */
-    protected function getDefaultNamespace($rootNamespace)
+    protected function getDefaultNamespace($rootNamespace) : string
     {
-        return $rootNamespace.'\Http\Controllers';
+        return $rootNamespace . '\Http\Controllers';
     }
 
     /**
@@ -223,7 +223,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      *
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions() : array
     {
         $options = parent::getOptions();
 

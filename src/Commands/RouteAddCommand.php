@@ -39,7 +39,7 @@ class RouteAddCommand extends Command
      *
      * @return string
      */
-    protected function getResourceRoute()
+    protected function getResourceRoute() : string
     {
         $lowerName = $this->getLowerPlural($this->argument('name'));
         $ucFirstName = Str::ucfirst($this->argument('name'));
@@ -55,7 +55,7 @@ class RouteAddCommand extends Command
      *
      * @return string
      */
-    public function getResourceType()
+    protected function getResourceType() : string
     {
         return $this->option('api') ? 'apiResource' : 'resource';
     }
@@ -65,7 +65,7 @@ class RouteAddCommand extends Command
      *
      * @return string
      */
-    public function getRouteFileType()
+    protected function getRouteFileType() : string
     {
         return $this->option('api') ? 'api' : 'web';
     }
@@ -85,13 +85,13 @@ class RouteAddCommand extends Command
             $routeFile = File::get('routes/' . $file . '.php');
 
             if (strpos($routeFile, $resourceRoute) !== false) {
-                echo "No Cruddy resource routes were added.\n";
+                $this->line("No Cruddy resource routes were added.\n");
             } else {
                 File::append('routes/' . $file . '.php', $resourceRoute);
-                echo "Cruddy resource routes were added successfully!\n";
+                $this->line("Cruddy resource routes were added successfully!\n");
             }
         } else {
-            echo "No Cruddy resource routes were added.\n";
+            $this->line("No Cruddy resource routes were added.\n");
         }
     }
 }

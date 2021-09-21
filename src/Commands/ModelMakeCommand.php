@@ -24,7 +24,7 @@ class ModelMakeCommand extends BaseModelMakeCommand
      *
      * @return string
      */
-    protected function getStub()
+    protected function getStub() : string
     {
         return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/model.stub');
     }
@@ -37,7 +37,7 @@ class ModelMakeCommand extends BaseModelMakeCommand
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function buildClass($name)
+    protected function buildClass($name) : string
     {
         $stub = $this->files->get($this->getStub());
 
@@ -50,9 +50,9 @@ class ModelMakeCommand extends BaseModelMakeCommand
      * Replace the inputs for the given stub.
      *
      * @param  string  $stub
-     * @return $this
+     * @return self
      */
-    protected function replaceInputs(&$stub)
+    protected function replaceInputs(string &$stub) : self
     {
         $inputs = $this->option('inputs');
 
@@ -80,10 +80,10 @@ class ModelMakeCommand extends BaseModelMakeCommand
      * @param  ColumnDefinition  $input
      * @return string
      */
-    public function getInputString(ColumnDefinition $input)
+    protected function getInputString(ColumnDefinition $input) : string
     {
         if ($input['name'] === 'id') {
-            return;
+            return '';
         }
 
         return "'" . $input['name'] . "',\n\t\t";
@@ -94,7 +94,7 @@ class ModelMakeCommand extends BaseModelMakeCommand
      *
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions() : array
     {
         $options = parent::getOptions();
 
