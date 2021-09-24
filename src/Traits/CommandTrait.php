@@ -13,7 +13,7 @@ trait CommandTrait
      *
      * @return string
      */
-    protected function getTable() : string
+    protected function getTableName() : string
     {
         if (method_exists(self::class, 'argument')) {
             return (string)$this->argument('table') ?? '';
@@ -418,7 +418,7 @@ trait CommandTrait
      */
     public function replaceFormAction(&$stub) : self
     {
-        $table = $this->getTable();
+        $table = $this->getTableName();
 
         if ($this->getType() === 'create') {
             $stub = str_replace(['DummyAction', '{{ action }}', '{{action}}'], '/' . $table, $stub);
@@ -449,7 +449,7 @@ trait CommandTrait
      */
     public function replaceFormEditUrl(&$stub) : self
     {
-        $table = $this->getTable();
+        $table = $this->getTableName();
 
         if (Config::get('cruddy.frontend_scaffolding') === 'vue') {
             $editUrl = "'/$table/' + item.id + '/edit'";
@@ -469,7 +469,7 @@ trait CommandTrait
      */
     public function replaceFormCancelUrl(&$stub) : self
     {
-        $table = $this->getTable();
+        $table = $this->getTableName();
 
         $stub = str_replace(['DummyCancelUrl', '{{ cancelUrl }}', '{{cancelUrl}}'], '/' . $table, $stub);
 
@@ -484,7 +484,7 @@ trait CommandTrait
     public function getPropsString() : string
     {
         if (method_exists(self::class, 'argument')) {
-            $table = $this->getTable();
+            $table = $this->getTableName();
             $type = $this->getType();
 
             if ($type === 'index') {
@@ -596,7 +596,7 @@ trait CommandTrait
     public function replaceVueComponentName(&$stub) : self
     {
         if (Config::get('cruddy.frontend_scaffolding') === 'vue') {
-            $studylyName = Str::studly(Str::singular($this->getTable()));
+            $studylyName = Str::studly(Str::singular($this->getTableName()));
             $ucFirstName = Str::ucfirst($this->getType());
             $componentName = $studylyName . $ucFirstName;
 

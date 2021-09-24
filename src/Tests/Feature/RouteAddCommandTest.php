@@ -1,29 +1,29 @@
 <?php
 
-namespace Cruddy\Tests\Unit;
+namespace Cruddy\Tests\Feature;
 
-use Tests\TestCase;
-use Illuminate\Support\Facades\Cache;
+// use Tests\TestCase;
+// use Illuminate\Support\Facades\Cache;
 
-class RouteAddCommandTest extends TestCase
+class RouteAddCommandTest
 {
-    /**
-     * A test for the output when the file does not exist.
-     *
-     * @return void
-     */
-    public function test_file_does_not_exist()
-    {
-        Cache::shouldReceive('exists')
-            ->with('routes/web.php')
-            ->once()
-            ->andReturn(false);
+//     /**
+//      * A test for the output when the file does not exist.
+//      *
+//      * @return void
+//      */
+//     public function test_file_does_not_exist()
+//     {
+//         Cache::shouldReceive('exists')
+//             ->with('routes/web.php')
+//             ->once()
+//             ->andReturn(false);
 
-        Cache::makePartial();
+//         Cache::makePartial();
 
-        $this->artisan('cruddy:route', [
-            'name' => 'web'
-        ])
-            ->expectsOutput("No Cruddy resource routes were added.\n");
-    }
+//         $this->artisan('cruddy:route', [
+//             'name' => 'web'
+//         ])
+//             ->expectsOutput("No Cruddy resource routes were added.\n");
+//     }
 }

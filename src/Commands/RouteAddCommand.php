@@ -2,14 +2,13 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\Traits\CommandTrait;
+use Cruddy\Traits\RouteAddCommandTrait;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 
 class RouteAddCommand extends Command
 {
-    use CommandTrait;
+    use RouteAddCommandTrait;
 
     /**
      * The name and signature of the console command.
@@ -18,7 +17,7 @@ class RouteAddCommand extends Command
      */
     protected $signature = 'cruddy:route
                             {name : The name of the resource that needs new routes}
-                            {--api=false : Flag for determining if API only routes need to be created.}';
+                            {--api : Flag for determining if API only routes need to be created.}';
 
     /**
      * The console command description.
@@ -28,49 +27,6 @@ class RouteAddCommand extends Command
     protected $description = 'Add new Cruddy routes';
 
     /**
-     * The name of the new Cruddy resource.
-     *
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * Get new Cruddy resource route.
-     *
-     * @return string
-     */
-    protected function getResourceRoute() : string
-    {
-        $lowerName = $this->getLowerPlural($this->argument('name'));
-        $ucFirstName = Str::ucfirst($this->argument('name'));
-        $routeString = "\n\n" .
-                        "// $ucFirstName Resource\n" .
-                        "Route::" . $this->getResourceType() . "('$lowerName', 'App\Http\Controllers\\" . $ucFirstName . "Controller')";
-
-        return $routeString . ';';
-    }
-
-    /**
-     * Get the type of route resource needed.
-     *
-     * @return string
-     */
-    protected function getResourceType() : string
-    {
-        return $this->option('api') ? 'apiResource' : 'resource';
-    }
-
-    /**
-     * Get the route file type.
-     *
-     * @return string
-     */
-    protected function getRouteFileType() : string
-    {
-        return $this->option('api') ? 'api' : 'web';
-    }
-
-    /**
      * Execute the console command.
      *
      * @return int
@@ -78,20 +34,17 @@ class RouteAddCommand extends Command
     public function handle()
     {
         $resourceRoute = $this->getResourceRoute();
+        $file = $this->getRouteFile();
 
-        $file = $this->getRouteFileType();
-
-        if (File::exists('routes/' . $file . '.php')) {
-            $routeFile = File::get('routes/' . $file . '.php');
-
-            if (strpos($routeFile, $resourceRoute) !== false) {
-                $this->line("No Cruddy resource routes were added.\n");
+        if (File::exists($file)) {
+            if (strpos(File::get($file), $resourceRoute) !== false) {
+                $this->line($this->noRoutesAddedMessage);
             } else {
-                File::append('routes/' . $file . '.php', $resourceRoute);
-                $this->line("Cruddy resource routes were added successfully!\n");
+                File::append($file, $resourceRoute);
+                $this->line($this->successMessage);
             }
         } else {
-            $this->line("No Cruddy resource routes were added.\n");
+            $this->line($this->noRoutesAddedMessage);
         }
     }
 }

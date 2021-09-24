@@ -76,7 +76,7 @@ class ViewMakeCommand extends GeneratorCommand
      */
     protected function getClassName() : string
     {
-        return $this->getStudlySingular($this->getTable()) ?? '';
+        return $this->getStudlySingular($this->getTableName()) ?? '';
     }
 
     /**
