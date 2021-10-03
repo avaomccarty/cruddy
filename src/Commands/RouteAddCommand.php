@@ -16,8 +16,8 @@ class RouteAddCommand extends Command
      * @var string
      */
     protected $signature = 'cruddy:route
-                            {name : The name of the resource that needs new routes}
-                            {--api : Flag for determining if API only routes need to be created.}';
+                            { name : The name of the resource that needs new routes. }
+                            { --api : Flag for determining if API only routes need to be created. }';
 
     /**
      * The console command description.

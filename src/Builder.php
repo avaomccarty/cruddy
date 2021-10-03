@@ -47,9 +47,9 @@ class Builder extends BaseBuilder
         $blueprint = $this->createBlueprint($table, $callback);
 
         Artisan::call('cruddy:controller', [
-            'name' => $className. 'Controller',
+            'name' => $className . 'Controller',
             '--resource' => true,
-            '--model' => $className,
+            '--model' => $className, // Note: This should be improved. Use the Cruddy model, not the default.
             '--api' => Config::get('cruddy.is_api'),
             '--inputs' => $blueprint->getColumns(),
         ]);

@@ -2,12 +2,16 @@
 
 namespace Cruddy\Traits;
 
+use Cruddy\Traits\Stub\InputTrait;
+use Cruddy\Traits\Stub\ModelTrait;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
 trait CommandTrait
 {
+    use InputTrait, ModelTrait;
+
     /**
      * Get the table.
      *
@@ -112,17 +116,19 @@ trait CommandTrait
      */
     public function getType() : string
     {
-        if (property_exists(self::class, 'types') && is_array($this->types)) {
-            if (in_array($this->argument('type'), $this->types)) {
-                return $this->argument('type');
+        if (method_exists(self::class, 'argument')) {
+            if (property_exists(self::class, 'types') && is_array($this->types)) {
+                if (in_array($this->argument('type'), $this->types)) {
+                    return $this->argument('type');
+                }
+
+                return $this->types[0];
             }
 
-            return $this->types[0];
-        }
-
-        if ($this->argument('type')) {
-            if (in_array($this->argument('type'), $this->getDefaultTypes())) {
-                return $this->argument('type');
+            if ($this->argument('type')) {
+                if (in_array($this->argument('type'), $this->getDefaultTypes())) {
+                    return $this->argument('type');
+                }
             }
         }
 
@@ -177,12 +183,10 @@ trait CommandTrait
     protected function getInputs() : array
     {
         if ($this->option('inputs')) {
-            dd($this->option('inputs'));
             return (array)$this->option('inputs');
         }
 
         if ($this->argument('inputs')) {
-            dd($this->argument('inputs'));
             return (array)$this->argument('inputs');
         }
 
@@ -237,19 +241,6 @@ trait CommandTrait
     }
 
     /**
-     * Resolve the fully-qualified path to the stub.
-     *
-     * @param  string  $stub
-     * @return string
-     */
-    protected function resolveStubPath($stub) : string
-    {
-        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
-            ? $customPath
-            : __DIR__.$stub;
-    }
-
-    /**
      * Get the submit input as a string.
      *
      * @return string
@@ -271,7 +262,6 @@ trait CommandTrait
      */
     public function getExtraInputInfo(ColumnDefinition $column) : string
     {
-        // dd('not hit?');
         $extraInputInfoString = '';
 
         if (($this->getType() === 'edit' || $this->getType() === 'show') && Config::get('cruddy.frontend_scaffolding') !== 'vue') {
@@ -320,10 +310,10 @@ trait CommandTrait
     /**
      * Replace the inputs for the given stub.
      *
-     * @param  string  $stub
-     * @return $this
+     * @param  string  &$stub
+     * @return self
      */
-    protected function replaceInputs(&$stub) : self
+    protected function replaceInputs(string &$stub) : self
     {
         $inputs = $this->argument('inputs');
 
@@ -347,10 +337,10 @@ trait CommandTrait
     /**
      * Replace the model variable for the given stub.
      *
-     * @param  string  $stub
-     * @return $this
+     * @param  string  &$stub
+     * @return self
      */
-    protected function replaceModelVariable(&$stub) : self
+    protected function replaceModelVariable(string &$stub) : self
     {
         $modelVariable = lcfirst(class_basename($this->argument('name')));
 
@@ -362,13 +352,27 @@ trait CommandTrait
     /**
      * Replace the rules for the given stub.
      *
-     * @param  string  $stub
-     * @return $this
+     * @param  string  &$stub
+     * @return self
      */
-    protected function replaceRules(&$stub) : self
+    protected function replaceRules(string &$stub) : self
     {
         $rules = $this->getRules();
 
+        $this->updateStubWithRules($stub, $rules);
+
+        return $this;
+    }
+
+    /**
+     * Replace the rules for the given stub.
+     *
+     * @param  string  &$stub
+     * @param  array  $rules
+     * @return void
+     */
+    public function updateStubWithRules(string &$stub, array $rules = []) : void
+    {
         $hasRule = false;
         $rulesString = '';
 
@@ -386,14 +390,13 @@ trait CommandTrait
                 $rulesString .= "'$rule->name' => '$validationRules',\n\t\t\t";
             }
         }
+
         if ($hasRule) {
             // Remove extra line break and tabs
             $rulesString = substr($rulesString, 0, -4);
         }
 
         $stub = str_replace(['DummyRules', '{{ rules }}', '{{rules}}'], $rulesString, $stub);
-
-        return $this;
     }
 
     /**
@@ -413,10 +416,10 @@ trait CommandTrait
     /**
      * Replace the action for the form request.
      *
-     * @param  string  $stub
-     * @return $this
+     * @param  string  &$stub
+     * @return self
      */
-    public function replaceFormAction(&$stub) : self
+    public function replaceFormAction(string &$stub) : self
     {
         $table = $this->getTableName();
 
@@ -444,10 +447,10 @@ trait CommandTrait
     /**
      * Replace the editUrl for the the edit button.
      *
-     * @param  string  $stub
-     * @return $this
+     * @param  string  &$stub
+     * @return self
      */
-    public function replaceFormEditUrl(&$stub) : self
+    public function replaceFormEditUrl(string &$stub) : self
     {
         $table = $this->getTableName();
 
@@ -464,10 +467,10 @@ trait CommandTrait
     /**
      * Replace the cancelUrl for the the cancel button.
      *
-     * @param  string  $stub
-     * @return $this
+     * @param  string  &$stub
+     * @return self
      */
-    public function replaceFormCancelUrl(&$stub) : self
+    public function replaceFormCancelUrl(string &$stub) : self
     {
         $table = $this->getTableName();
 
@@ -503,10 +506,10 @@ trait CommandTrait
     /**
      * Replace the props variable for the given stub.
      *
-     * @param  string  $stub
-     * @return $this
+     * @param  string  &$stub
+     * @return self
      */
-    protected function replaceProps(&$stub) : self
+    protected function replaceProps(string &$stub) : self
     {
         $stub = str_replace(['DummyProps', '{{ props }}', '{{props}}'], $this->getPropsString(), $stub);
 
@@ -516,10 +519,10 @@ trait CommandTrait
     /**
      * Replace the variable name for the given stub.
      *
-     * @param  string  $stub
-     * @return $this
+     * @param  string  &$stub
+     * @return self
      */
-    protected function replaceVariableName(&$stub) : self
+    protected function replaceVariableName(string &$stub) : self
     {
         $type = $this->getType();
 
@@ -537,10 +540,10 @@ trait CommandTrait
     /**
      * Replace the model variable for the given stub.
      *
-     * @param  string  $stub
-     * @return $this
+     * @param  string  &$stub
+     * @return self
      */
-    protected function replaceComponentNameVariable(&$stub) : self
+    protected function replaceComponentNameVariable(string &$stub) : self
     {
         if (method_exists(self::class, 'argument')) {
             $kebabName = Str::kebab($this->argument('name'));
@@ -590,10 +593,10 @@ trait CommandTrait
     /**
      * Replace the Vue component name.
      *
-     * @param  string  $stub
-     * @return $this
+     * @param  string  &$stub
+     * @return self
      */
-    public function replaceVueComponentName(&$stub) : self
+    public function replaceVueComponentName(string &$stub) : self
     {
         if (Config::get('cruddy.frontend_scaffolding') === 'vue') {
             $studylyName = Str::studly(Str::singular($this->getTableName()));
@@ -609,10 +612,10 @@ trait CommandTrait
     /**
      * Replace the Vue data values.
      *
-     * @param  string  $stub
-     * @return $this
+     * @param  string  &$stub
+     * @return self
      */
-    public function replaceVueData(&$stub) : self
+    public function replaceVueData(string &$stub) : self
     {
         if (Config::get('cruddy.frontend_scaffolding') === 'vue') {
             $inputs = $this->argument('inputs');
@@ -632,10 +635,10 @@ trait CommandTrait
     /**
      * Replace the Vue post data values.
      *
-     * @param  string  $stub
-     * @return $this
+     * @param  string  &$stub
+     * @return self
      */
-    public function replaceVuePostData(&$stub) : self
+    public function replaceVuePostData(string &$stub) : self
     {
         if (Config::get('cruddy.frontend_scaffolding') === 'vue') {
             $inputs = $this->argument('inputs');

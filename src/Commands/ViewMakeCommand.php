@@ -18,7 +18,11 @@ class ViewMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'cruddy:view {name} {table} {type=index} {inputs?*}';
+    protected $signature = 'cruddy:view
+                            { name : The name of the resource that needs new views. }
+                            { table : The name of the original migration table. }
+                            { type=index : The type of file being created. }
+                            { inputs?* : The inputs needed within the file. }';
 
     /**
      * The console command description.

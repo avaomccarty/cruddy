@@ -17,7 +17,10 @@ class VueViewMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'cruddy:vue-view {name} {table} {type=index}';
+    protected $signature = 'cruddy:vue-view
+                            { name : The name of the resource that needs new vue view files. }
+                            { table : The name of the original migration table. }
+                            { type=index : The type of file being created. }';
 
     /**
      * The console command description.

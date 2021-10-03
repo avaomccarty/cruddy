@@ -72,10 +72,10 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     /**
      * Replace the inputs for the given stub.
      *
-     * @param  string  $stub
+     * @param  string  &$stub
      * @return self
      */
-    protected function replaceInputs(&$stub) : self
+    protected function replaceInputs(string &$stub) : self
     {
         $inputs = $this->option('inputs');
 
@@ -158,10 +158,10 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     /**
      * Replace the model for the given stub.
      *
-     * @param  string  $stub
+     * @param  string  &$stub
      * @return self
      */
-    protected function replaceModel(&$stub) : self
+    protected function replaceModel(string &$stub) : self
     {
         $modelClass = $this->parseModel($this->option('model'));
 
@@ -174,7 +174,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
             }
         }
 
-        $stub = str_replace(['DummyModelClass', '{{ model }}', '{{model}}'], class_basename($modelClass), $stub);
+        $stub = str_replace($this->dummyCL, class_basename($modelClass), $stub);
         $stub = str_replace(['DummyModelVariable', '{{ modelVariable }}', '{{modelVariable}}'], lcfirst(class_basename($modelClass)), $stub);
         $stub = str_replace(['DummyFullModelClass', '{{ namespacedModel }}', '{{namespacedModel}}'], $modelClass, $stub);
 
@@ -184,10 +184,10 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     /**
      * Replace the resource for the given stub.
      *
-     * @param  string  $stub
+     * @param  string  &$stub
      * @return self
      */
-    protected function replaceResource(&$stub) : self
+    protected function replaceResource(string &$stub) : self
     {
         $stub = str_replace(['DummyResource', '{{ resource }}', '{{resource}}'], $this->getResource(), $stub);
 
