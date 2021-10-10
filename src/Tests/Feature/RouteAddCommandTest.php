@@ -12,6 +12,11 @@ class RouteAddCommandTest extends TestCase
 {
     use DatabaseTransactions, RouteAddCommandTrait;
 
+    /**
+     * Whether to load the environment variables for the tests.
+     *
+     * @var boolean
+     */
     protected $loadEnvironmentVariables = true;
 
     protected function getPackageProviders($app)

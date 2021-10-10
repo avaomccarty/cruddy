@@ -4,12 +4,15 @@ namespace Cruddy;
 
 use Illuminate\Database\Schema\Builder as BaseBuilder;
 use Closure;
+use Cruddy\Traits\ConfigTrait;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
 class Builder extends BaseBuilder
 {
+    use ConfigTrait;
+
     /**
      * The console command signature.
      *
@@ -50,7 +53,7 @@ class Builder extends BaseBuilder
             'name' => $className . 'Controller',
             '--resource' => true,
             '--model' => $className, // Note: This should be improved. Use the Cruddy model, not the default.
-            '--api' => Config::get('cruddy.is_api'),
+            '--api' => $this->isApi(),
             '--inputs' => $blueprint->getColumns(),
         ]);
 
@@ -71,12 +74,12 @@ class Builder extends BaseBuilder
         // Note: Commented out for testing. Needs to be updated to not keep inserting resource.
         Artisan::call('cruddy:route', [
             'name' => $className,
-            '--api' => Config::get('cruddy.is_api'),
+            '--api' => $this->isApi(),
         ]);
 
-        if (Config::get('cruddy.needs_ui')) {
+        if ($this->needsUI()) {
             foreach ($this->views as $view) {
-                if (! Config::get('cruddy.is_api') || $view !== 'edit') {
+                if (! $this->isApi() || $view !== 'edit') {
                     // Make standard views
                     Artisan::call('cruddy:view', [
                         'name' => $className,
@@ -86,8 +89,8 @@ class Builder extends BaseBuilder
                     ]);
                 }
 
-                if (Config::get('cruddy.frontend_scaffolding') === 'vue') {
-                    if (! Config::get('cruddy.is_api') || $view !== 'edit') {
+                if ($this->needsVueFrontend()) {
+                    if (! $this->isApi() || $view !== 'edit') {
                         // Make Vue views
                         Artisan::call('cruddy:vue-view', [
                             'name' => $className,

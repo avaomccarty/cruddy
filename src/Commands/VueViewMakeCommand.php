@@ -2,7 +2,7 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\Traits\CommandTrait;
+use Cruddy\Traits\VueViewMakeCommandTrait;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class VueViewMakeCommand extends GeneratorCommand
 {
-    use CommandTrait;
+    use VueViewMakeCommandTrait;
 
     /**
      * The console command signature.
@@ -43,7 +43,7 @@ class VueViewMakeCommand extends GeneratorCommand
      */
     protected function getStub() : string
     {
-        return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/views/vue/page.stub');
+        return $this->resolveStubPath($this->getStubsLocation() . '/views/vue/page.stub');
     }
 
     /**

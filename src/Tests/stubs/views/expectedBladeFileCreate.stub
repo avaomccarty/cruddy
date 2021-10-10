@@ -1,0 +1,21 @@
+<x-layout>
+    <form action="/names" method="POST">
+        <h1 class="is-size-1">Create</h1>
+        @if(isset($errors) && count($errors) > 0)
+            @foreach($errors as $error)
+                <p class="is-danger">{{ $error }}</p>
+            @endforeach
+        @endif
+        @csrf
+        <input type="number" name="id" min="0" class="input my-2">
+
+		<input type="text" name="bar" class="input my-2" placeholder="bar">
+
+		<input type="text" name="test" class="input my-2" placeholder="test">
+
+		<input type="submit" value="Submit" class="button is-primary my-2">
+
+        <a href="/names" class="button is-danger my-2">Cancel</a>
+    </form>
+</x-layout>
+

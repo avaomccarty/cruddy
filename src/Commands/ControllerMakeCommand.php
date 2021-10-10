@@ -3,6 +3,8 @@
 namespace Cruddy\Commands;
 
 use Cruddy\Traits\CommandTrait;
+use Cruddy\Traits\Stubs\InputTrait;
+use Cruddy\Traits\Stubs\ResourceTrait;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Routing\Console\ControllerMakeCommand as BaseControllerMakeCommand;
 use Illuminate\Support\Facades\Config;
@@ -10,7 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 
 class ControllerMakeCommand extends BaseControllerMakeCommand
 {
-    use CommandTrait;
+    use CommandTrait, InputTrait, ResourceTrait;
 
     /**
      * The console command name.
@@ -41,10 +43,10 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     protected function getStub() : string
     {
         if ($this->option('api')) {
-            return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/controller.api.stub');
+            return $this->resolveStubPath($this->getStubsLocation() . '/controller.api.stub');
         }
 
-        return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/controller.stub');
+        return $this->resolveStubPath($this->getStubsLocation() . '/controller.stub');
     }
 
     /**
@@ -92,7 +94,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
             $inputsString = substr($inputsString, 0, strlen($inputsString) - 5);
         }
 
-        $stub = str_replace(['DummyInputs', '{{ inputs }}', '{{inputs}}'], $inputsString, $stub);
+        $stub = str_replace($this->stubInputPlaceholders, $inputsString, $stub);
 
         return $this;
     }
@@ -122,39 +124,6 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
         return str_ireplace('controller', '', $this->argument('name'));
     }
 
-
-    /**
-     * Build the model replacement values.
-     *
-     * @param  array  $replace
-     * @return array
-     */
-    protected function buildModelReplacements(array $replace) : array
-    {
-        $modelClass = $this->parseModel($this->option('model'));
-
-        if (! class_exists($modelClass)) {
-            if ($this->confirm("A {$modelClass} model does not exist. Do you want to generate it?", true)) {
-                $this->call('cruddy:model --factory', [
-                    'name' => $modelClass,
-                    '--inputs' => $this->option('inputs'),
-                ]);
-            }
-        }
-
-        return array_merge($replace, [
-            'DummyFullModelClass' => $modelClass,
-            '{{ namespacedModel }}' => $modelClass,
-            '{{namespacedModel}}' => $modelClass,
-            'DummyModelClass' => class_basename($modelClass),
-            '{{ model }}' => class_basename($modelClass),
-            '{{model}}' => class_basename($modelClass),
-            'DummyModelVariable' => lcfirst(class_basename($modelClass)),
-            '{{ modelVariable }}' => lcfirst(class_basename($modelClass)),
-            '{{modelVariable}}' => lcfirst(class_basename($modelClass)),
-        ]);
-    }
-
     /**
      * Replace the model for the given stub.
      *
@@ -174,37 +143,15 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
             }
         }
 
-        $stub = str_replace($this->dummyCL, class_basename($modelClass), $stub);
-        $stub = str_replace(['DummyModelVariable', '{{ modelVariable }}', '{{modelVariable}}'], lcfirst(class_basename($modelClass)), $stub);
-        $stub = str_replace(['DummyFullModelClass', '{{ namespacedModel }}', '{{namespacedModel}}'], $modelClass, $stub);
+        // $stub = str_replace($this->stubModelPlaceholders, class_basename($modelClass), $stub);
+        // $stub = str_replace($this->stubModelVariablePlaceholders, lcfirst(class_basename($modelClass)), $stub);
+        // $stub = str_replace($this->stubFullModelClassPlaceholders, $modelClass, $stub);
+        
+        $this->replaceModelPlaceholder($modelClass, $stub)
+            ->replaceModelVariablePlaceholders($modelClass, $stub)
+            ->replaceFullModelPlaceholders($modelClass, $stub);
 
         return $this;
-    }
-
-    /**
-     * Replace the resource for the given stub.
-     *
-     * @param  string  &$stub
-     * @return self
-     */
-    protected function replaceResource(string &$stub) : self
-    {
-        $stub = str_replace(['DummyResource', '{{ resource }}', '{{resource}}'], $this->getResource(), $stub);
-
-        return $this;
-    }
-
-    /**
-     * Resolve the fully-qualified path to the stub.
-     *
-     * @param  string  $stub
-     * @return string
-     */
-    protected function resolveStubPath($stub) : string
-    {
-        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
-            ? $customPath
-            : __DIR__.$stub;
     }
 
     /**

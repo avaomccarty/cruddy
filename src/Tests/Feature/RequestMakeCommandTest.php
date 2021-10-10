@@ -2,20 +2,17 @@
 
 namespace Cruddy\Tests\Feature;
 
-use Cruddy\Commands\RequestMakeCommand;
 use Cruddy\ServiceProvider;
+use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\RequestMakeCommandTrait;
-use Cruddy\Traits\CommandTrait;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
-use Illuminate\Database\Schema\ColumnDefinition;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
-use stdClass;
 
 class RequestMakeCommandTest extends TestCase
 {
-    use RequestMakeCommandTrait;
+    use RequestMakeCommandTrait, TestTrait;
 
     /**
      * The output from successfully running the command.
@@ -31,6 +28,11 @@ class RequestMakeCommandTest extends TestCase
      */
     protected $stubPath = '/stubs';
 
+    /**
+     * Whether to load the environment variables for the tests.
+     *
+     * @var boolean
+     */
     protected $loadEnvironmentVariables = true;
 
     protected function getPackageProviders($app)
@@ -59,7 +61,7 @@ class RequestMakeCommandTest extends TestCase
             $rulesString .= "'";
             $rulesString .= $rule['name'];
             $rulesString .= "' => '";
-            $rulesString .= Config::get('cruddy.validation_defaults.' . $rule['type']);
+            $rulesString .= $this->getValidationDefault($rule['type']);
             if ($rule !== last($rules)) {
                 $rulesString .= '|';
             }
@@ -174,8 +176,8 @@ class " . $this->getNameInput() . " extends FormRequest
     public function rules()
     {
         return [
-            'name1' => 'string',
-\t\t\t'name2' => 'number',
+            '" . $this->nameString . "' => 'string',
+\t\t\t'" . $this->nameInteger . "' => 'integer',
         ];
     }
 }
@@ -338,24 +340,7 @@ class " . $this->getNameInput() . " extends FormRequest
         $stubFile = 'request.stub';
         $stubPath = 'stubs/cruddy';
         $stubLocation = dirname(dirname(dirname(__DIR__))) . '/vendor/orchestra/testbench-core/laravel/' . $stubPath . '/' . $stubFile;
-
-        $rule1 = new ColumnDefinition([
-            'type' => 'string',
-            'name' => 'name1',
-            'length' => 100
-        ]);
-        
-        $rule2 = new ColumnDefinition([
-            'type' => 'number',
-            'name' => 'name2',
-            'min' => 1,
-            'max' => 100,
-        ]);
-
-        $rules = [
-            $rule1,
-            $rule2
-        ];
+        $rules = $this->getMockColumns();
 
         $stub = $this->getStub();
         $outputFile = $this->getExpectedOutputFile();

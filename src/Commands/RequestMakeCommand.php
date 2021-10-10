@@ -4,8 +4,6 @@ namespace Cruddy\Commands;
 
 use Cruddy\Traits\RequestMakeCommandTrait;
 use Illuminate\Console\GeneratorCommand;
-use Illuminate\Database\Schema\ColumnDefinition;
-use Illuminate\Support\Facades\Config;
 use Symfony\Component\Console\Input\InputArgument;
 
 class RequestMakeCommand extends GeneratorCommand

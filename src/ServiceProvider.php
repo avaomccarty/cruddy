@@ -9,12 +9,15 @@ use Cruddy\Commands\RouteAddCommand;
 use Cruddy\Commands\ViewMakeCommand;
 use Cruddy\Commands\VueImportAddCommand;
 use Cruddy\Commands\VueViewMakeCommand;
+use Cruddy\Traits\ConfigTrait;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
+    use ConfigTrait;
+
     /**
      * Register services.
      *
@@ -47,7 +50,7 @@ class ServiceProvider extends BaseServiceProvider
 
         // Add new Cruddy database configuration to the config.
         // Note: This seems off. Won't this just cache this confguration? But then the driver would be removed if the cache is busted.
-        Config::set('database.connections.cruddy', Config::get('cruddy.database.connections.cruddy'));
+        $this->setDatabaseConnection();
 
         // Include commands
         if ($this->app->runningInConsole()) {

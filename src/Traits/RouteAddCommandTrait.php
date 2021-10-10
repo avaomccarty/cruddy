@@ -61,6 +61,17 @@ trait RouteAddCommandTrait
     }
 
     /**
+     * Get the lower plural version of the value.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    protected function getLowerPlural(string $value) : string
+    {
+        return strtolower(Str::pluralStudly($value)) ?? '';
+    }
+
+    /**
      * Get the resource name.
      *
      * @return string

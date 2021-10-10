@@ -2,7 +2,7 @@
 
 @section('main')
 
-@if (isset(${{ VariableName }}))
+@if (isset(${{ value }}))
     <{{ componentName }} {{ props }}/>
 @else
     <{{ componentName }}/>

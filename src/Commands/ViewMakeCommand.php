@@ -2,8 +2,7 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\Traits\CommandTrait;
-use Exception;
+use Cruddy\Traits\ViewMakeCommandTrait;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\Console\Input\InputArgument;
@@ -11,7 +10,7 @@ use Illuminate\Support\Str;
 
 class ViewMakeCommand extends GeneratorCommand
 {
-    use CommandTrait;
+    use ViewMakeCommandTrait;
 
     /**
      * The console command signature.
@@ -20,7 +19,7 @@ class ViewMakeCommand extends GeneratorCommand
      */
     protected $signature = 'cruddy:view
                             { name : The name of the resource that needs new views. }
-                            { table : The name of the original migration table. }
+                            { table : The name of the table within the migration. }
                             { type=index : The type of file being created. }
                             { inputs?* : The inputs needed within the file. }';
 
@@ -63,17 +62,6 @@ class ViewMakeCommand extends GeneratorCommand
     }
 
     /**
-     * Get the default namespace for the class.
-     *
-     * @param  string  $rootNamespace
-     * @return string
-     */
-    protected function getDefaultNamespace($rootNamespace) : string
-    {
-        return $rootNamespace . '\resources\views';
-    }
-
-    /**
      * Get the class name from the table argument.
      *
      * @return string
@@ -94,12 +82,8 @@ class ViewMakeCommand extends GeneratorCommand
         $name = Str::replaceFirst($this->rootNamespace(), '', $name);
         $name = strtolower($name);
 
-        if (Config::get('cruddy.frontend_scaffolding') === 'vue') {
-            return Config::get('cruddy.vue_folder') . '/' . $this->getClassName() . '/' . $this->getType() . '.vue';
-        }
-
-        if (Config::get('cruddy.default_frontend_scaffolding') === 'livewire') {
-            $name = str_replace('views\\', 'views\\livewire\\', $name);
+        if ($this->needsVueFrontend()) {
+            return $this->getVueFolder() . '/' . $this->getClassName() . '/' . $this->getType() . '.vue';
         }
 
         return str_replace('\\', '/', $name) . '/' . $this->getType() . '.blade.php';

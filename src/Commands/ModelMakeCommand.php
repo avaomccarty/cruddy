@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Foundation\Console\ModelMakeCommand as BaseModelMakeCommand;
+use Illuminate\Support\Facades\File;
 
 class ModelMakeCommand extends BaseModelMakeCommand
 {
@@ -26,7 +27,7 @@ class ModelMakeCommand extends BaseModelMakeCommand
      */
     protected function getStub() : string
     {
-        return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/model.stub');
+        return $this->resolveStubPath($this->getStubsLocation() . '/model.stub');
     }
 
     /**
@@ -52,7 +53,7 @@ class ModelMakeCommand extends BaseModelMakeCommand
             $inputsString = substr($inputsString, 0, strlen($inputsString) - 3);
         }
 
-        $stub = str_replace($this->stubVariableModels, $inputsString, $stub);
+        $stub = str_replace($this->stubModelPlaceholders, $inputsString, $stub);
 
         return $this;
     }

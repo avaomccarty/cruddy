@@ -2,14 +2,14 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\Traits\CommandTrait;
+use Cruddy\Traits\VueImportAddCommandTrait;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 
 class VueImportAddCommand extends Command
 {
-    use CommandTrait;
+    use VueImportAddCommandTrait;
 
     /**
      * The name and signature of the console command.
@@ -54,14 +54,14 @@ class VueImportAddCommand extends Command
         $importStatement = $this->getImportStatement();
         $componentStatement = $this->getComponentStatement();
 
-        if (File::exists(Config::get('cruddy.vue_import_file'))) {
-            $importFile = File::get(Config::get('cruddy.vue_import_file'));
+        if (File::exists($this->getVueImportFileLocation())) {
+            $importFile = File::get($this->getVueImportFileLocation());
 
             // Add import statement to the top of the file if it does not already exist
             if (strpos($importFile, $importStatement) !== false) {
                 $this->output("No Cruddy Vue imports were added.\n");
             } else {
-                File::prepend(Config::get('cruddy.vue_import_file'), $importStatement);
+                File::prepend($this->getVueImportFileLocation(), $importStatement);
                 $this->output("Cruddy Vue imports were added successfully!\n");
             }
 
@@ -73,7 +73,7 @@ class VueImportAddCommand extends Command
                     $positionInFile = strpos($importFile, $search);
                     if ($positionInFile !== false && is_numeric($positionInFile)) {
                         $updatedFile = substr_replace($importFile, $componentStatement, $positionInFile, 0);
-                        File::put(Config::get('cruddy.vue_import_file'), $updatedFile);
+                        File::put($this->getVueImportFileLocation(), $updatedFile);
                         $this->output("Cruddy Vue components were added successfully!\n");
                         break;
                     } else {

@@ -2,13 +2,12 @@
 
 namespace Cruddy\Traits;
 
+use Cruddy\Traits\Stubs\RuleTrait;
 use Illuminate\Database\Schema\ColumnDefinition;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\File;
 
 trait RequestMakeCommandTrait
 {
-    use CommandTrait;
+    use CommandTrait, RuleTrait;
 
     /**
      * The acceptable types of requests.
@@ -60,7 +59,7 @@ trait RequestMakeCommandTrait
      */
     protected function addDefaultValidationRules(string $type = 'string', string &$validationRules = '') : void
     {
-        $defaults = Config::get('cruddy.validation_defaults.' . $type);
+        $defaults = $this->getValidationDefault($type);
 
         if (strlen(trim($defaults)) > 0) {
             if (strlen(trim($validationRules)) > 0) {
@@ -115,19 +114,70 @@ trait RequestMakeCommandTrait
      */
     protected function getStub() : string
     {
-        return $this->resolveStubPath(Config::get('cruddy.stubs_folder') . '/request.stub');
+        return $this->resolveStubPath($this->getStubsLocation() . '/request.stub');
     }
-        
+
     /**
-     * Resolve the fully-qualified path to the stub.
+     * Replace the rules for the given stub.
      *
-     * @param  string  $stub
-     * @return string
+     * @param  string  &$stub
+     * @return self
      */
-    protected function resolveStubPath($stub) : string
+    protected function replaceRules(string &$stub) : self
     {
-        return File::exists($customPath = base_path(trim($stub, '/')))
-            ? $customPath
-            : __DIR__ . $stub;
+        $rules = $this->getRules();
+
+        $this->updateStubWithRules($stub, $rules);
+
+        return $this;
+    }
+
+    /**
+     * Replace the rules for the given stub.
+     *
+     * @param  string  &$stub
+     * @param  array  $rules
+     * @return void
+     */
+    protected function updateStubWithRules(string &$stub, array $rules = []) : void
+    {
+        $hasRule = false;
+        $rulesString = '';
+
+        foreach ($rules as $rule) {
+            $hasRule = true;
+            if ($rule->name !== 'id') {
+                $validationRules = '';
+                if (method_exists(self::class, 'addDefaultValidationRules')) {
+                    $this->addDefaultValidationRules($rule->type, $validationRules);
+                }
+                if (method_exists(self::class, 'addColumnValidationRules')) {
+                    $this->addColumnValidationRules($rule, $validationRules);
+                }
+
+                $rulesString .= "'$rule->name' => '$validationRules',\n\t\t\t";
+            }
+        }
+
+        if ($hasRule) {
+            // Remove extra line break and tabs
+            $rulesString = substr($rulesString, 0, -4);
+        }
+
+        $stub = str_replace($this->stubRulePlaceholders, $rulesString, $stub);
+    }
+
+    /**
+     * Get the rules.
+     *
+     * @return array
+     */
+    public function getRules() : array
+    {
+        if (method_exists(self::class, 'argument')) {
+            return (array)$this->argument('rules') ?? [];
+        }
+
+        return [];
     }
 }

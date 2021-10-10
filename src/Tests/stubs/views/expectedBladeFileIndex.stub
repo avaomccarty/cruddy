@@ -1,12 +1,12 @@
 <x-layout>
     <div class="container">
         <div class="row">
-        @if (${{ model }}s->count())
-            <a class="button is-primary m-2" href="/{{ model }}s/create">Create</a>
+        @if ($names->count())
+            <a class="button is-primary m-2" href="/names/create">Create</a>
             <table class="table is-striped is-narrow">
                 <thead>
                     <tr>
-                        @foreach (${{ model }}s->first()->toArray() as $key => $value)
+                        @foreach ($names->first()->toArray() as $key => $value)
                             <th>
                                 {{ $key }}
                             </th>
@@ -17,19 +17,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (${{ model }}s as ${{ model }})
+                    @foreach ($names as $name)
                         <tr>
-                            @foreach (${{ model }}->toArray() as $value)
+                            @foreach ($name->toArray() as $value)
                                 <td>{{ $value }}</td>
                             @endforeach
                             <td>
-                                <a class="button is-primary" href="/{{ model }}s/{{ ${{ model }}->id }}">Show</a>
+                                <a class="button is-primary" href="/names/{{ $name->id }}">Show</a>
                             </td>
                             <td>
-                                <a class="button is-info" href="/{{ model }}s/{{ ${{ model }}->id }}/edit">Edit</a>
+                                <a class="button is-info" href="/names/{{ $name->id }}/edit">Edit</a>
                             </td>
                             <td>
-                                <form action="/{{ model }}s/{{ ${{ model }}->id }}" method="POST">
+                                <form action="/names/{{ $name->id }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <input type="submit" class="button is-danger" value="Delete">
@@ -42,13 +42,13 @@
         @else
             <div>
                 <p class="is-size-3 is-centered">Your query returned zero results.</p>
-                <a class="button is-primary m-2" href="/{{ model }}s/create">Create</a>
+                <a class="button is-primary m-2" href="/names/create">Create</a>
             </div>
         @endif
         </div>
         <div class="row">
             <div class="col">
-                {{ ${{ model }}s->links() }}
+                {{ $names->links() }}
             </div>
         </div>
     </div>
