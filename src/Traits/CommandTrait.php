@@ -18,11 +18,7 @@ trait CommandTrait
      */
     protected function getTableName() : string
     {
-        if (method_exists(self::class, 'argument')) {
-            return (string)$this->argument('table') ?? '';
-        }
-
-        return '';
+        return (string)$this->argument('table') ?? '';
     }
 
     /**
@@ -54,19 +50,17 @@ trait CommandTrait
      */
     protected function getType() : string
     {
-        if (method_exists(self::class, 'argument')) {
-            if (property_exists(self::class, 'types') && is_array($this->types)) {
-                if (in_array($this->argument('type'), $this->types)) {
-                    return $this->argument('type');
-                }
-
-                return $this->types[0];
+        if (isset($this->types) && is_array($this->types)) {
+            if (in_array($this->argument('type'), $this->types)) {
+                return $this->argument('type');
             }
 
-            if ($this->argument('type')) {
-                if (in_array($this->argument('type'), $this->getDefaultTypes())) {
-                    return $this->argument('type');
-                }
+            return $this->types[0];
+        }
+
+        if ($this->argument('type')) {
+            if (in_array($this->argument('type'), $this->getDefaultTypes())) {
+                return $this->argument('type');
             }
         }
 

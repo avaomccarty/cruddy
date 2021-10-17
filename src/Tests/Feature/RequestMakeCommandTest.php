@@ -5,14 +5,14 @@ namespace Cruddy\Tests\Feature;
 use Cruddy\ServiceProvider;
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\RequestMakeCommandTrait;
+use Cruddy\Traits\Stubs\RuleTrait;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
-use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
 class RequestMakeCommandTest extends TestCase
 {
-    use RequestMakeCommandTrait, TestTrait;
+    use RequestMakeCommandTrait, RuleTrait, TestTrait;
 
     /**
      * The output from successfully running the command.
@@ -28,20 +28,6 @@ class RequestMakeCommandTest extends TestCase
      */
     protected $stubPath = '/stubs';
 
-    /**
-     * Whether to load the environment variables for the tests.
-     *
-     * @var boolean
-     */
-    protected $loadEnvironmentVariables = true;
-
-    protected function getPackageProviders($app)
-    {
-        return [
-            ServiceProvider::class,
-        ];
-    }
-
     public function setUp() : void
     {
         parent::setUp();
@@ -49,324 +35,34 @@ class RequestMakeCommandTest extends TestCase
     }
 
     /**
-     * Get a usable stub.
+     * Get the assertions based on the type of request file being created.
      *
-     * @param  array  $rules
-     * @return string
+     * @param  string  $type
+     * @return 
      */
-    protected function getExpectedRequestFile(array $rules = []) : string
+    public function getAssertionsByType(string $type)
     {
-        $rulesString = '';
-        foreach ($rules as $rule) {
-            $rulesString .= "'";
-            $rulesString .= $rule['name'];
-            $rulesString .= "' => '";
-            $rulesString .= $this->getValidationDefault($rule['type']);
-            if ($rule !== last($rules)) {
-                $rulesString .= '|';
-            }
-        }
+        $fileType = 'request';
+        $requestFileName = ucfirst($type) . ucfirst($this->name);
+        $stubPath = 'stubs';
+        $stubLocation = $this->getStubLocation($fileType);
+        $stub = File::get($stubLocation);
 
-        return "
-<?php
-
-namespace App\Http\Requests;
-
-use Illuminate\Foundation\Http\FormRequest;
-
-class " . $this->getNameInput() . " extends FormRequest
-{
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return true;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
-    {
-        return [
-            $rulesString
-        ];
-    }
-}
-";
-    }
-
-    /**
-     * Get the stub file.
-     *
-     * @return string
-     */
-    public function getStub()
-    {
-        return "
-<?php
-
-namespace App\Http\Requests;
-
-use Illuminate\Foundation\Http\FormRequest;
-
-class " . $this->getNameInput() . " extends FormRequest
-{
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return true;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
-    {
-        return [
-            {{ rules }}
-        ];
-    }
-}
-";
-    }
-
-    /**
-     * Get the correct output file.
-     *
-     * @return string
-     */
-    protected function getExpectedOutputFile() : string
-    {
-        return "
-<?php
-
-namespace App\Http\Requests;
-
-use Illuminate\Foundation\Http\FormRequest;
-
-class " . $this->getNameInput() . " extends FormRequest
-{
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return true;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
-    {
-        return [
-            '" . $this->nameString . "' => 'string',
-\t\t\t'" . $this->nameInteger . "' => 'integer',
-        ];
-    }
-}
-";
-    }
-
-    /**
-     * A test for correct default stub file.
-     *
-     * @test
-     * @group cruddy
-     * @return void
-     */
-    public function test_correct_default_stub_file_used()
-    {
-        $fileLocation = app_path() . '/Http/Requests/' . $this->getNameInput() . '.php';
-        $stubFile = 'request.stub';
-        $stubPath = 'stubs/cruddy';
-        $stubLocation = dirname(dirname(dirname(__DIR__))) . '/vendor/orchestra/testbench-core/laravel/' . $stubPath . '/' . $stubFile;
+        $expectedRequestFileLocation = $this->getExpectedRequestFileLocation($requestFileName);
+        $expectedRequestFile = $this->getExpectedRequestFile($type);
 
         File::shouldReceive('exists')
-            ->with($fileLocation)
+            ->with($expectedRequestFileLocation)
             ->once()
             ->andReturn(false);
-
-        File::shouldReceive('exists')
-            ->andReturn(true);
-
-        File::shouldReceive('get')
-            ->with($stubLocation)
-            ->once()
-            ->andReturn($this->getExpectedRequestFile());
-
-        File::shouldReceive('put')
-            ->with($fileLocation, $this->getExpectedRequestFile())
-            ->once();
-
-        File::partialMock();
-
-        Config::shouldReceive('get')
-            ->with('cruddy.stubs_folder')
-            ->once()
-            ->andReturn($stubPath);
-
-        Config::partialMock();
-
-        $this->artisan('cruddy:request', [
-            'name' => $this->name
-        ])
-            ->expectsOutput($this->successOutput)
-            ->assertExitCode(0);
-    }
-
-    /**
-     * A test for correct update stub file.
-     *
-     * @test
-     * @group cruddy
-     * @return void
-     */
-    public function test_correct_update_stub_file_used()
-    {
-        $fileLocation = app_path() . '/Http/Requests/UpdateTest.php';
-        $stubFile = 'request.stub';
-        $stubPath = 'stubs/cruddy';
-        $stubLocation = dirname(dirname(dirname(__DIR__))) . '/vendor/orchestra/testbench-core/laravel/' . $stubPath . '/' . $stubFile;
-
-        File::shouldReceive('exists')
-            ->with($fileLocation)
-            ->once()
-            ->andReturn(false);
-
-        File::shouldReceive('exists')
-            ->andReturn(true);
-
-        File::shouldReceive('get')
-            ->with($stubLocation)
-            ->once()
-            ->andReturn($this->getExpectedRequestFile());
-
-        File::shouldReceive('put')
-            ->with($fileLocation, $this->getExpectedRequestFile())
-            ->once();
-
-        File::partialMock();
-
-        Config::shouldReceive('get')
-            ->with('cruddy.stubs_folder')
-            ->once()
-            ->andReturn($stubPath);
-
-        Config::partialMock();
-
-        $this->artisan('cruddy:request', [
-            'name' => $this->name,
-            'type' => 'update'
-        ])
-            ->expectsOutput($this->successOutput)
-            ->assertExitCode(0);
-    }
-
-    /**
-     * A test for correct store stub file.
-     *
-     * @test
-     * @group cruddy
-     * @return void
-     */
-    public function test_correct_store_stub_file_used()
-    {
-        $fileLocation = app_path() . '/Http/Requests/StoreTest.php';
-        $stubFile = 'request.stub';
-        $stubPath = 'stubs/cruddy';
-        $stubLocation = dirname(dirname(dirname(__DIR__))) . '/vendor/orchestra/testbench-core/laravel/' . $stubPath . '/' . $stubFile;
-
-        File::shouldReceive('exists')
-            ->with($fileLocation)
-            ->once()
-            ->andReturn(false);
-
-        File::shouldReceive('exists')
-            ->andReturn(true);
-
-        File::shouldReceive('get')
-            ->with($stubLocation)
-            ->once()
-            ->andReturn($this->getExpectedRequestFile());
-
-        File::shouldReceive('put')
-            ->with($fileLocation, $this->getExpectedRequestFile())
-            ->once();
-
-        File::partialMock();
-
-        Config::shouldReceive('get')
-            ->with('cruddy.stubs_folder')
-            ->once()
-            ->andReturn($stubPath);
-
-        Config::partialMock();
-
-        $this->artisan('cruddy:request', [
-            'name' => $this->name,
-            'type' => 'store'
-        ])
-            ->expectsOutput($this->successOutput)
-            ->assertExitCode(0);
-    }
-
-    /**
-     * A test for using correct variables within the stub.
-     *
-     * @test
-     * @group cruddy
-     * @return void
-     */
-    public function test_correct_variables_used_in_stub()
-    {
-        $fileLocation = app_path() . '/Http/Requests/UpdateTest.php';
-        $stubFile = 'request.stub';
-        $stubPath = 'stubs/cruddy';
-        $stubLocation = dirname(dirname(dirname(__DIR__))) . '/vendor/orchestra/testbench-core/laravel/' . $stubPath . '/' . $stubFile;
-        $rules = $this->getMockColumns();
-
-        $stub = $this->getStub();
-        $outputFile = $this->getExpectedOutputFile();
-
-        $mock = $this->partialMock(RequestMakeCommandTest::class, function (MockInterface $mock) use ($rules) {
-            $mock->shouldReceive('getRules')
-                ->andReturn($rules);
-        });
-
-        File::shouldReceive('exists')
-            ->with($fileLocation)
-            ->once()
-            ->andReturn(false);
-
-        File::shouldReceive('exists')
-            ->andReturn(true);
 
         File::shouldReceive('get')
             ->with($stubLocation)
             ->once()
             ->andReturn($stub);
-        
-        $this->updateStubWithRules($outputFile, $rules);
 
         File::shouldReceive('put')
-            ->with($fileLocation, $outputFile)
+            ->with($expectedRequestFileLocation, $expectedRequestFile)
             ->once();
 
         File::partialMock();
@@ -376,21 +72,45 @@ class " . $this->getNameInput() . " extends FormRequest
             ->once()
             ->andReturn($stubPath);
 
-        foreach ($rules as $rule) {
-            Config::shouldReceive('get')
-                ->with('cruddy.validation_defaults.' . $rule->type)
-                ->once()
-                ->andReturn($rule->type);
-        }
-
         Config::partialMock();
 
         $this->artisan('cruddy:request', [
             'name' => $this->name,
-            'type' => 'update',
-            'rules' => $rules
+            'type' => $type,
+            'rules' => $this->getMockColumns()
         ])
             ->expectsOutput($this->successOutput)
             ->assertExitCode(0);
+
+        
+        // Assert that the expected request file does not have any stub rule placeholders remaining
+        foreach ($this->stubRulePlaceholders as $placeholder) {
+            $this->assertFalse(strpos($expectedRequestFile, $placeholder));
+        }
     }
+
+    /**
+     * A test for correct update request file.
+     *
+     * @test
+     * @group cruddy
+     * @return void
+     */
+    public function test_correct_update_request_file_created()
+    {
+        $this->getAssertionsByType('update');
+    }
+
+    /**
+     * A test for correct store request file.
+     *
+     * @test
+     * @group cruddy
+     * @return void
+     */
+    public function test_correct_store_request_file_created()
+    {
+        $this->getAssertionsByType('store');
+    }
+
 }

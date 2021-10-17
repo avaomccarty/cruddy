@@ -61,17 +61,16 @@ class Builder extends BaseBuilder
         Artisan::call('cruddy:request', [
             'name' => $className,
             'type' => 'update',
-            'rules' => $blueprint->getColumns(), // Should this be --rules?
+            'rules' => $blueprint->getColumns(),
         ]);
 
         // Create store request class
         Artisan::call('cruddy:request', [
             'name' => $className,
             'type' => 'store',
-            'rules' => $blueprint->getColumns() // Should this be --rules?
+            'rules' => $blueprint->getColumns(),
         ]);
 
-        // Note: Commented out for testing. Needs to be updated to not keep inserting resource.
         Artisan::call('cruddy:route', [
             'name' => $className,
             '--api' => $this->isApi(),

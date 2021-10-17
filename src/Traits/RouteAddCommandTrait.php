@@ -51,13 +51,11 @@ trait RouteAddCommandTrait
     protected function getResourceRoute() : string
     {
         $name = $this->getResourceName();
-        $lowerName = $this->getLowerPlural($name);
+        $lowerPluralName = $this->getLowerPlural($name);
         $ucFirstName = Str::ucfirst($name);
-        $routeString = "\n\n" .
-                    "// $ucFirstName Resource\n" .
-                    "Route::" . $this->getResourceType() . "('$lowerName', 'App\Http\Controllers\\" . $ucFirstName . "Controller')";
 
-        return $routeString . ';';
+        return "\n\n// $ucFirstName Resource\n"
+            . "Route::" . $this->getResourceType() . "('$lowerPluralName', 'App\Http\Controllers\\" . $ucFirstName . "Controller');";
     }
 
     /**
@@ -78,11 +76,7 @@ trait RouteAddCommandTrait
      */
     protected function getResourceName() : string
     {
-        if (method_exists(self::class, 'argument')) {
-            return $this->argument('name') ?? '';
-        }
-
-        return $this->name ?? '';
+        return $this->argument('name') ?? '';
     }
 
     /**
@@ -92,11 +86,7 @@ trait RouteAddCommandTrait
      */
     protected function getResourceType() : string
     {
-        if (method_exists(self::class, 'option')) {
-            return $this->option('api') ? 'apiResource' : $this->defaultResourceType;
-        }
-
-        return $this->defaultResourceType;
+        return $this->option('api') ? 'apiResource' : $this->defaultResourceType;
     }
 
     /**
@@ -106,11 +96,7 @@ trait RouteAddCommandTrait
      */
     protected function getRouteFileName() : string
     {
-        if (method_exists(self::class, 'option')) {
-            return $this->option('api') ? 'api' : $this->defaultRouteFileName;
-        }
-
-        return $this->defaultRouteFileName;
+        return $this->option('api') ? 'api' : $this->defaultRouteFileName;
     }
 
     /**

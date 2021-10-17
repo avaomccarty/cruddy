@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\File;
 
 trait InputTrait
 {
-    use ConfigTrait, ValueTrait;
+    use ConfigTrait, VariableTrait;
 
     /**
      * The acceptable input placeholders within a stub.
@@ -160,7 +160,7 @@ trait InputTrait
                 $extraInputInfoString .= ' ';
             }
 
-            $extraInputInfoString .= 'value="{{ $' . $this->getClassName() . '->' . $column["name"] . ' }}"';
+            $extraInputInfoString .= 'value="{{ $' . $this->getCamelCaseSingular($this->argument('name')) . '->' . $column["name"] . ' }}"';
         }
 
         if ($this->getType() === 'show') {

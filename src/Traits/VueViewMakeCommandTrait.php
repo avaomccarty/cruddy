@@ -2,26 +2,24 @@
 
 namespace Cruddy\Traits;
 
-use Cruddy\Traits\Stubs\ValueTrait;
+use Cruddy\Traits\Stubs\VariableTrait;
 use Cruddy\Traits\Stubs\VueTrait;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Str;
 
 trait VueViewMakeCommandTrait {
 
-    use CommandTrait, VueTrait, ValueTrait;
+    use CommandTrait, VueTrait, VariableTrait;
 
     /**
-     * Replace the props variable for the given stub.
+     * Get the default namespace for the class.
      *
-     * @param  string  &$stub
-     * @return self
+     * @param  string  $rootNamespace
+     * @return string
      */
-    protected function replaceProps(string &$stub) : self
+    protected function getDefaultNamespace($rootNamespace) : string
     {
-        $stub = str_replace($this->stubVuePropsPlaceholders, $this->getPropsString(), $stub);
-
-        return $this;
+        return $rootNamespace . '\resources\views';
     }
 
     /**
@@ -31,18 +29,15 @@ trait VueViewMakeCommandTrait {
      */
     protected function getPropsString() : string
     {
-        if (method_exists(self::class, 'argument')) {
-            $table = $this->getTableName();
-            $type = $this->getType();
+        $table = $this->getTableName();
+        $type = $this->getType();
 
-            if ($type === 'index') {
-                $prop = strtolower(Str::studly(trim($table)));
-                return ' :prop-items="{{ json_encode($' . $prop . '->toArray()[\'data\']) }}"';
-            } else if ($type === 'show' || $type === 'edit') {
-                $table = $this->argument('table');
-                $prop = strtolower(Str::studly(Str::singular(trim($table))));
-                return ' :prop-item="{{ $' . $prop . ' }}"';
-            }
+        if ($type === 'index') {
+            $prop = strtolower(trim($table));
+            return ' :prop-items="{{ json_encode($' . $prop . '->toArray()[\'data\']) }}"';
+        } else if ($type === 'show' || $type === 'edit') {
+            $prop = strtolower(Str::singular(trim($table)));
+            return ' :prop-item="{{ $' . $prop . ' }}"';
         }
 
         return '';
@@ -61,7 +56,7 @@ trait VueViewMakeCommandTrait {
         if ($type === 'index') {
             $variableName = strtolower(Str::pluralStudly($this->getClassName()));
         } else {
-            $variableName = strtolower(Str::studly($this->getClassName()));
+            $variableName = strtolower($this->getClassName());
         }
 
         $stub = str_replace($this->stubValuePlaceholders, $variableName ?? '', $stub);
@@ -77,12 +72,10 @@ trait VueViewMakeCommandTrait {
      */
     protected function replaceComponentNameVariable(string &$stub) : self
     {
-        if (method_exists(self::class, 'argument')) {
-            $kebabName = Str::kebab($this->argument('name'));
-            $componentName = $kebabName . '-' . $this->getType();
+        $kebabName = Str::kebab($this->argument('name'));
+        $componentName = $kebabName . '-' . $this->getType();
 
-            $stub = str_replace($this->stubComponentNamePlaceholders, $componentName, $stub);
-        }
+        $stub = str_replace($this->stubComponentNamePlaceholders, $componentName, $stub);
 
         return $this;
     }

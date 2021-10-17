@@ -4,7 +4,6 @@ namespace Cruddy\Commands;
 
 use Cruddy\Traits\VueImportAddCommandTrait;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 
 class VueImportAddCommand extends Command

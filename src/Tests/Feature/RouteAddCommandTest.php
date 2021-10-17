@@ -3,6 +3,7 @@
 namespace Cruddy\Tests\Feature;
 
 use Cruddy\ServiceProvider;
+use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\RouteAddCommandTrait;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\File;
@@ -10,27 +11,21 @@ use Orchestra\Testbench\TestCase;
 
 class RouteAddCommandTest extends TestCase
 {
-    use DatabaseTransactions, RouteAddCommandTrait;
+    use DatabaseTransactions, RouteAddCommandTrait, TestTrait;
 
     /**
-     * Whether to load the environment variables for the tests.
+     * Determine if the resource is for an api.
      *
      * @var boolean
      */
-    protected $loadEnvironmentVariables = true;
-
-    protected function getPackageProviders($app)
-    {
-        return [
-            ServiceProvider::class,
-        ];
-    }
+    public $isApi;
 
     public function setUp() : void
     {
         parent::setUp();
-        $this->name = 'test';
+        $this->name = 'name';
         $this->file = $this->getRouteFile();
+        $this->resourceRoute = $this->getResourceRoute();
     }
 
     /**
@@ -53,8 +48,10 @@ class RouteAddCommandTest extends TestCase
             ->andReturn('');
 
         File::shouldReceive('append')
-            ->with($this->file, $this->getResourceRoute())
+            ->with($this->file, $this->resourceRoute)
             ->once();
+
+        File::partialMock();
 
         $this->artisan('cruddy:route', [
             'name' => $this->name
@@ -70,9 +67,11 @@ class RouteAddCommandTest extends TestCase
      */
     public function test_import_statement_added_to_api_route_files()
     {
+        $this->isApi = true;
         $this->defaultRouteFileName = 'api';
         $this->defaultResourceType = 'apiResource';
         $file = $this->getRouteFile(); // Get the route file with the new defaults
+        $resourceRoute = $this->getResourceRoute();
 
         File::shouldReceive('exists')
             ->with($file)
@@ -85,12 +84,12 @@ class RouteAddCommandTest extends TestCase
             ->andReturn('');
 
         File::shouldReceive('append')
-            ->with($file, $this->getResourceRoute())
+            ->with($file, $resourceRoute)
             ->once();
 
         $this->artisan('cruddy:route', [
             'name' => $this->name,
-            '--api' => true
+            '--api' => $this->isApi
         ])->expectsOutput($this->successMessage);
     }
     
@@ -111,10 +110,10 @@ class RouteAddCommandTest extends TestCase
         File::shouldReceive('get')
             ->with($this->file)
             ->once()
-            ->andReturn($this->getResourceRoute());
+            ->andReturn($this->resourceRoute);
 
         File::shouldReceive('append')
-            ->with($this->file, $this->getResourceRoute())
+            ->with($this->file, $this->resourceRoute)
             ->never();
 
         $this->artisan('cruddy:route', [
@@ -139,10 +138,10 @@ class RouteAddCommandTest extends TestCase
         File::shouldReceive('get')
             ->with($this->file)
             ->never()
-            ->andReturn($this->getResourceRoute());
+            ->andReturn($this->resourceRoute);
 
         File::shouldReceive('append')
-            ->with($this->file, $this->getResourceRoute())
+            ->with($this->file, $this->resourceRoute)
             ->never();
 
         $this->artisan('cruddy:route', [

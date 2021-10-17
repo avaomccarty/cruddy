@@ -55,7 +55,7 @@ trait ModelTrait
      * @param  string  &$stub
      * @return self
      */
-    public function replaceModelPlaceholder(string $model, string &$stub)
+    protected function replaceModelPlaceholder(string $model, string &$stub) : self
     {
         $stub = str_replace($this->stubModelPlaceholders, class_basename($model), $stub);
 
@@ -63,15 +63,40 @@ trait ModelTrait
     }
 
     /**
+     * Get the camelcase version of the class from the namespace.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function getCamelCaseClassBasename(string $value) : string
+    {
+        return lcfirst(class_basename($value)) ?? '';
+    }
+        
+    /**
      * Replace the model placeholders within a stub.
      *
      * @param  string  $model
      * @param  string  &$stub
      * @return self
      */
-    public function replaceModelVariablePlaceholders(string $model, string &$stub)
+    protected function replaceModelPlaceholders(string $model, string &$stub) : self
     {
-        str_replace($this->stubModelVariablePlaceholders, lcfirst(class_basename($model)), $stub);
+        $stub = str_replace($this->stubModelPlaceholders, $this->getCamelCaseClassBasename($model), $stub);
+
+        return $this;
+    }
+
+    /**
+     * Replace the model variable placeholders within a stub.
+     *
+     * @param  string  $model
+     * @param  string  &$stub
+     * @return self
+     */
+    protected function replaceModelVariablePlaceholders(string $model, string &$stub) : self
+    {
+        $stub = str_replace($this->stubModelVariablePlaceholders, $this->getCamelCaseClassBasename($model), $stub);
 
         return $this;
     }
@@ -83,9 +108,9 @@ trait ModelTrait
      * @param  string  &$stub
      * @return self
      */
-    public function replaceFullModelPlaceholders(string $model, string &$stub)
+    protected function replaceFullModelPlaceholders(string $model, string &$stub) : self
     {
-        str_replace($this->stubFullModelClassPlaceholders, $model, $stub);
+        $stub = str_replace($this->stubFullModelClassPlaceholders, $model, $stub);
 
         return $this;
     }

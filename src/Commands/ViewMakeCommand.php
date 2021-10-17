@@ -2,15 +2,19 @@
 
 namespace Cruddy\Commands;
 
+use Cruddy\Traits\CommandTrait;
+use Cruddy\Traits\Stubs\FormTrait;
+use Cruddy\Traits\Stubs\ModelTrait;
+use Cruddy\Traits\Stubs\VariableTrait;
+use Cruddy\Traits\Stubs\VueTrait;
 use Cruddy\Traits\ViewMakeCommandTrait;
 use Illuminate\Console\GeneratorCommand;
-use Illuminate\Support\Facades\Config;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Support\Str;
 
 class ViewMakeCommand extends GeneratorCommand
 {
-    use ViewMakeCommandTrait;
+    use ViewMakeCommandTrait, ModelTrait, VariableTrait, CommandTrait, FormTrait, VueTrait;
 
     /**
      * The console command signature.
@@ -53,8 +57,10 @@ class ViewMakeCommand extends GeneratorCommand
             ->replaceInputs($stub)
             ->replaceFormAction($stub)
             ->replaceFormEditUrl($stub)
+            ->replaceVariableCollectionPlaceholders($this->argument('name'), $stub)
+            ->replaceVariablePlaceholders($this->argument('name'), $stub)
             ->replaceFormCancelUrl($stub)
-            ->replaceModelVariable($stub)
+            ->replaceModelPlaceholders($this->argument('name'), $stub)
             ->replaceVueComponentName($stub)
             ->replaceVueData($stub)
             ->replaceVuePostData($stub)
@@ -82,7 +88,7 @@ class ViewMakeCommand extends GeneratorCommand
         $name = Str::replaceFirst($this->rootNamespace(), '', $name);
         $name = strtolower($name);
 
-        if ($this->needsVueFrontend()) {
+        if ($this->needsVueFrontend(true)) {
             return $this->getVueFolder() . '/' . $this->getClassName() . '/' . $this->getType() . '.vue';
         }
 

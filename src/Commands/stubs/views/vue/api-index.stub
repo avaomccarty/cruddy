@@ -3,7 +3,7 @@
         <div class="container">
             <div class="row">
                 <table class="table is-striped is-narrow" v-if="items && items.length > 0">
-                    <a class="button is-primary m-2" href="/{{ model }}s/create">Create</a>
+                    <a class="button is-primary m-2" href="/{{ variableCollection }}/create">Create</a>
                     <thead>
                         <tr>
                             <th
@@ -25,10 +25,10 @@
                                 {{ val }}
                             </td>
                             <td>
-                                <a class="button is-primary" :href="'/{{ model }}s/' + item.id">Show</a>
+                                <a class="button is-primary" :href="'/{{ variableCollection }}/' + item.id">Show</a>
                             </td>
                             <td>
-                                <a class="button is-info" :href="'/{{ model }}s/' + item.id + '/edit'">Edit</a>
+                                <a class="button is-info" :href="'/{{ variableCollection }}/' + item.id + '/edit'">Edit</a>
                             </td>
                             <td>
                                 <form @submit.prevent="deleteItem(item.id)">
@@ -40,7 +40,7 @@
                 </table>
                 <div v-else>
                     <p class="is-size-3 is-centered">Your query returned zero results.</p>
-                    <a class="button is-primary m-2" href="/{{ model }}s/create">Create</a>
+                    <a class="button is-primary m-2" href="/{{ variableCollection }}/create">Create</a>
                 </div>
             </div>
         </div>
@@ -64,9 +64,9 @@ export default {
     },
     methods: {
         setData () {
-            this.$axios.get('{{ model }}s')
+            this.$axios.get('{{ variableCollection }}')
             .then(response => {
-                this.{{ model }}s = response.data.{{ model }}s;
+                this.{{ variableCollection }} = response.data.{{ variableCollection }};
             })
             .catch(error => {
                 if (error.response) {

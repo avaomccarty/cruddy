@@ -5,8 +5,6 @@ namespace Cruddy\Tests\Feature;
 use Cruddy\ServiceProvider;
 use Cruddy\Traits\CommandTrait;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\File;
 use Orchestra\Testbench\TestCase;
 
 class ModelMakeCommandTest extends TestCase

@@ -1,5 +1,5 @@
 <x-layout>
-    <form action="/names" method="POST">
+    <form action="/name" method="POST">
         <h1 class="is-size-1">Create</h1>
         @if(isset($errors) && count($errors) > 0)
             @foreach($errors as $error)
@@ -7,15 +7,12 @@
             @endforeach
         @endif
         @csrf
-        <input type="number" name="id" min="0" class="input my-2">
+        <input type="text" name="name-string" class="input my-2" placeholder="name-string">
 
-		<input type="text" name="bar" class="input my-2" placeholder="bar">
-
-		<input type="text" name="test" class="input my-2" placeholder="test">
+		<input type="number" name="name-integer" class="input my-2">
 
 		<input type="submit" value="Submit" class="button is-primary my-2">
 
-        <a href="/names" class="button is-danger my-2">Cancel</a>
+        <a href="/name" class="button is-danger my-2">Cancel</a>
     </form>
 </x-layout>
-

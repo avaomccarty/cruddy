@@ -2,15 +2,15 @@
 
 namespace Cruddy\Commands;
 
+use Cruddy\Traits\Stubs\VueTrait;
 use Cruddy\Traits\VueViewMakeCommandTrait;
 use Illuminate\Console\GeneratorCommand;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputArgument;
 
 class VueViewMakeCommand extends GeneratorCommand
 {
-    use VueViewMakeCommandTrait;
+    use VueViewMakeCommandTrait, VueTrait;
 
     /**
      * The console command signature.
@@ -77,17 +77,6 @@ class VueViewMakeCommand extends GeneratorCommand
         $name = strtolower($name);
 
         return str_replace('\\', '/', $name) . '/' . $this->getType() . '.blade.php';
-    }
-
-    /**
-     * Get the default namespace for the class.
-     *
-     * @param  string  $rootNamespace
-     * @return string
-     */
-    protected function getDefaultNamespace($rootNamespace) : string
-    {
-        return $rootNamespace . '\resources\views';
     }
 
     /**

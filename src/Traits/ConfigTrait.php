@@ -31,7 +31,7 @@ trait ConfigTrait
      *
      * @return boolean
      */
-    protected function needsVueFrontend() : bool
+    protected function needsVueFrontend($test = false) : bool
     {
         return Config::get('cruddy.frontend_scaffolding') === 'vue';
     }

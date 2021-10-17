@@ -2,7 +2,6 @@
 
 namespace Cruddy\Traits;
 
-use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Symfony\Component\Console\Input\InputOption;
 

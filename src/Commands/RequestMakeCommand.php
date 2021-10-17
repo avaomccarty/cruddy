@@ -45,20 +45,10 @@ class RequestMakeCommand extends GeneratorCommand
     protected function buildClass($name) : string
     {
         $stub = $this->files->get($this->getStub());
+
         return $this->replaceNamespace($stub, $name)
             ->replaceRules($stub)
             ->replaceClass($stub, $name);
-    }
-
-    /**
-     * Get the default namespace for the class.
-     *
-     * @param  string  $rootNamespace
-     * @return string
-     */
-    protected function getDefaultNamespace($rootNamespace) : string
-    {
-        return $rootNamespace . '\Http\Requests';
     }
 
     /**

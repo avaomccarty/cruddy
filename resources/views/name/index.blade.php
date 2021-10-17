@@ -1,12 +1,12 @@
 <x-layout>
     <div class="container">
         <div class="row">
-        @if ($names->count())
-            <a class="button is-primary m-2" href="/names/create">Create</a>
+        @if (${{ variableCollection }}->count())
+            <a class="button is-primary m-2" href="/{{ variableCollection }}/create">Create</a>
             <table class="table is-striped is-narrow">
                 <thead>
                     <tr>
-                        @foreach ($names->first()->toArray() as $key => $value)
+                        @foreach (${{ variableCollection }}->first()->toArray() as $key => $value)
                             <th>
                                 {{ $key }}
                             </th>
@@ -17,19 +17,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($names as $name)
+                    @foreach (${{ variableCollection }} as ${{ variable }})
                         <tr>
-                            @foreach ($name->toArray() as $value)
+                            @foreach (${{ variable }}->toArray() as $value)
                                 <td>{{ $value }}</td>
                             @endforeach
                             <td>
-                                <a class="button is-primary" href="/names/{{ $name->id }}">Show</a>
+                                <a class="button is-primary" href="/{{ variableCollection }}/{{ ${{ variable }}->id }}">Show</a>
                             </td>
                             <td>
-                                <a class="button is-info" href="/names/{{ $name->id }}/edit">Edit</a>
+                                <a class="button is-info" href="/{{ variableCollection }}/{{ ${{ variable }}->id }}/edit">Edit</a>
                             </td>
                             <td>
-                                <form action="/names/{{ $name->id }}" method="POST">
+                                <form action="/{{ variableCollection }}/{{ ${{ variable }}->id }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <input type="submit" class="button is-danger" value="Delete">
@@ -42,13 +42,13 @@
         @else
             <div>
                 <p class="is-size-3 is-centered">Your query returned zero results.</p>
-                <a class="button is-primary m-2" href="/names/create">Create</a>
+                <a class="button is-primary m-2" href="/{{ variableCollection }}/create">Create</a>
             </div>
         @endif
         </div>
         <div class="row">
             <div class="col">
-                {{ $names->links() }}
+                {{ ${{ variableCollection }}->links() }}
             </div>
         </div>
     </div>
