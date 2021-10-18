@@ -111,7 +111,7 @@ trait ConfigTrait
      *
      * @return string
      */
-    public function getDefaultInputType(string $input) : string
+    public function getDefaultForInputType(string $input) : string
     {
         return Config::get('cruddy.input_defaults.' . $input) ?? '';
     }

@@ -10,6 +10,20 @@ trait RuleTrait
     use ConfigTrait;
 
     /**
+     * The spacer used between validation rules.
+     *
+     * @var string
+     */
+    protected $ruleSpacer = '|';
+
+    /**
+     * The formatting at the end of the rule line.
+     *
+     * @var string
+     */
+    protected $endOfLineForRule = "\n\t\t\t";
+
+    /**
      * The acceptable rule placeholders within a stub.
      *
      * @var array
@@ -28,46 +42,71 @@ trait RuleTrait
      */
     protected function replaceRules(string &$stub) : self
     {
-        $rules = $this->getRules();
-
-        $this->updateStubWithRules($stub, $rules);
+        $this->updateStubWithRules($stub, $this->getNonIdRules());
 
         return $this;
     }
 
     /**
-     * Replace the rules for the given stub.
+     * Get the rules without ID columns.
      *
-     * @param  string  &$stub
-     * @param  array  $rules
+     * @return array
+     */
+    public function getNonIdRules() : array
+    {
+        return array_filter($this->getRules(), function ($rule) {
+            return $rule->name !== 'id';
+        });
+    }
+
+    /**
+     * Get the rules.
+     *
+     * @return array
+     */
+    public function getRules() : array
+    {
+        return (array)$this->argument('rules') ?? [];
+    }
+
+    /**
+     * Get a validation rule string from a rule.
+     *
+     * @param  ColumnDefinition  $rule
+     * @return string
+     */
+    protected function getValidationRule(ColumnDefinition $rule, string $validationRules)
+    {
+        return "'$rule->name' => '$validationRules'," . $this->endOfLineForRule;
+    }
+
+    /**
+     * Remove the formatting from the end of the rules.
+     *
+     * @param  string  &$rules
      * @return void
      */
-    protected function updateStubWithRules(string &$stub, array $rules = []) : void
+    protected function removeFormattingFromEndOfRules(string &$rules) : void
     {
-        $hasRule = false;
-        $rulesString = '';
+        if ($this->endsWithString($rules, $this->endOfLineForRule)) {
+            $rules = substr($rules, 0, -strlen($this->endOfLineForRule));
+        }
+    }
 
-        foreach ($rules as $rule) {
-            $hasRule = true;
-            if ($rule->name !== 'id') {
-                $validationRules = '';
-                if (method_exists(self::class, 'addDefaultValidationRules')) {
-                    $this->addDefaultValidationRules($rule->type, $validationRules);
-                }
-                if (method_exists(self::class, 'addColumnValidationRules')) {
-                    $this->addColumnValidationRules($rule, $validationRules);
-                }
-
-                $rulesString .= "'$rule->name' => '$validationRules',\n\t\t\t";
-            }
+    /**
+     * Determine if the string ends with another string.
+     *
+     * @param  string  $haystack
+     * @param  string  $needle
+     * @return boolean
+     */
+    protected function endsWithString(string $haystack, string $needle) : bool
+    {
+        if (empty($needle) || empty($haystack)) {
+            return false;
         }
 
-        if ($hasRule) {
-            // Remove extra line break and tabs
-            $rulesString = substr($rulesString, 0, -4);
-        }
-
-        $stub = str_replace($this->stubRulePlaceholders, $rulesString, $stub);
+        return substr($haystack, -strlen($needle)) === $needle;
     }
 
     /**
@@ -79,15 +118,7 @@ trait RuleTrait
      */
     protected function addDefaultValidationRules(string $type = 'string', string &$validationRules = '') : void
     {
-        $defaults = $this->getValidationDefault($type);
-
-        if (strlen(trim($defaults)) > 0) {
-            if (strlen(trim($validationRules)) > 0) {
-                $validationRules .= '|';
-            }
-
-            $validationRules .= $defaults;
-        }
+        $this->addRule($validationRules, $this->getValidationDefault($type));
     }
 
     /**
@@ -100,44 +131,134 @@ trait RuleTrait
     protected function addColumnValidationRules(ColumnDefinition $column, string &$validationRules = '') : void
     {
         if ($column->unsigned) {
-            if (strpos($validationRules, 'min:') === false) {
-                if (strlen(trim($validationRules)) > 0) {
-                    $validationRules .= '|';
-                }
-
-                $validationRules .= 'min:0';
-            }
-            if (strpos($validationRules, 'integer') === false) {
-                if (strlen(trim($validationRules)) > 0) {
-                    $validationRules .= '|';
-                }
-
-                $validationRules .= 'integer';
-            }
+            $this->includeMinOfZeroRule($validationRules);
+            $this->includeIntegerRule($validationRules);
         }
 
         if ($column->nullable) {
-            if (strpos($validationRules, 'nullable') === false) {
-                if (strlen(trim($validationRules)) > 0) {
-                    $validationRules = 'nullable|' . $validationRules;
-                } else {
-                    $validationRules = 'nullable';
-                }
-            }
+            $this->includeNullableRule($validationRules);
         }
     }
 
     /**
-     * Get the rules.
+     * Check if the string already contains a rule.
      *
-     * @return array
+     * @param  string  $rule
+     * @return boolean
      */
-    public function getRules() : array
+    protected function hasRule(string $rules) : bool
     {
-        if (method_exists(self::class, 'argument')) {
-            return (array)$this->argument('rules') ?? [];
+        return strlen(trim($rules)) > 0;
+    }
+
+    /**
+     * Include one nullable validation rule within the rules.
+     *
+     * @param  string  &$rules
+     * @return void
+     */
+    protected function includeNullableRule(string &$rules) : void
+    {
+        if (strpos($rules, 'nullable') === false) {
+            $this->addNullableRule($rules);
+        }
+    }
+
+    /**
+     * Include one integer validation rule within the rules.
+     *
+     * @param  string  &$rules
+     * @return void
+     */
+    protected function includeIntegerRule(string &$rules) : void
+    {
+        if (strpos($rules, 'integer') === false) {
+            $this->addIntegerRule($rules);
+        }
+    }
+
+    /**
+     * Add an integer validation rule to the string.
+     *
+     * @param  string  &$rules
+     * @return void
+     */
+    protected function addNullableRule(string &$rules) : void
+    {
+        $this->addRule('nullable', $rules);
+    }
+
+    /**
+     * Add an integer validation rule to the string.
+     *
+     * @param  string  &$rules
+     * @return void
+     */
+    protected function addIntegerRule(string &$rules) : void
+    {
+        $this->addRule($rules, 'integer');
+    }
+
+    /**
+     * Include one minimum validation rule within the rules.
+     *
+     * @param  string  &$rules
+     * @return void
+     */
+    protected function includeMinOfZeroRule(string &$rules) : void
+    {
+        if (strpos($rules, 'min:') === false) {
+            $this->addMinOfZeroRule($rules);
+        }
+    }
+
+    /**
+     * Add a minimum validation rule to the string.
+     *
+     * @param  string  &$rules
+     * @return void
+     */
+    protected function addMinOfZeroRule(string &$rules) : void
+    {
+        $this->addRule($rules, 'min:0');
+    }
+
+    /**
+     * Add a rule to the rules.
+     *
+     * @param  string  &$rules
+     * @param  string  $rule
+     * @return void
+     */
+    protected function addRule(string &$rules, string $rule) : void
+    {
+        if ($this->hasRule($rules)) {
+            $rules .= $this->ruleSpacer;
         }
 
-        return [];
+        $rules .= $rule;
+    }
+
+    /**
+     * Replace the rules for the given stub.
+     *
+     * @param  string  &$stub
+     * @param  array  $rules
+     * @return void
+     */
+    protected function updateStubWithRules(string &$stub, array $rules = []) : void
+    {
+        $rulesString = '';
+        foreach ($rules as $rule) {
+            $validationRules = '';
+            $this->addDefaultValidationRules($rule->type, $validationRules);
+            $this->addColumnValidationRules($rule, $validationRules);
+
+            $rulesString .= $this->getValidationRule($rule, $validationRules);
+        }
+
+        $this->removeFormattingFromEndOfRules($rulesString);
+
+        $stub = str_replace($this->stubRulePlaceholders, $rulesString, $stub);
     }
 }

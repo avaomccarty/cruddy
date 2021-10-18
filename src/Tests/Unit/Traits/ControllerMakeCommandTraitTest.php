@@ -1,8 +1,7 @@
 <?php
 
-namespace Cruddy\Tests\Unit;
+namespace Cruddy\Tests\Unit\Traits;
 
-use Cruddy\ServiceProvider;
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\ControllerMakeCommandTrait;
 use Mockery\MockInterface;
@@ -125,7 +124,7 @@ class ControllerMakeCommandTraitTest extends TestCase
             $mock->shouldReceive('call')
                 ->with('cruddy:model', $callArguments)
                 ->once();
-            $mock->shouldReceive('replaceModelPlaceholder')
+            $mock->shouldReceive('replaceModelPlaceholders')
                 ->with($modelClass, $stub)
                 ->once()
                 ->andReturn($mock);

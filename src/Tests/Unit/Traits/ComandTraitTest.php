@@ -1,8 +1,7 @@
 <?php
 
-namespace Cruddy\Tests\Unit;
+namespace Cruddy\Tests\Unit\Traits;
 
-use Cruddy\ServiceProvider;
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\ConfigTrait;
@@ -323,7 +322,7 @@ class CommandTraitTest extends TestCase
     public function test_resolve_stub_path_when_file_not_found()
     {
         $stub = 'stub';
-        $expectedResult = dirname(dirname(__DIR__)) . '/Commands/' . $stub;
+        $expectedResult = dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stub;
 
         File::shouldReceive('exists')
             ->once()

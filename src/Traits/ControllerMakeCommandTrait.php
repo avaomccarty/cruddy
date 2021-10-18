@@ -68,7 +68,7 @@ trait ControllerMakeCommandTrait
             ]);
         }
 
-        $this->replaceModelPlaceholder($modelClass, $stub)
+        $this->replaceModelPlaceholders($modelClass, $stub)
             ->replaceModelVariablePlaceholders($modelClass, $stub)
             ->replaceFullModelPlaceholders($modelClass, $stub);
 

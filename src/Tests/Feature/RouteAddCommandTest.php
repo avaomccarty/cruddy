@@ -2,7 +2,6 @@
 
 namespace Cruddy\Tests\Feature;
 
-use Cruddy\ServiceProvider;
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\RouteAddCommandTrait;
 use Illuminate\Foundation\Testing\DatabaseTransactions;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Cruddy\Tests\Unit;
+namespace Cruddy\Tests\Unit\Traits;
 
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\ViewMakeCommandTrait;

@@ -2,28 +2,14 @@
 
 namespace Cruddy\Tests\Feature;
 
-use Cruddy\ServiceProvider;
+use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\CommandTrait;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Orchestra\Testbench\TestCase;
 
 class ModelMakeCommandTest extends TestCase
 {
-    use DatabaseTransactions, CommandTrait;
-
-    /**
-     * Whether to load the environment variables for the tests.
-     *
-     * @var boolean
-     */
-    protected $loadEnvironmentVariables = true;
-
-    protected function getPackageProviders($app)
-    {
-        return [
-            ServiceProvider::class,
-        ];
-    }
+    use DatabaseTransactions, CommandTrait, TestTrait;
 
     public function setUp() : void
     {

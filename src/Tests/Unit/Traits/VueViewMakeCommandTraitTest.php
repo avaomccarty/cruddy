@@ -1,6 +1,6 @@
 <?php
 
-namespace Cruddy\Tests\Unit;
+namespace Cruddy\Tests\Unit\Traits;
 
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\Stubs\VariableTrait;
@@ -146,6 +146,7 @@ class VueViewMakeCommandTraitTest extends TestCase
 
         $type = 'index';
         $className = 'className';
+        $originalStub = $stub;
 
         $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($stub, $type, $className) {
             $mock->shouldAllowMockingProtectedMethods();
@@ -163,9 +164,9 @@ class VueViewMakeCommandTraitTest extends TestCase
             $expectedStub .= strtolower($className) . 's';
         }
 
-        $this->assertTrue(count($this->stubValuePlaceholders) > 0, 'The test requires having variables to replace within the stub.');
         $this->assertIsObject($result, 'The result should be an object.');
         $this->assertInstanceOf(self::class, $result, 'The result has an incorrect instance type.');
+        $this->assertNotSame($originalStub, $stub, 'The stub should have been updated.');
         $this->assertSame($expectedStub, $stub, 'The variables were not replaced correctly within the stub.');
     }
 

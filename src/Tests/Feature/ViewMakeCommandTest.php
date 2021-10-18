@@ -2,7 +2,6 @@
 
 namespace Cruddy\Tests\Feature;
 
-use Cruddy\ServiceProvider;
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\Stubs\InputTrait;

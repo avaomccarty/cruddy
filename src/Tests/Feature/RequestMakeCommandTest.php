@@ -2,7 +2,6 @@
 
 namespace Cruddy\Tests\Feature;
 
-use Cruddy\ServiceProvider;
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\RequestMakeCommandTrait;
 use Cruddy\Traits\Stubs\RuleTrait;
