@@ -45,16 +45,13 @@ trait ModelMakeCommandTrait
     protected function replaceInputs(string &$stub) : self
     {
         $inputs = $this->option('inputs');
-
-        $hasInput = false;
         $inputsString = '';
 
         foreach ($inputs as $input) {
-            $hasInput = true;
             $inputsString .= $this->getInputString($input);
         }
 
-        if ($hasInput) {
+        if (count($inputs) > 0) {
             // Remove extra formatting at the end of string
             $inputsString = substr($inputsString, 0, strlen($inputsString) - 3);
         }
