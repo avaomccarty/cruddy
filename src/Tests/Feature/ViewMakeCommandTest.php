@@ -303,6 +303,7 @@ class ViewMakeCommandTest extends TestCase
     {
         $this->getAssertionsByType('index');
     }
+
     /**
      * A test for correct create view file.
      *
@@ -312,6 +313,7 @@ class ViewMakeCommandTest extends TestCase
     {
         $this->getAssertionsByType('create');
     }
+
     /**
      * A test for correct show view file.
      *
@@ -321,6 +323,7 @@ class ViewMakeCommandTest extends TestCase
     {
         $this->getAssertionsByType('show');
     }
+
     /**
      * A test for correct edit view file.
      *
