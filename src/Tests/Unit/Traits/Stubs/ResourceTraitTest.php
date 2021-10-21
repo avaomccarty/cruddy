@@ -22,7 +22,7 @@ class ResourceTraitTest extends TestCase
         $originalStub = $expectedStub = $stub = 'stub-';
         $resource = 'resource-';
 
-        foreach ($this->stubResourcePlaceholders as $placeholder) {
+        foreach ($this->resourcePlaceholders as $placeholder) {
             $stub .= $placeholder;
             $expectedStub .= $resource;
         }

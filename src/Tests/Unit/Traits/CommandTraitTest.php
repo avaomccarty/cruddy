@@ -334,4 +334,5 @@ class CommandTraitTest extends TestCase
         $this->assertNotEmpty($result, 'The type should not be empty.');
         $this->assertSame($expectedResult, $result, 'The stub is incorrect.');
     }
+
 }

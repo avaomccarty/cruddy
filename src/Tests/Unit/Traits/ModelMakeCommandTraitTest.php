@@ -55,7 +55,7 @@ class ModelMakeCommandTraitTest extends TestCase
                 ->with($stub, $name)
                 ->once()
                 ->andReturn($mock);
-            $mock->shouldReceive('replaceInputs')
+            $mock->shouldReceive('replaceModelInputs')
                 ->with($stub)
                 ->once()
                 ->andReturn($mock);
@@ -81,5 +81,48 @@ class ModelMakeCommandTraitTest extends TestCase
         $this->assertIsString($stub, 'The stub should be a string.');
         $this->assertNotEmpty($stub, 'The stub shouldn\'t be empty.');
         $this->assertSame($originalStub, $stub, 'The stub shouldn\'t be updated based on the mocks within this test.');
+    }
+
+    /**
+     * A test 
+     *
+     * @return void
+     */
+    public function test_replace_model_inputs()
+    {
+        $stub ='stub-';
+        $inputs = $this->getMockColumns();
+        $inputsString = '';
+
+        foreach ($inputs as $input) {
+            $inputsString .= $input->name;
+        }
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputs, $inputsString, $stub) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('getInputs')
+                ->once()
+                ->andReturn($inputs);
+            
+            foreach ($inputs as $input) {
+                $mock->shouldReceive('getInputString')
+                    ->with($input)
+                    ->once()
+                    ->andReturn($input->name);
+            }
+
+            $mock->shouldReceive('removeEndOfLineFormatting')
+                ->with($inputsString)
+                ->once();
+
+            $mock->shouldReceive('replaceModelPlaceholders')
+                ->with($inputsString, $stub)
+                ->once();
+        });
+
+        $result = $mock->replaceModelInputs($stub);
+        
+        $this->assertIsObject($result);
+        $this->assertInstanceOf(self::class, $result);
     }
 }

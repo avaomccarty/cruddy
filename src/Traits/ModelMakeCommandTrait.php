@@ -2,12 +2,12 @@
 
 namespace Cruddy\Traits;
 
-use Illuminate\Database\Schema\ColumnDefinition;
-use Symfony\Component\Console\Input\InputOption;
+use Cruddy\Traits\Stubs\InputTrait;
+use Cruddy\Traits\Stubs\StubTrait;
 
 trait ModelMakeCommandTrait
 {
-    use CommandTrait;
+    use CommandTrait, InputTrait, StubTrait;
 
     /**
      * Get the stub file.
@@ -32,7 +32,7 @@ trait ModelMakeCommandTrait
         $stub = $this->files->get($this->getStub());
 
         return $this->replaceNamespace($stub, $name)
-            ->replaceInputs($stub)
+            ->replaceModelInputs($stub)
             ->replaceClass($stub, $name);
     }
 
@@ -42,51 +42,18 @@ trait ModelMakeCommandTrait
      * @param  string  &$stub
      * @return self
      */
-    protected function replaceInputs(string &$stub) : self
+    protected function replaceModelInputs(string &$stub) : self
     {
-        $inputs = $this->option('inputs');
+        $inputs = $this->getInputs();
         $inputsString = '';
 
         foreach ($inputs as $input) {
             $inputsString .= $this->getInputString($input);
         }
 
-        if (count($inputs) > 0) {
-            // Remove extra formatting at the end of string
-            $inputsString = substr($inputsString, 0, strlen($inputsString) - 3);
-        }
-
-        $stub = str_replace($this->stubModelPlaceholders, $inputsString, $stub);
+        $this->removeEndOfLineFormatting($inputsString);
+        $this->replaceModelPlaceholders($inputsString, $stub);
 
         return $this;
-    }
-
-    /**
-     * Get the input needed as a string.
-     *
-     * @param  ColumnDefinition  $input
-     * @return string
-     */
-    protected function getInputString(ColumnDefinition $input) : string
-    {
-        if ($input['name'] === 'id') {
-            return '';
-        }
-
-        return "'" . $input['name'] . "',\n\t\t";
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions() : array
-    {
-        $options = parent::getOptions();
-
-        $options[] = ['inputs', null, InputOption::VALUE_OPTIONAL, 'The inputs for the resource'];
-
-        return $options;
     }
 }

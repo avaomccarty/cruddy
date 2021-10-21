@@ -140,7 +140,7 @@ class VueViewMakeCommandTraitTest extends TestCase
     {
         $baseStub = 'stub-';
         $expectedStub = $stub = $baseStub;
-        foreach ($this->stubValuePlaceholders as $stubPlaceholder) {
+        foreach ($this->valuePlaceholders as $stubPlaceholder) {
             $stub .= $stubPlaceholder;
         }
 
@@ -160,7 +160,7 @@ class VueViewMakeCommandTraitTest extends TestCase
      
         $result = $mock->replaceVariableName($stub);
 
-        foreach ($this->stubValuePlaceholders as $stubPlaceholder) {
+        foreach ($this->valuePlaceholders as $stubPlaceholder) {
             $expectedStub .= strtolower($className) . 's';
         }
 
@@ -180,7 +180,7 @@ class VueViewMakeCommandTraitTest extends TestCase
         $type = 'create';
         $className = 'className';
         $originalStub = $expectedStub = $stub = 'stub-';
-        foreach ($this->stubValuePlaceholders as $stubPlaceholder) {
+        foreach ($this->valuePlaceholders as $stubPlaceholder) {
             $stub .= $stubPlaceholder;
             $expectedStub .= strtolower($className);
         }
@@ -213,14 +213,10 @@ class VueViewMakeCommandTraitTest extends TestCase
         $name = 'nameForTest';
         $kebabName = 'name-for-test';
         $type = 'type';
-        $originalStub = $expectedStub = $stub = 'stub-';
+        $stub = 'stub-';
+        $componentName  = $kebabName . '-' . $type;
 
-        foreach ($this->stubComponentNamePlaceholders as $stubPlaceholder) {
-            $stub .= $stubPlaceholder;
-            $expectedStub .= $kebabName . '-' . $type;
-        }
-
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($name, $type) {
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($name, $type, $componentName, $stub) {
             $mock->shouldAllowMockingProtectedMethods();
             $mock->shouldReceive('argument')
                 ->with('name')
@@ -229,52 +225,14 @@ class VueViewMakeCommandTraitTest extends TestCase
             $mock->shouldReceive('getType')
                 ->once()
                 ->andReturn($type);
+            $mock->shouldReceive('replaceStubComponentNamePlaceholders')
+                ->with($componentName, $stub)
+                ->once();
         });
 
         $result = $mock->replaceComponentNameVariable($stub);
 
-        $this->assertNotSame($originalStub, $stub, 'The stub was not updated.');
         $this->assertIsObject($result, 'The result should be an object.');
         $this->assertInstanceOf(self::class, $result, 'The result has an incorrect instance type.');
-        $this->assertSame($expectedStub, $stub, 'The variables were not replaced correctly within the stub.');
-    }
-
-    /**
-     * A test for getting the vue post data string for non-edit types.
-     *
-     * @return void
-     */
-    public function test_get_vue_post_data_string_for_not_edit_types()
-    {
-        $input = $this->getMockColumns()[0];
-        $expectedResult = "name-string: this.name-string,\n\t\t\t\t";
-
-        $result = $this->getVuePostDataString($input);
-
-        $this->assertSame($expectedResult, $result, 'The Vue post data string was incorrect.');
-    }
-
-    /**
-     * A test for getting the vue post data string for edit types.
-     *
-     * @return void
-     */
-    public function test_get_vue_post_data_string_for_edit_type()
-    {
-        $type = 'edit';
-        $input = $this->getMockColumns()[0];
-        $expectedResult = "name-string: this.item.name-string,\n\t\t\t\t";
-
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($type) {
-            $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getType')
-                ->once()
-                ->andReturn($type);
-        });
-        
-
-        $result = $mock->getVuePostDataString($input);
-
-        $this->assertSame($expectedResult, $result, 'The Vue post data string was incorrect.');
     }
 }

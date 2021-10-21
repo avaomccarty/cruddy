@@ -110,69 +110,11 @@ class RuleTraitTest extends TestCase
     {
         $rule = $this->getMockColumns()[0];
         $validationRules = 'validationRules';
-        $expectedResult = "'$rule->name' => '$validationRules'," . $this->endOfLineForRule;
+        $expectedResult = "'$rule->name' => '$validationRules'," . $this->endOfLine;
 
         $result = $this->getValidationRule($rule, $validationRules);
 
         $this->assertSame($expectedResult, $result, 'The validatin rule string does not match.');
-    }
-
-    /**
-     * A test to remove unneeded formatting at the end of the string.
-     *
-     * @return void
-     */
-    public function test_remove_formatting_at_end_of_rules()
-    {
-        $expectedResult = $rules = 'rules';
-        $rules = $rules . $this->endOfLineForRule;
-
-        $this->removeFormattingFromEndOfRules($rules);
-
-        $this->assertSame($expectedResult, $rules, 'The string does not match the expected result.');
-        $this->assertFalse(strpos($rules, $this->endOfLineForRule), 'The formatting was found within the result.');
-    }
-
-    /**
-     * A test for needs formatting removed when formatting needs to be removed.
-     *
-     * @return void
-     */
-    public function test_needs_formatting_removed_when_formatting_needs_removed()
-    {
-        $rules = 'rules' . $this->endOfLineForRule;
-        
-        $result = $this->needsFormattingRemoved($rules);
-
-        $this->assertTrue($result);
-    }
-
-    /**
-     * A test for needs formatting removed when formatting does not need to be removed.
-     *
-     * @return void
-     */
-    public function test_needs_formatting_removed_when_formatting_does_not_need_removed()
-    {
-        $rules = $this->endOfLineForRule . 'rules';
-        
-        $result = $this->needsFormattingRemoved($rules);
-
-        $this->assertFalse($result);
-    }
-
-    /**
-     * A test for needs formatting removed when empty string used.
-     *
-     * @return void
-     */
-    public function test_needs_formatting_removed_when_empty_string_used()
-    {
-        $rules = '';
-        
-        $result = $this->needsFormattingRemoved($rules);
-
-        $this->assertFalse($result);
     }
 
     /**
@@ -444,7 +386,7 @@ class RuleTraitTest extends TestCase
             $expectedRulesString .= $rule->name;
         }
 
-        foreach ($this->stubRulePlaceholders as $placeholder) {
+        foreach ($this->rulePlaceholders as $placeholder) {
             $stub .= $placeholder;
             $expectedStub .= $expectedRulesString;
         }
@@ -457,7 +399,7 @@ class RuleTraitTest extends TestCase
                     ->once()
                     ->andReturn($rule->name);
             }
-            $mock->shouldReceive('removeFormattingFromEndOfRules')
+            $mock->shouldReceive('removeEndOfLineFormatting')
                 ->with($expectedRulesString)
                 ->once();
         });

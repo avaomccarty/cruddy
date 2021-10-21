@@ -7,7 +7,7 @@ use Illuminate\Database\Schema\ColumnDefinition;
 
 trait RuleTrait
 {
-    use ConfigTrait;
+    use ConfigTrait, StubTrait;
 
     /**
      * The spacer used between validation rules.
@@ -17,18 +17,18 @@ trait RuleTrait
     protected $ruleSpacer = '|';
 
     /**
-     * The formatting at the end of the rule line.
+     * The formatting at the end of the line.
      *
      * @var string
      */
-    protected $endOfLineForRule = "\n\t\t\t";
+    protected $endOfLine = "\n\t\t\t";
 
     /**
      * The acceptable rule placeholders within a stub.
      *
      * @var array
      */
-    protected $stubRulePlaceholders = [
+    protected $rulePlaceholders = [
         'DummyRules',
         '{{ rules }}',
         '{{rules}}'
@@ -77,31 +77,7 @@ trait RuleTrait
      */
     protected function getValidationRule(ColumnDefinition $rule, string $validationRules)
     {
-        return "'$rule->name' => '$validationRules'," . $this->endOfLineForRule;
-    }
-
-    /**
-     * Remove the formatting from the end of the rules.
-     *
-     * @param  string  &$rules
-     * @return void
-     */
-    protected function removeFormattingFromEndOfRules(string &$rules) : void
-    {
-        if ($this->needsFormattingRemoved($rules)) {
-            $rules = substr($rules, 0, -strlen($this->endOfLineForRule));
-        }
-    }
-
-    /**
-     * Determine if the rules need formatting removed from the end.
-     *
-     * @param  string  $rules
-     * @return boolean
-     */
-    protected function needsFormattingRemoved(string $rules) : bool
-    {
-        return substr($rules, -strlen($this->endOfLineForRule)) === $this->endOfLineForRule;
+        return "'$rule->name' => '$validationRules'," . $this->endOfLine;
     }
 
     /**
@@ -190,9 +166,9 @@ trait RuleTrait
             $rulesString .= $this->getRuleString($rule);
         }
 
-        $this->removeFormattingFromEndOfRules($rulesString);
+        $this->removeEndOfLineFormatting($rulesString);
 
-        $stub = str_replace($this->stubRulePlaceholders, $rulesString, $stub);
+        $this->replaceInStub($this->rulePlaceholders, $rulesString, $stub);
     }
 
     /**

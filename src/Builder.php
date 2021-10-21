@@ -4,14 +4,14 @@ namespace Cruddy;
 
 use Illuminate\Database\Schema\Builder as BaseBuilder;
 use Closure;
+use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\ConfigTrait;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
 class Builder extends BaseBuilder
 {
-    use ConfigTrait;
+    use ConfigTrait, CommandTrait;
 
     /**
      * The console command signature.
@@ -46,15 +46,15 @@ class Builder extends BaseBuilder
      */
     protected function createPreHook(string $table, Closure $callback)
     {
-        $className = $this->getClassName($table);
+        $className = $this->getStudlySingular($table);
         $blueprint = $this->createBlueprint($table, $callback);
 
         Artisan::call('cruddy:controller', [
             'name' => $className . 'Controller',
             '--resource' => true,
-            '--model' => $className, // Note: This should be improved. Use the Cruddy model, not the default.
+            '--model' => $className,
             '--api' => $this->isApi(),
-            '--inputs' => $blueprint->getColumns(),
+            'inputs' => $blueprint->getColumns(),
         ]);
 
         // Create update request class
@@ -105,16 +105,5 @@ class Builder extends BaseBuilder
                 }
             }
         }
-    }
-
-    /**
-     * Get the class name from the $table.
-     *
-     * @param  string  $table
-     * @return string
-     */
-    protected function getClassName(string $table)
-    {
-        return Str::studly(Str::singular(trim($table)));
     }
 }

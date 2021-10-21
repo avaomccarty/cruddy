@@ -43,10 +43,9 @@ return [
 
     /**
      * The default validation rules for all columns in the CuddyBlueprint. These validation rules
-     * are written to the CruddyRequest.
+     * are written to the Cruddy request files.
      *
      */
-    // Note: Need to update these defaults to reasonable values.
     'validation_defaults' => [
         'bigInteger' => 'required|integer|min:1', // Note: Also "unsignedBigInteger".
         // 'binary' => 'string',
@@ -95,7 +94,6 @@ return [
      * are written to the view files.
      *
      */
-    // Note: Need to update these defaults to reasonable values.
     'input_defaults' => [
         'bigInteger' => 'number',
         // 'unsignedBigInteger' => 'number',
@@ -150,7 +148,7 @@ return [
         // 'uuid' => 'text',
         // 'uuidMorphs' => 'text',
         // 'year' => 'text',
-        'submit' => 'submit' // Needed for Cruddy. Is not part of Laravel.
+        'submit' => 'submit' // Needed for Cruddy to add submit inputs on forms.
     ],
 
     /**

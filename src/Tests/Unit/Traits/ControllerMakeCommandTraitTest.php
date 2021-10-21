@@ -42,7 +42,7 @@ class ControllerMakeCommandTraitTest extends TestCase
                 ->with($stub)
                 ->once()
                 ->andReturn($mock);
-            $mock->shouldReceive('replaceInputs')
+            $mock->shouldReceive('replaceControllerInputs')
                 ->with($stub)
                 ->once()
                 ->andReturn($mock);

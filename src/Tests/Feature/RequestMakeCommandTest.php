@@ -21,17 +21,18 @@ class RequestMakeCommandTest extends TestCase
     protected $successOutput = 'Cruddy request created successfully.';
 
     /**
+     * The name of the resource.
+     *
+     * @var string
+     */
+    protected $name = 'test';
+
+    /**
      * The location of the stubs folder.
      *
      * @var string
      */
     protected $stubPath = '/stubs';
-
-    public function setUp() : void
-    {
-        parent::setUp();
-        $this->name = 'test';
-    }
 
     /**
      * Get the assertions based on the type of request file being created.
@@ -83,7 +84,7 @@ class RequestMakeCommandTest extends TestCase
 
         
         // Assert that the expected request file does not have any stub rule placeholders remaining
-        foreach ($this->stubRulePlaceholders as $placeholder) {
+        foreach ($this->rulePlaceholders as $placeholder) {
             $this->assertFalse(strpos($expectedRequestFile, $placeholder));
         }
     }

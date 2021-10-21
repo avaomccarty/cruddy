@@ -4,13 +4,15 @@ namespace Cruddy\Tests\Unit\Traits\Stubs;
 
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\CommandTrait;
+use Cruddy\Traits\ConfigTrait;
 use Cruddy\Traits\Stubs\FormTrait;
+use Cruddy\Traits\Stubs\StubTrait;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
 class FormTraitTest extends TestCase
 {
-    use CommandTrait, FormTrait, TestTrait;
+    use CommandTrait, ConfigTrait, FormTrait, StubTrait, TestTrait;
 
     /**
      * A test to replace the form action for a create file or an index file that needs a Vue frontend.
@@ -43,7 +45,7 @@ class FormTraitTest extends TestCase
                     ->andReturn(true);
             });
 
-            $mock->stubActionPlaceholders = [$search];
+            $mock->actionPlaceholders = [$search];
             $mock->replaceFormAction($stub);
 
             $this->assertIsString($stub, 'The type should be a string.');
@@ -80,7 +82,7 @@ class FormTraitTest extends TestCase
                 ->andReturn(false);
         });
 
-        $mock->stubActionPlaceholders = [$search];
+        $mock->actionPlaceholders = [$search];
         $mock->replaceFormAction($stub);
 
         $this->assertIsString($stub, 'The type should be a string.');
@@ -116,7 +118,7 @@ class FormTraitTest extends TestCase
                 ->andReturn(true);
         });
 
-        $mock->stubActionPlaceholders = [$search];
+        $mock->actionPlaceholders = [$search];
         $mock->replaceFormAction($stub);
 
         $this->assertIsString($stub, 'The type should be a string.');
@@ -134,27 +136,30 @@ class FormTraitTest extends TestCase
     {
         $name = 'name';
         $search = 'search';
-        $baseStub = '-in-stub';
-        $stub = $originalStub = $search . $baseStub;
-        $expectedStub = "'/$name/' + item.id + '/edit'" . $baseStub;
+        $stub = $search . '-in-stub';
+        $editUrl = "'/$name/' + item.id + '/edit'";
 
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($name) {
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($name, $editUrl, $stub) {
             $mock->shouldAllowMockingProtectedMethods();
             $mock->shouldReceive('argument')
                 ->with('name')
+                ->once()
                 ->andReturn($name);
 
             $mock->shouldReceive('needsVueFrontend')
                 ->andReturn(true);
+
+            $mock->shouldReceive('replaceEditUrlPlaceholders')
+                ->with($editUrl, $stub)
+                ->once()
+                ->andReturn($this);
         });
 
-        $mock->stubEditUrlPlaceholders = [$search];
-        $mock->replaceFormEditUrl($stub);
+        $mock->editUrlPlaceholders = [$search];
+        $result = $mock->replaceFormEditUrl($stub);
 
-        $this->assertIsString($stub, 'The type should be a string.');
-        $this->assertNotEmpty($stub, 'The stub value shouldn\'t be empty.');
-        $this->assertSame($expectedStub, $stub, 'The stub should contain the updated string.');
-        $this->assertNotSame($originalStub, $stub, 'The stub should have been updated within this test.');
+        $this->assertIsObject($result);
+        $this->assertInstanceOf(self::class, $result);
     }
 
     /**
@@ -166,11 +171,10 @@ class FormTraitTest extends TestCase
     {
         $name = 'name';
         $search = 'search';
-        $baseStub = '-in-stub';
-        $stub = $originalStub = $search . $baseStub;
-        $expectedStub = '/name/{{ $name->id }}/edit' . $baseStub;
+        $stub = $search . '-in-stub';
+        $editUrl = '/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}/edit';
 
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($name) {
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($name, $editUrl, $stub) {
             $mock->shouldAllowMockingProtectedMethods();
             $mock->shouldReceive('argument')
                 ->with('name')
@@ -178,14 +182,17 @@ class FormTraitTest extends TestCase
 
             $mock->shouldReceive('needsVueFrontend')
                 ->andReturn(false);
+
+            $mock->shouldReceive('replaceEditUrlPlaceholders')
+                ->with($editUrl, $stub)
+                ->once()
+                ->andReturn($this);
         });
 
-        $mock->stubEditUrlPlaceholders = [$search];
-        $mock->replaceFormEditUrl($stub);
+        $mock->editUrlPlaceholders = [$search];
+        $result = $mock->replaceFormEditUrl($stub);
 
-        $this->assertIsString($stub, 'The type should be a string.');
-        $this->assertNotEmpty($stub, 'The stub value shouldn\'t be empty.');
-        $this->assertSame($expectedStub, $stub, 'The stub should contain the updated string.');
-        $this->assertNotSame($originalStub, $stub, 'The stub should have been updated within this test.');
+        $this->assertIsObject($result);
+        $this->assertInstanceOf(self::class, $result);
     }
 }

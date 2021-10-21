@@ -5,6 +5,7 @@ namespace Cruddy\Tests\Feature;
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\Stubs\InputTrait;
+use Cruddy\Traits\Stubs\FormTrait;
 use Cruddy\Traits\Stubs\ModelTrait;
 use Cruddy\Traits\ViewMakeCommandTrait;
 use Illuminate\Support\Facades\Config;
@@ -13,7 +14,7 @@ use Orchestra\Testbench\TestCase;
 
 class ViewMakeCommandTest extends TestCase
 {
-    use ViewMakeCommandTrait, TestTrait, InputTrait, ModelTrait, CommandTrait;
+    use ViewMakeCommandTrait, TestTrait, FormTrait, InputTrait, ModelTrait, CommandTrait;
 
     /**
      * The name of the resource.
@@ -187,6 +188,8 @@ class ViewMakeCommandTest extends TestCase
         }
         $mockSubmitInputStub = $this->getInputStubMock('submit');
 
+        $directory = 'resources/views/name';
+
         // Assert config frontend scaffolding is used.
         Config::shouldReceive('get')
             ->with('cruddy.frontend_scaffolding')
@@ -273,7 +276,7 @@ class ViewMakeCommandTest extends TestCase
             ->with($expectedBladeFileLocation, $expectedBladeFile)
             ->once()
             ->andReturn(true);
-        
+
         File::partialMock();
         
         $this->artisan('cruddy:view', [
@@ -284,12 +287,17 @@ class ViewMakeCommandTest extends TestCase
         ])->expectsOutput('Cruddy view created successfully.');
 
         // Assert that the expected blade file does not have any stub model placeholders remaining
-        foreach ($this->stubModelPlaceholders as $stubModelPlaceholder) {
+        foreach ($this->modelPlaceholders as $stubModelPlaceholder) {
             $this->assertFalse(strpos($expectedBladeFile, $stubModelPlaceholder));
         }
 
         // Assert that the expected blade file does not have any stub input placeholders remaining
-        foreach ($this->stubInputPlaceholders as $stubInputPlaceholder) {
+        foreach ($this->inputPlaceholders as $stubInputPlaceholder) {
+            $this->assertFalse(strpos($expectedBladeFile, $stubInputPlaceholder));
+        }
+
+        // Assert that the expected blade file does not have any stub input placeholders remaining
+        foreach ($this->editUrlPlaceholders as $stubInputPlaceholder) {
             $this->assertFalse(strpos($expectedBladeFile, $stubInputPlaceholder));
         }
     }

@@ -4,13 +4,13 @@ namespace Cruddy\Commands;
 
 use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\ControllerMakeCommandTrait;
-use Illuminate\Database\Schema\ColumnDefinition;
+use Cruddy\Traits\Stubs\InputTrait;
 use Illuminate\Routing\Console\ControllerMakeCommand as BaseControllerMakeCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 class ControllerMakeCommand extends BaseControllerMakeCommand
 {
-    use CommandTrait, ControllerMakeCommandTrait;
+    use InputTrait, CommandTrait, ControllerMakeCommandTrait;
 
     /**
      * The console command name.
@@ -45,46 +45,6 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
         }
 
         return $this->resolveStubPath($this->getStubsLocation() . '/controller.stub');
-    }
-
-    /**
-     * Replace the inputs for the given stub.
-     *
-     * @param  string  &$stub
-     * @return self
-     */
-    protected function replaceInputs(string &$stub) : self
-    {
-        $inputs = $this->option('inputs');
-        $inputsString = '';
-
-        foreach ($inputs as $input) {
-            $inputsString .= $this->getInputString($input);
-        }
-
-        if (count($inputs) > 0) {
-            // Remove extra formatting at the end of string
-            $inputsString = substr($inputsString, 0, strlen($inputsString) - 5);
-        }
-
-        $stub = str_replace($this->stubInputPlaceholders, $inputsString, $stub);
-
-        return $this;
-    }
-
-    /**
-     * Get the input needed as a string.
-     *
-     * @param  ColumnDefinition  $input
-     * @return string
-     */
-    protected function getInputString(ColumnDefinition $input) : string
-    {
-        if ($input['name'] === 'id') {
-            return '';
-        }
-
-        return "'" . $input['name'] . "'" . ' => $request->' . $input['name'] . ",\n\t\t\t\t";
     }
 
     /**

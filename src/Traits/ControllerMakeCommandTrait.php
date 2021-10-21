@@ -2,11 +2,19 @@
 
 namespace Cruddy\Traits;
 
+use Cruddy\Traits\Stubs\InputTrait;
 use Cruddy\Traits\Stubs\ResourceTrait;
 
 trait ControllerMakeCommandTrait
 {
-    use CommandTrait, ResourceTrait;
+    use CommandTrait, ResourceTrait, InputTrait;
+
+    /**
+     * The formatting at the end of the line.
+     *
+     * @var string
+     */
+    protected $endOfLine = "\n\t\t\t\t";
 
     /**
      * Get the default namespace for the class.
@@ -37,7 +45,7 @@ trait ControllerMakeCommandTrait
 
         return $this->replaceNamespace($stub, $name)
             ->replaceResource($stub)
-            ->replaceInputs($stub)
+            ->replaceControllerInputs($stub)
             ->replaceClass($stub, $name);
     }
 
@@ -68,9 +76,36 @@ trait ControllerMakeCommandTrait
             ]);
         }
 
-        $this->replaceModelPlaceholders($modelClass, $stub)
-            ->replaceModelVariablePlaceholders($modelClass, $stub)
+        $modelClassName = $this->getClassBasename($modelClass);
+
+        $this->replaceModelPlaceholders($modelClassName, $stub)
+            ->replaceModelVariablePlaceholders($modelClassName, $stub)
             ->replaceFullModelPlaceholders($modelClass, $stub);
+
+        return $this;
+    }
+
+    /**
+     * Replace the inputs for the given stub.
+     *
+     * @param  string  &$stub
+     * @return self
+     */
+    protected function replaceControllerInputs(string &$stub) : self
+    {
+        $inputs = $this->option('inputs');
+        $inputsString = '';
+
+        foreach ($inputs as $input) {
+            $inputsString .= $this->getControllerInputString($input);
+        }
+
+        if (count($inputs) > 0) {
+            // Remove extra formatting at the end of string
+            $inputsString = substr($inputsString, 0, strlen($inputsString) - 5);
+        }
+
+        $this->replaceInStub($this->inputPlaceholders, $inputsString, $stub);
 
         return $this;
     }

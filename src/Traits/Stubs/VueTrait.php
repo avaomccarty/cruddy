@@ -6,12 +6,28 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Schema\ColumnDefinition;
 trait VueTrait
 {
+    use StubTrait;
+
+    /**
+     * The styling for the end of the Vue data.
+     *
+     * @var string
+     */
+    protected $endOfDataLine = "\n\t\t\t";
+
+    /**
+     * The styling for the end of the Vue post data.
+     *
+     * @var string
+     */
+    protected $endOfPostDataLine = "\n\t\t\t\t";
+
     /**
      * The acceptable vue data placeholders within a stub.
      *
      * @var array
      */
-    protected $stubVueDataPlaceholders = [
+    protected $vueDataPlaceholders = [
         'DummyVueData',
         '{{ vueData }}',
         '{{vueData}}'
@@ -22,7 +38,7 @@ trait VueTrait
      *
      * @var array
      */
-    protected $stubVuePostDataPlaceholders = [
+    protected $vuePostDataPlaceholders = [
         'DummyVuePostData',
         '{{ vuePostData }}',
         '{{vuePostData}}'
@@ -33,7 +49,7 @@ trait VueTrait
      *
      * @var array
      */
-    protected $stubVueComponentPlaceholders = [
+    protected $vueComponentPlaceholders = [
         'DummyComponentName',
         '{{ componentName }}',
         '{{componentName}}'
@@ -44,7 +60,7 @@ trait VueTrait
      *
      * @var array
      */
-    protected $stubVuePropsPlaceholders = [
+    protected $vuePropsPlaceholders = [
         'DummyProps',
         '{{ props }}',
         '{{props}}'
@@ -55,7 +71,7 @@ trait VueTrait
      *
      * @var array
      */
-    protected $stubComponentNamePlaceholders = [
+    protected $componentNamePlaceholders = [
         'DummyComponentName',
         '{{ componentName }}',
         '{{componentName}}'
@@ -69,7 +85,7 @@ trait VueTrait
      */
     protected function replaceProps(string &$stub) : self
     {
-        $stub = str_replace($this->stubVuePropsPlaceholders, $this->getPropsString(), $stub);
+        $this->replaceInStub($this->vuePropsPlaceholders, $this->getPropsString(), $stub);
 
         return $this;
     }
@@ -79,11 +95,13 @@ trait VueTrait
      *
      * @param  string  $value
      * @param  string  &$stub
-     * @return string
+     * @return self
      */
-    protected function replaceVueDataPlaceholders(string $value, string &$stub) : string
+    protected function replaceStubComponentNamePlaceholders(string $value, string &$stub) : self
     {
-        return str_replace($this->stubVueDataPlaceholders, $value, $stub);
+        $this->replaceInStub($this->componentNamePlaceholders, $value, $stub);
+
+        return $this;
     }
         
     /**
@@ -91,11 +109,27 @@ trait VueTrait
      *
      * @param  string  $value
      * @param  string  &$stub
-     * @return string
+     * @return self
      */
-    protected function replaceVuePostDataPlaceholders(string $value, string &$stub) : string
+    protected function replaceVueDataPlaceholders(string $value, string &$stub) : self
     {
-        return str_replace($this->stubVueDataPlaceholders, $value, $stub);
+        $this->replaceInStub($this->vueDataPlaceholders, $value, $stub);
+
+        return $this;
+    }
+        
+    /**
+     * Replace the Vue data props variables for the given stub.
+     *
+     * @param  string  $value
+     * @param  string  &$stub
+     * @return self
+     */
+    protected function replaceVuePostDataPlaceholders(string $value, string &$stub) : self
+    {
+        $this->replaceInStub($this->vueDataPlaceholders, $value, $stub);
+
+        return $this;
     }
 
     /**
@@ -114,10 +148,30 @@ trait VueTrait
                 $vueDataString .= $this->getVueDataString($input);
             }
 
-            $stub = str_replace($this->stubVueDataPlaceholders, $vueDataString, $stub);
+            $this->replaceInStub($this->vueDataPlaceholders, $vueDataString, $stub);
         }
 
         return $this;
+    }
+
+    /**
+     * Get the Vue post data needed as a string.
+     *
+     * @param  ColumnDefinition  $input
+     * @return string
+     */
+    protected function getVuePostDataString(ColumnDefinition $input) : string
+    {
+        $vuePostDataString = '';
+
+        if ($this->getType() === 'edit') {
+            $vuePostDataString .= $input['name'] . ': this.item.' . $input['name'] . ',';
+        } else {
+            $vuePostDataString .= $input['name'] . ': this.' . $input['name'] . ',';
+        }
+
+        $vuePostDataString .= $this->endOfPostDataLine;
+        return str_replace('  ', ' ', $vuePostDataString);
     }
 
     /**
@@ -128,9 +182,7 @@ trait VueTrait
      */
     protected function getVueDataString(ColumnDefinition $input) : string
     {
-        $vueDataString = '';
-        $vueDataString .= $input['name'] . ': null,';
-        $vueDataString .= "\n\t\t\t";
+        $vueDataString = $input['name'] . ': null,' . $this->endOfDataLine;
 
         return str_replace('  ', ' ', $vueDataString);
     }
@@ -152,7 +204,7 @@ trait VueTrait
                 $vuePostDataString .= $this->getVuePostDataString($input);
             }
 
-            $stub = str_replace($this->stubVuePostDataPlaceholders, $vuePostDataString, $stub);
+            $this->replaceInStub($this->vuePostDataPlaceholders, $vuePostDataString, $stub);
         }
 
         return $this;
@@ -171,7 +223,7 @@ trait VueTrait
             $ucFirstType = Str::ucfirst($this->getType());
             $componentName = $studylyTableName . $ucFirstType;
 
-            $stub = str_replace($this->stubVueComponentPlaceholders, $componentName, $stub);
+            $this->replaceInStub($this->vueComponentPlaceholders, $componentName, $stub);
         }
 
         return $this;

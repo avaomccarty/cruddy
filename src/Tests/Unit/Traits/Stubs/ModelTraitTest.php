@@ -34,25 +34,15 @@ class ModelTraitTest extends TestCase
      */
     public function test_replace_model_placeholder()
     {
-        $className = 'Class';
-        $model = 'Foo\Bar\Baz\\' . $className;
+        $model = 'model-';
         $originalStub = $expectedStub = $stub = 'stub-';
 
-        foreach ($this->stubModelPlaceholders as $placeholder) {
+        foreach ($this->modelPlaceholders as $placeholder) {
             $stub .= $placeholder;
-            $expectedStub .= $className;
+            $expectedStub .= $model;
         }
 
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($model, $className) {
-            $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getClassBasename')
-                ->with($model)
-                ->once()
-                ->andReturn($className);
-        });
-        
-
-        $result = $mock->replaceModelPlaceholders($model, $stub);
+        $result = $this->replaceModelPlaceholders($model, $stub);
 
         $this->assertIsObject($result);
         $this->assertInstanceOf(self::class, $result);
@@ -67,25 +57,15 @@ class ModelTraitTest extends TestCase
      */
     public function test_replace_model_variable_placeholder()
     {
-        $className = 'Class';
-        $model = 'Foo\Bar\Baz\\' . $className;
+        $model = 'model-';
         $originalStub = $expectedStub = $stub = 'stub-';
 
-        foreach ($this->stubModelVariablePlaceholders as $placeholder) {
+        foreach ($this->modelVariablePlaceholders as $placeholder) {
             $stub .= $placeholder;
-            $expectedStub .= $className;
+            $expectedStub .= $model;
         }
 
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($model, $className) {
-            $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getClassBasename')
-                ->with($model)
-                ->once()
-                ->andReturn($className);
-        });
-        
-
-        $result = $mock->replaceModelVariablePlaceholders($model, $stub);
+        $result = $this->replaceModelVariablePlaceholders($model, $stub);
 
         $this->assertIsObject($result);
         $this->assertInstanceOf(self::class, $result);
@@ -103,7 +83,7 @@ class ModelTraitTest extends TestCase
         $model = 'Foo\Bar\Baz\\';
         $originalStub = $expectedStub = $stub = 'stub-';
 
-        foreach ($this->stubFullModelClassPlaceholders as $placeholder) {
+        foreach ($this->fullModelClassPlaceholders as $placeholder) {
             $stub .= $placeholder;
             $expectedStub .= $model;
         }

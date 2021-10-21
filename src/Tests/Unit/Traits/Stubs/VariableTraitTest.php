@@ -53,7 +53,7 @@ class VariableTraitTest extends TestCase
         $variable = 'variable';
         $camelCasePluralVariable = 'camelCasePluralVariable';
 
-        foreach ($this->stubVariableCollectionPlaceholders as $placeholder) {
+        foreach ($this->variableCollectionPlaceholders as $placeholder) {
             $stub .= $placeholder;
             $expectedStub .= $camelCasePluralVariable;
         }
@@ -86,7 +86,7 @@ class VariableTraitTest extends TestCase
         $variable = 'variable';
         $camelCaseSingularVariable = 'camelCaseSingularVariable';
 
-        foreach ($this->stubVariablePlaceholders as $placeholder) {
+        foreach ($this->variablePlaceholders as $placeholder) {
             $stub .= $placeholder;
             $expectedStub .= $camelCaseSingularVariable;
         }

@@ -52,15 +52,17 @@ class ViewMakeCommand extends GeneratorCommand
     protected function buildClass($name) : string
     {
         $stub = $this->files->get($this->getStub());
+        $name = $this->getNameInput();
+        $model = $this->getClassBasename($name);
 
         return $this->replaceNamespace($stub, $name)
             ->replaceInputs($stub)
             ->replaceFormAction($stub)
             ->replaceFormEditUrl($stub)
-            ->replaceVariableCollectionPlaceholders($this->argument('name'), $stub)
-            ->replaceVariablePlaceholders($this->argument('name'), $stub)
+            ->replaceVariableCollectionPlaceholders($name, $stub)
+            ->replaceVariablePlaceholders($name, $stub)
             ->replaceFormCancelUrl($stub)
-            ->replaceModelPlaceholders($this->argument('name'), $stub)
+            ->replaceModelPlaceholders($model, $stub)
             ->replaceVueComponentName($stub)
             ->replaceVueData($stub)
             ->replaceVuePostData($stub)

@@ -30,6 +30,7 @@ class InputTraitTest extends TestCase
             $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($type) {
                 $mock->shouldAllowMockingProtectedMethods();
                 $mock->shouldReceive('getType')
+                    ->once()
                     ->andReturn($type);
             });
             
@@ -55,6 +56,7 @@ class InputTraitTest extends TestCase
             $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($type) {
                 $mock->shouldAllowMockingProtectedMethods();
                 $mock->shouldReceive('getType')
+                    ->once()
                     ->andReturn($type);
             });
             
@@ -108,7 +110,7 @@ class InputTraitTest extends TestCase
     {
         $expectedStub = $stub = 'stub-';
         $inputString = 'input-';
-        foreach ($this->stubInputPlaceholders as $placeholder) {
+        foreach ($this->inputPlaceholders as $placeholder) {
             $stub .= $placeholder;
             $expectedStub .= $inputString;
         }
@@ -196,16 +198,16 @@ class InputTraitTest extends TestCase
     public function test_get_inputs_string_with_submit()
     {
         $inputs = $this->getMockColumns();
-        $submitInputString = '-submitInputString';
         $expectedResult = '';
+        $getInputFile = '-getInputFile';
 
         foreach ($inputs as $input) {
             $expectedResult .= $input['name'];
         }
 
-        $expectedResult .= $submitInputString;
+        $expectedResult .= $getInputFile;
 
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputs, $submitInputString) {
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputs, $getInputFile, $expectedResult) {
             $mock->shouldAllowMockingProtectedMethods();
             $mock->shouldReceive('getInputs')
                 ->once()
@@ -213,6 +215,7 @@ class InputTraitTest extends TestCase
 
             foreach ($inputs as $input) {
                 $mock->shouldReceive('getInputString')
+                    ->with($input)
                     ->once()
                     ->andReturn($input['name']);
             }
@@ -221,9 +224,14 @@ class InputTraitTest extends TestCase
                 ->once()
                 ->andReturn(true);
 
-            $mock->shouldReceive('getSubmitInputString')
+            $mock->shouldReceive('getInputFile')
+                ->with('submit')
                 ->once()
-                ->andReturn($submitInputString);
+                ->andReturn($getInputFile);
+
+            $mock->shouldReceive('replaceValuePlaceholders')
+                ->with('Submit', $getInputFile)
+                ->once();
         });
 
         $result = $mock->getInputsString();
@@ -326,17 +334,17 @@ class InputTraitTest extends TestCase
         $replaceString = 'string-';
         $extraInputString = 'extra-input-string-';
 
-        foreach ($this->stubModelNamePlaceholders as $placeholder) {
+        foreach ($this->modelNamePlaceholders as $placeholder) {
             $inputString .= $placeholder;
             $expectedResult .= $replaceString;
         }
 
-        foreach ($this->stubNamePlaceholders as $placeholder) {
+        foreach ($this->namePlaceholders as $placeholder) {
             $inputString .= $placeholder;
             $expectedResult .= $input['name'];
         }
 
-        foreach ($this->stubDataPlaceholders as $placeholder) {
+        foreach ($this->dataPlaceholders as $placeholder) {
             $inputString .= $placeholder;
             $expectedResult .= $extraInputString;
         }
@@ -446,14 +454,18 @@ class InputTraitTest extends TestCase
     {
         $input = $this->getMockColumns()[0];
         $inputFile = 'inputFile';
-        $expectedResult = $inputFile . "\n\t\t";
+        $endOfLine = $this->getEndOfLine();
+        $expectedResult = $inputFile . $endOfLine;
 
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($input, $inputFile) {
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($input, $inputFile, $endOfLine) {
             $mock->shouldAllowMockingProtectedMethods();
             $mock->shouldReceive('getInputFile')
                 ->with($input['type'])
                 ->once()
                 ->andReturn($inputFile);
+            $mock->shouldReceive('getEndOfLine')
+                ->once()
+                ->andReturn($endOfLine);
         });
 
         $result = $mock->getInputAsString($input);
@@ -503,33 +515,33 @@ class InputTraitTest extends TestCase
         $this->assertTrue($result, 'The show type should return true when checking if the file is edit or show.');
     }
 
-    /**
-     * A test for getting the submit input string.
-     *
-     * @return void
-     */
-    public function test_get_submit_input_string()
-    {
-        $originalInputFile = $expectedResult = $inputFile = 'inputFile-';
+    // /**
+    //  * A test for getting the submit input string.
+    //  *
+    //  * @return void
+    //  */
+    // public function test_get_submit_input_string()
+    // {
+    //     $originalInputFile = $expectedResult = $inputFile = 'inputFile-';
 
-        foreach ($this->stubValuePlaceholders as $placeholder) {
-            $inputFile .= $placeholder;
-            $expectedResult .= $this->submitValue;
-        }
+    //     foreach ($this->valuePlaceholders as $placeholder) {
+    //         $inputFile .= $placeholder;
+    //         $expectedResult .= $this->submitValue;
+    //     }
 
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputFile) {
-            $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getInputFile')
-                ->with('submit')
-                ->once()
-                ->andReturn($inputFile);
-        });
+    //     $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputFile) {
+    //         $mock->shouldAllowMockingProtectedMethods();
+    //         $mock->shouldReceive('getInputFile')
+    //             ->with('submit')
+    //             ->once()
+    //             ->andReturn($inputFile);
+    //     });
         
-        $result = $mock->getSubmitInputString();
+    //     $result = $mock->getSubmitInputString();
 
-        $this->assertNotSame($originalInputFile, $result, 'The input file should have been updated.');
-        $this->assertSame($expectedResult, $result, 'The submit input string is incorrect.');
-    }
+    //     $this->assertNotSame($originalInputFile, $result, 'The input file should have been updated.');
+    //     $this->assertSame($expectedResult, $result, 'The submit input string is incorrect.');
+    // }
 
     /**
      * A test getting the input stub.
@@ -945,6 +957,159 @@ class InputTraitTest extends TestCase
 
             $this->assertFalse($result);
         }
+    }
+
+    /**
+     * A test to get the controller input string for a non-ID column.
+     *
+     * @return void
+     */
+    public function test_get_controller_input_string_for_non_id_column()
+    {
+        $name = 'name';
+        $input = new ColumnDefinition([
+            'name' => $name
+        ]);
+        $endOfLine = 'endOfLine';
+        $expectedResult = "'" . $input->name . "'" . ' => $request->' . $input->name . "," . $endOfLine;
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($input, $endOfLine) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('isIdColumn')
+                ->with($input)
+                ->once()
+                ->andReturn(false);
+            $mock->shouldReceive('getEndOfLine')
+                ->once()
+                ->andReturn($endOfLine);
+        });
         
+        
+        $result = $mock->getControllerInputString($input);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * A test to get the controller input string for an ID column.
+     *
+     * @return void
+     */
+    public function test_get_controller_input_string_for_id_column()
+    {
+        $name = 'id';
+        $input = new ColumnDefinition([
+            'name' => $name
+        ]);
+        $endOfLine = 'endOfLine';
+        $expectedResult = '';
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($input, $endOfLine) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('isIdColumn')
+                ->with($input)
+                ->once()
+                ->andReturn(true);
+            $mock->shouldReceive('getEndOfLine')
+                ->never();
+        });
+        
+        
+        $result = $mock->getControllerInputString($input);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * A test to get the model input string for a non-ID column.
+     *
+     * @return void
+     */
+    public function test_get_model_input_string_for_non_id_column()
+    {
+        $name = 'name';
+        $input = new ColumnDefinition([
+            'name' => $name
+        ]);
+        $endOfLine = 'endOfLine';
+        $expectedResult = "'" . $input->name . "'," . $endOfLine;
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($input, $endOfLine) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('isIdColumn')
+                ->with($input)
+                ->once()
+                ->andReturn(false);
+            $mock->shouldReceive('getEndOfLine')
+                ->once()
+                ->andReturn($endOfLine);
+        });
+        
+        
+        $result = $mock->getModelInputString($input);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * A test to get the model input string for an ID column.
+     *
+     * @return void
+     */
+    public function test_get_model_input_string_for_id_column()
+    {
+        $name = 'id';
+        $input = new ColumnDefinition([
+            'name' => $name
+        ]);
+        $endOfLine = 'endOfLine';
+        $expectedResult = '';
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($input, $endOfLine) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('isIdColumn')
+                ->with($input)
+                ->once()
+                ->andReturn(true);
+            $mock->shouldReceive('getEndOfLine')
+                ->never();
+        });
+        
+        
+        $result = $mock->getModelInputString($input);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * A test for if an input is for an ID column when it is an ID column.
+     *
+     * @return void
+     */
+    public function test_is_id_column_for_id_column()
+    {
+        $column = new ColumnDefinition([
+            'name' => 'id'
+        ]);
+
+        $result = $this->isIdColumn($column);
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * A test for if an input is for an ID column when it is not an ID column.
+     *
+     * @return void
+     */
+    public function test_is_id_column_for_non_id_column()
+    {
+        $column = new ColumnDefinition([
+            'name' => 'not-id'
+        ]);
+
+        $result = $this->isIdColumn($column);
+
+        $this->assertFalse($result);
     }
 }

@@ -4,12 +4,14 @@ namespace Cruddy\Traits\Stubs;
 
 trait ResourceTrait
 {
+    use StubTrait;
+
     /**
      * The acceptable resource placeholders within a stub.
      *
      * @var array
      */
-    protected $stubResourcePlaceholders = [
+    protected $resourcePlaceholders = [
         'DummyResource',
         '{{ resource }}',
         '{{resource}}'
@@ -23,7 +25,7 @@ trait ResourceTrait
      */
     protected function replaceResource(string &$stub) : self
     {
-        $stub = str_replace($this->stubResourcePlaceholders, $this->getResource(), $stub);
+        $this->replaceInStub($this->resourcePlaceholders, $this->getResource(), $stub);
 
         return $this;
     }

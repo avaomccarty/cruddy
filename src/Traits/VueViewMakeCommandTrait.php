@@ -4,7 +4,6 @@ namespace Cruddy\Traits;
 
 use Cruddy\Traits\Stubs\VariableTrait;
 use Cruddy\Traits\Stubs\VueTrait;
-use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Str;
 
 trait VueViewMakeCommandTrait {
@@ -59,7 +58,7 @@ trait VueViewMakeCommandTrait {
             $variableName = strtolower($this->getClassName());
         }
 
-        $stub = str_replace($this->stubValuePlaceholders, $variableName ?? '', $stub);
+        $this->replaceValuePlaceholders($variableName ?? '', $stub);
 
         return $this;
     }
@@ -75,28 +74,8 @@ trait VueViewMakeCommandTrait {
         $kebabName = Str::kebab($this->argument('name'));
         $componentName = $kebabName . '-' . $this->getType();
 
-        $stub = str_replace($this->stubComponentNamePlaceholders, $componentName, $stub);
+        $this->replaceStubComponentNamePlaceholders($componentName, $stub);
 
         return $this;
-    }
-
-    /**
-     * Get the Vue post data needed as a string.
-     *
-     * @param  ColumnDefinition  $input
-     * @return string
-     */
-    protected function getVuePostDataString(ColumnDefinition $input) : string
-    {
-        $vuePostDataString = '';
-
-        if ($this->getType() === 'edit') {
-            $vuePostDataString .= $input['name'] . ': this.item.' . $input['name'] . ',';
-        } else {
-            $vuePostDataString .= $input['name'] . ': this.' . $input['name'] . ',';
-        }
-
-        $vuePostDataString .= "\n\t\t\t\t";
-        return str_replace('  ', ' ', $vuePostDataString);
     }
 }

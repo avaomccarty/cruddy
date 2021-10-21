@@ -6,12 +6,14 @@ use Illuminate\Support\Str;
 
 trait VariableTrait
 {
+    use StubTrait;
+
     /**
      * The acceptable value placeholders within a stub.
      *
      * @var array
      */
-    protected $stubValuePlaceholders = [
+    protected $valuePlaceholders = [
         'DummyValue',
         '{{ value }}',
         '{{value}}'
@@ -22,7 +24,7 @@ trait VariableTrait
      *
      * @var array
      */
-    protected $stubVariableCollectionPlaceholders = [
+    protected $variableCollectionPlaceholders = [
         'DummyVariableCollection',
         '{{ variableCollection }}',
         '{{variableCollection}}'
@@ -33,7 +35,7 @@ trait VariableTrait
      *
      * @var array
      */
-    protected $stubVariablePlaceholders = [
+    protected $variablePlaceholders = [
         'DummyVariable',
         '{{ variable }}',
         '{{variable}}'
@@ -68,9 +70,24 @@ trait VariableTrait
      * @param  string  &$stub
      * @return self
      */
+    protected function replaceValuePlaceholders(string $variable, string &$stub) : self
+    {
+        $this->replaceInStub($this->valuePlaceholders, $variable, $stub);
+
+        return $this;
+    }
+            
+    /**
+     * Replace the variable collection placeholders within a stub.
+     *
+     * @param  string  $variable
+     * @param  string  &$stub
+     * @return self
+     */
     protected function replaceVariableCollectionPlaceholders(string $variable, string &$stub) : self
     {
-        $stub = str_replace($this->stubVariableCollectionPlaceholders, $this->getCamelCasePlural($variable), $stub);
+        $value = $this->getCamelCasePlural($variable);
+        $this->replaceInStub($this->variableCollectionPlaceholders, $value, $stub);
 
         return $this;
     }
@@ -84,7 +101,7 @@ trait VariableTrait
      */
     protected function replaceVariablePlaceholders(string $variable, string &$stub) : self
     {
-        $stub = str_replace($this->stubVariablePlaceholders, $this->getCamelCaseSingular($variable), $stub);
+        $this->replaceInStub($this->variablePlaceholders, $this->getCamelCaseSingular($variable), $stub);
 
         return $this;
     }

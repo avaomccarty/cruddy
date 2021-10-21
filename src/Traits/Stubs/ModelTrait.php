@@ -4,12 +4,14 @@ namespace Cruddy\Traits\Stubs;
 
 trait ModelTrait
 {
+    use StubTrait;
+
     /**
      * The acceptable model placeholders within a stub.
      *
      * @var array
      */
-    protected $stubModelPlaceholders = [
+    protected $modelPlaceholders = [
         'DummyModelClass',
         '{{ model }}',
         '{{model}}'
@@ -20,7 +22,7 @@ trait ModelTrait
      *
      * @var array
      */
-    protected $stubModelVariablePlaceholders = [
+    protected $modelVariablePlaceholders = [
         'DummyModelVariable',
         '{{ modelVariable }}',
         '{{modelVariable}}'
@@ -31,7 +33,7 @@ trait ModelTrait
      *
      * @var array
      */
-    protected $stubFullModelClassPlaceholders = [
+    protected $fullModelClassPlaceholders = [
         'DummyFullModelClass',
         '{{ namespacedModel }}',
         '{{namespacedModel}}'
@@ -42,7 +44,7 @@ trait ModelTrait
      *
      * @var array
      */
-    protected $stubModelNamePlaceholders = [
+    protected $modelNamePlaceholders = [
         'DummyModelName',
         '{{ ModelName }}',
         '{{ModelName}}'
@@ -68,7 +70,7 @@ trait ModelTrait
      */
     protected function replaceModelPlaceholders(string $model, string &$stub) : self
     {
-        $stub = str_replace($this->stubModelPlaceholders, $this->getClassBasename($model), $stub);
+        $this->replaceInStub($this->modelPlaceholders, $model, $stub);
 
         return $this;
     }
@@ -82,7 +84,7 @@ trait ModelTrait
      */
     protected function replaceModelVariablePlaceholders(string $model, string &$stub) : self
     {
-        $stub = str_replace($this->stubModelVariablePlaceholders, $this->getClassBasename($model), $stub);
+        $this->replaceInStub($this->modelVariablePlaceholders, $model, $stub);
 
         return $this;
     }
@@ -96,7 +98,7 @@ trait ModelTrait
      */
     protected function replaceFullModelPlaceholders(string $model, string &$stub) : self
     {
-        $stub = str_replace($this->stubFullModelClassPlaceholders, $model, $stub);
+        $this->replaceInStub($this->fullModelClassPlaceholders, $model, $stub);
 
         return $this;
     }

@@ -7,14 +7,14 @@ use Cruddy\Traits\ConfigTrait;
 
 trait FormTrait
 {
-    use ConfigTrait, CommandTrait;
+    use ConfigTrait, CommandTrait, StubTrait;
 
     /**
      * The acceptable action placeholders within a stub.
      *
      * @var array
      */
-    protected $stubActionPlaceholders = [
+    protected $actionPlaceholders = [
         'DummyAction',
         '{{ action }}',
         '{{action}}'
@@ -25,7 +25,7 @@ trait FormTrait
      *
      * @var array
      */
-    protected $stubEditUrlPlaceholders = [
+    protected $editUrlPlaceholders = [
         'DummyEditUrl',
         '{{ editUrl }}',
         '{{editUrl}}'
@@ -36,7 +36,7 @@ trait FormTrait
      *
      * @var array
      */
-    protected $stubCancelUrlPlaceholders = [
+    protected $cancelUrlPlaceholders = [
         'DummyCancelUrl',
         '{{ cancelUrl }}',
         '{{cancelUrl}}'
@@ -53,13 +53,13 @@ trait FormTrait
         $name = $this->argument('name');
 
         if ($this->getType() === 'create' || ($this->getType() === 'index' && $this->needsVueFrontend())) {
-            $stub = str_replace($this->stubActionPlaceholders, '/' . $name, $stub);
+            $this->replaceActionPlaceholders('/' . $name, $stub);
         } else if ($this->getType() === 'edit') {
             if ($this->needsVueFrontend()) {
                 $route = "'/$name/' + this.item.id";
-                $stub = str_replace($this->stubActionPlaceholders, $route, $stub);
+                $this->replaceActionPlaceholders($route, $stub);
             } else {
-                $stub = str_replace($this->stubActionPlaceholders, '/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}', $stub);
+                $this->replaceActionPlaceholders('/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}', $stub);
             }
         }
 
@@ -78,10 +78,39 @@ trait FormTrait
 
         if ($this->needsVueFrontend()) {
             $editUrl = "'/$name/' + item.id + '/edit'";
-            $stub = str_replace($this->stubEditUrlPlaceholders, $editUrl, $stub);
+            $this->replaceEditUrlPlaceholders($editUrl, $stub);
         } else {
-            $stub = str_replace($this->stubEditUrlPlaceholders, '/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}/edit', $stub);
+            $editUrl = '/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}/edit';
+            $this->replaceEditUrlPlaceholders($editUrl, $stub);
         }
+
+        return $this;
+    }
+
+    /**
+     * Replace the editUrlPlaceholders with the provided value within the stub.
+     *
+     * @param  string  $value
+     * @param  string  &$stub
+     * @return self
+     */
+    protected function replaceEditUrlPlaceholders(string $value, string &$stub) : self
+    {
+        $this->replaceInStub($this->editUrlPlaceholders, $value, $stub);
+
+        return $this;
+    }
+
+    /**
+     * Replace the actionPlaceholders with the provided value within the stub.
+     *
+     * @param  string  $value
+     * @param  string  &$stub
+     * @return self
+     */
+    protected function replaceActionPlaceholders(string $value, string &$stub) : self
+    {
+        $this->replaceInStub($this->actionPlaceholders, $value, $stub);
 
         return $this;
     }
@@ -94,7 +123,7 @@ trait FormTrait
      */
     protected function replaceFormCancelUrl(string &$stub) : self
     {
-        $stub = str_replace($this->stubCancelUrlPlaceholders, '/' . $this->argument('name'), $stub);
+        $this->replaceInStub($this->cancelUrlPlaceholders, '/' . $this->argument('name'), $stub);
 
         return $this;
     }

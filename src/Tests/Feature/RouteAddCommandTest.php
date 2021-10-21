@@ -19,10 +19,30 @@ class RouteAddCommandTest extends TestCase
      */
     public $isApi;
 
+    /**
+     * The name of the resource.
+     *
+     * @var string
+     */
+    protected $name = 'name';
+
+    /**
+     * The file location.
+     *
+     * @var string
+     */
+    protected $file;
+
+    /**
+     * The resource route.
+     *
+     * @var string
+     */
+    protected $resourceRoute;
+
     public function setUp() : void
     {
         parent::setUp();
-        $this->name = 'name';
         $this->file = $this->getRouteFile();
         $this->resourceRoute = $this->getResourceRoute();
     }
