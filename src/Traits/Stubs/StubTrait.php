@@ -55,11 +55,13 @@ trait StubTrait
      * @param  array  $variables
      * @param  string  $value
      * @param  string  &$stub
-     * @return void
+     * @return self
      */
-    protected function replaceInStub(array $variables, string $value, string &$stub) : void
+    protected function replaceInStub(array $variables, string $value, string &$stub) : self
     {
         $stub = str_replace($variables, $value, $stub);
+
+        return $this;
     }
 
 }

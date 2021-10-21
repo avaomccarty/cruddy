@@ -3,13 +3,13 @@
 namespace Cruddy\Commands;
 
 use Cruddy\Traits\CommandTrait;
-use Illuminate\Database\Schema\ColumnDefinition;
+use Cruddy\Traits\Stubs\InputTrait;
 use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Foundation\Console\ModelMakeCommand as BaseModelMakeCommand;
 
 class ModelMakeCommand extends BaseModelMakeCommand
 {
-    use CommandTrait;
+    use CommandTrait, InputTrait;
 
     /**
      * The console command name.
@@ -46,7 +46,7 @@ class ModelMakeCommand extends BaseModelMakeCommand
         $stub = $this->files->get($this->getStub());
 
         return $this->replaceNamespace($stub, $name)
-            ->replaceInputs($stub)
+            ->replaceInStub($this->inputPlaceholders, $this->getInputsString(), $stub)
             ->replaceClass($stub, $name);
     }
 }

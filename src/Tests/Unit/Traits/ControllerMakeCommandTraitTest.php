@@ -3,13 +3,22 @@
 namespace Cruddy\Tests\Unit\Traits;
 
 use Cruddy\Tests\TestTrait;
+use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\ControllerMakeCommandTrait;
+use Cruddy\Traits\Stubs\InputTrait;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
 class ControllerMakeCommandTraitTest extends TestCase
 {
-    use ControllerMakeCommandTrait, TestTrait;
+    use ControllerMakeCommandTrait, CommandTrait, InputTrait, TestTrait;
+
+    /**
+     * The inputs for the test.
+     *
+     * @var array
+     */
+    protected $inputs;
 
     public function setUp() : void
     {
@@ -27,31 +36,41 @@ class ControllerMakeCommandTraitTest extends TestCase
         $name = 'name';
         $stubLocation = 'stub-location';
         $stub = $originalStub = 'stub';
+        $resource = 'resource';
+        $inputsString = 'inputsString';
 
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($stub, $stubLocation, $name) {
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($stub, $stubLocation, $name, $resource, $inputsString) {
             $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('getStub')
+                ->andReturn($stubLocation);
+            $mock->shouldReceive('getControllerInputsString')
+                ->with()
+                ->andReturn($inputsString);
             $mock->shouldReceive('option')
                 ->with('model')
                 ->once()
                 ->andReturn(false);
+            $mock->shouldReceive('replaceModel')
+                ->never();
             $mock->shouldReceive('replaceNamespace')
                 ->with($stub, $name)
                 ->once()
                 ->andReturn($mock);
-            $mock->shouldReceive('replaceResource')
-                ->with($stub)
+            $mock->shouldReceive('getResource')
+                ->once()
+                ->andReturn($resource);
+            $mock->shouldReceive('replaceInStub')
+                ->with($this->resourcePlaceholders, $resource, $stub)
                 ->once()
                 ->andReturn($mock);
-            $mock->shouldReceive('replaceControllerInputs')
-                ->with($stub)
+            $mock->shouldReceive('replaceInStub')
+                ->with($this->inputPlaceholders, $inputsString, $stub)
                 ->once()
                 ->andReturn($mock);
             $mock->shouldReceive('replaceClass')
                 ->with($stub, $name)
                 ->once()
                 ->andReturn($mock);
-            $mock->shouldReceive('getStub')
-                ->andReturn($stubLocation);
 
             $filesMock = $this->partialMock(self::class, function (MockInterface $mock) use ($stub, $stubLocation) {
                 $mock->shouldAllowMockingProtectedMethods();
@@ -100,7 +119,7 @@ class ControllerMakeCommandTraitTest extends TestCase
     public function test_replace_model()
     {
         $stub = 'stub';
-        $inputs = $this->inputs;
+        $inputs = $this->getMockColumns();
         $model = 'model';
         $modelClass = 'modelClass';
         $callArguments = [
@@ -124,16 +143,16 @@ class ControllerMakeCommandTraitTest extends TestCase
             $mock->shouldReceive('call')
                 ->with('cruddy:model', $callArguments)
                 ->once();
-            $mock->shouldReceive('replaceModelPlaceholders')
-                ->with($modelClass, $stub)
+            $mock->shouldReceive('replaceInStub')
+                ->with($this->modelPlaceholders, $modelClass, $stub)
                 ->once()
                 ->andReturn($mock);
-            $mock->shouldReceive('replaceModelVariablePlaceholders')
-                ->with($modelClass, $stub)
+            $mock->shouldReceive('replaceInStub')
+                ->with($this->modelVariablePlaceholders, $modelClass, $stub)
                 ->once()
                 ->andReturn($mock);
-            $mock->shouldReceive('replaceFullModelPlaceholders')
-                ->with($modelClass, $stub)
+            $mock->shouldReceive('replaceInStub')
+                ->with($this->fullModelClassPlaceholders, $modelClass, $stub)
                 ->once()
                 ->andReturn($mock);
         });

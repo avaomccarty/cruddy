@@ -41,41 +41,4 @@ trait VueViewMakeCommandTrait {
 
         return '';
     }
-
-    /**
-     * Replace the variable name for the given stub.
-     *
-     * @param  string  &$stub
-     * @return self
-     */
-    protected function replaceVariableName(string &$stub) : self
-    {
-        $type = $this->getType();
-
-        if ($type === 'index') {
-            $variableName = strtolower(Str::pluralStudly($this->getClassName()));
-        } else {
-            $variableName = strtolower($this->getClassName());
-        }
-
-        $this->replaceValuePlaceholders($variableName ?? '', $stub);
-
-        return $this;
-    }
-
-    /**
-     * Replace the model variable for the given stub.
-     *
-     * @param  string  &$stub
-     * @return self
-     */
-    protected function replaceComponentNameVariable(string &$stub) : self
-    {
-        $kebabName = Str::kebab($this->argument('name'));
-        $componentName = $kebabName . '-' . $this->getType();
-
-        $this->replaceStubComponentNamePlaceholders($componentName, $stub);
-
-        return $this;
-    }
 }

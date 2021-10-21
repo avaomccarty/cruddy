@@ -55,17 +55,56 @@ class ViewMakeCommand extends GeneratorCommand
         $name = $this->getNameInput();
         $model = $this->getClassBasename($name);
 
+        if ($this->needsVueFrontend()) {
+            $editUrl = "'/$name/' + item.id + '/edit'";
+        } else {
+            $editUrl = '/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}/edit';
+        }
+
+        $cancelUrl = '/' . $name;
+
+
+        $route = '';
+
+        if ($this->getType() === 'create' || ($this->getType() === 'index' && $this->needsVueFrontend())) {
+            $route = '/' . $name;
+        } else if ($this->getType() === 'edit') {
+            if ($this->needsVueFrontend()) {
+                $route = "'/$name/' + this.item.id";
+            } else {
+                $route = '/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}';
+            }
+        }
+
+
+        $vueDataString = '';
+        $vuePostDataString = '';
+        $componentName = '';
+        if ($this->needsVueFrontend()) {
+            $inputs = $this->argument('inputs');
+
+            foreach ($inputs as $input) {
+                $vueDataString .= $this->getVueDataString($input);
+                $vuePostDataString .= $this->getVuePostDataString($input);
+            }
+
+            $studylyTableName = $this->getStudlySingular($this->getTableName());
+            $ucFirstType = Str::ucfirst($this->getType());
+            $componentName = $studylyTableName . $ucFirstType;
+        }
+
+
         return $this->replaceNamespace($stub, $name)
-            ->replaceInputs($stub)
-            ->replaceFormAction($stub)
-            ->replaceFormEditUrl($stub)
-            ->replaceVariableCollectionPlaceholders($name, $stub)
-            ->replaceVariablePlaceholders($name, $stub)
-            ->replaceFormCancelUrl($stub)
-            ->replaceModelPlaceholders($model, $stub)
-            ->replaceVueComponentName($stub)
-            ->replaceVueData($stub)
-            ->replaceVuePostData($stub)
+            ->replaceInStub($this->inputPlaceholders, $this->getInputsString(), $stub)
+            ->replaceInStub($this->actionPlaceholders, $route, $stub)
+            ->replaceInStub($this->editUrlPlaceholders, $editUrl, $stub)
+            ->replaceInStub($this->variableCollectionPlaceholders, $this->getCamelCasePlural($name), $stub)
+            ->replaceInStub($this->variablePlaceholders, $name, $stub)
+            ->replaceInStub($this->cancelUrlPlaceholders, $cancelUrl, $stub)
+            ->replaceInStub($this->modelPlaceholders, $model, $stub)
+            ->replaceInStub($this->vueComponentPlaceholders, $componentName, $stub)
+            ->replaceInStub($this->vueDataPlaceholders, $vueDataString, $stub)
+            ->replaceInStub($this->vuePostDataPlaceholders, $vuePostDataString, $stub)
             ->replaceClass($stub, $name);
     }
 

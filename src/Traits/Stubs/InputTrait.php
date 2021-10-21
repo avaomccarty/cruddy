@@ -118,19 +118,6 @@ trait InputTrait
     }
 
     /**
-     * Replace the inputs for the given stub.
-     *
-     * @param  string  &$stub
-     * @return self
-     */
-    protected function replaceInputs(string &$stub) : self
-    {
-        $this->replaceInStub($this->inputPlaceholders, $this->getInputsString(), $stub);
-
-        return $this;
-    }
-
-    /**
      * Get the inputs as a string.
      *
      * @return string
@@ -145,7 +132,7 @@ trait InputTrait
 
             if ($key === array_key_last($inputs) && $this->typeNeedsSubmitInput()) {
                 $submitInputFile = $this->getInputFile('submit');
-                $this->replaceValuePlaceholders('Submit', $submitInputFile);
+                $this->replaceInStub($this->valuePlaceholders, 'Submit', $submitInputFile);
                 $inputsString .= $submitInputFile;
             }
         }
@@ -190,9 +177,9 @@ trait InputTrait
         $inputString = $this->getInputAsString($column);
         $replaceString = $this->getReplaceString($column);
 
-        $this->replaceInStub($this->modelNamePlaceholders, $replaceString, $inputString);
-        $this->replaceInStub($this->namePlaceholders, $column['name'], $inputString);
-        $this->replaceInStub($this->dataPlaceholders, $this->getExtraInputInfo($column), $inputString);
+        $this->replaceInStub($this->modelNamePlaceholders, $replaceString, $inputString)
+            ->replaceInStub($this->namePlaceholders, $column['name'], $inputString)
+            ->replaceInStub($this->dataPlaceholders, $this->getExtraInputInfo($column), $inputString);
 
         return str_replace('  ', ' ', $inputString);
     }
@@ -238,17 +225,6 @@ trait InputTrait
         return in_array($this->getType(), $types);
     }
 
-    // /**
-    //  * Replace the placeholders with the submit input within the stub.
-    //  *
-    //  * @param  string  $value
-    //  * @return void
-    //  */
-    // protected function replaceSubmitInputString(string $value) : void
-    // {
-        // $this->replaceValuePlaceholders($value, $this->getInputFile('submit'));
-    // }
-
     /**
      * Get the stub input file.
      *
@@ -284,9 +260,9 @@ trait InputTrait
     {
         $value = '';
         
-        foreach ($this->getExtraInputInfoMapping($column) as $mapping) {
-            if ($mapping[$this->shouldAddExtraInput]) {
-                $this->addExtraInputInfo($value, $mapping[$this->valueToAdd]);
+        foreach ($this->getExtraInputInfoMapping($column) as $extraInputInfo) {
+            if ($extraInputInfo[$this->shouldAddExtraInput]) {
+                $this->addExtraInputInfo($value, $extraInputInfo[$this->valueToAdd]);
             }
         }
 
@@ -398,6 +374,25 @@ trait InputTrait
     protected function isBooleanColumn(ColumnDefinition $column) : bool
     {
         return $column->type === 'boolean' || $column->type === 'tinyInteger';
+    }
+
+    /**
+     * Get the input string for the controller.
+     *
+     * @return string
+     */
+    protected function getControllerInputsString() : string
+    {
+        $inputs = $this->option('inputs') ?? [];
+        $inputsString = '';
+
+        foreach ($inputs as $input) {
+            $inputsString .= $this->getControllerInputString($input);
+        }
+
+        $this->removeEndOfLineFormatting($inputsString);
+
+        return $inputsString;
     }
 
     /**

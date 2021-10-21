@@ -3,11 +3,10 @@
 namespace Cruddy\Traits;
 
 use Cruddy\Traits\Stubs\InputTrait;
-use Cruddy\Traits\Stubs\StubTrait;
 
 trait ModelMakeCommandTrait
 {
-    use CommandTrait, InputTrait, StubTrait;
+    use CommandTrait, InputTrait;
 
     /**
      * Get the stub file.
@@ -32,17 +31,16 @@ trait ModelMakeCommandTrait
         $stub = $this->files->get($this->getStub());
 
         return $this->replaceNamespace($stub, $name)
-            ->replaceModelInputs($stub)
+            ->replaceInStub($this->modelPlaceholders, $this->getModelInputs(), $stub)
             ->replaceClass($stub, $name);
     }
 
     /**
-     * Replace the inputs for the given stub.
+     * Get the model inputs string.
      *
-     * @param  string  &$stub
-     * @return self
+     * @return string
      */
-    protected function replaceModelInputs(string &$stub) : self
+    protected function getModelInputs() : string
     {
         $inputs = $this->getInputs();
         $inputsString = '';
@@ -52,8 +50,7 @@ trait ModelMakeCommandTrait
         }
 
         $this->removeEndOfLineFormatting($inputsString);
-        $this->replaceModelPlaceholders($inputsString, $stub);
 
-        return $this;
+        return $inputsString;
     }
 }

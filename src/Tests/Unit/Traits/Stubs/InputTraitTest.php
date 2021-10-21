@@ -102,37 +102,6 @@ class InputTraitTest extends TestCase
     }
 
     /**
-     * A test to replace the input placeholders within a stub.
-     *
-     * @return void
-     */
-    public function test_replace_inputs()
-    {
-        $expectedStub = $stub = 'stub-';
-        $inputString = 'input-';
-        foreach ($this->inputPlaceholders as $placeholder) {
-            $stub .= $placeholder;
-            $expectedStub .= $inputString;
-        }
-        
-        $originalStub = $stub;
-
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputString) {
-            $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getInputsString')
-                ->once()
-                ->andReturn($inputString);
-        });
-
-        $result = $mock->replaceInputs($stub);
-
-        $this->assertNotSame($originalStub, $stub, 'The stub should have been updated.');
-        $this->assertIsObject($result, 'The result should be an object.');
-        $this->assertInstanceOf(self::class, $result, 'The result has an incorrect instance type.');
-        $this->assertSame($expectedStub, $stub, 'The variables were not replaced correctly within the stub.');
-    }
-
-    /**
      * A test to get the inputs string without inputs.
      *
      * @return void
@@ -229,8 +198,8 @@ class InputTraitTest extends TestCase
                 ->once()
                 ->andReturn($getInputFile);
 
-            $mock->shouldReceive('replaceValuePlaceholders')
-                ->with('Submit', $getInputFile)
+            $mock->shouldReceive('replaceInStub')
+                ->with($this->valuePlaceholders, 'Submit', $getInputFile)
                 ->once();
         });
 
@@ -514,34 +483,6 @@ class InputTraitTest extends TestCase
 
         $this->assertTrue($result, 'The show type should return true when checking if the file is edit or show.');
     }
-
-    // /**
-    //  * A test for getting the submit input string.
-    //  *
-    //  * @return void
-    //  */
-    // public function test_get_submit_input_string()
-    // {
-    //     $originalInputFile = $expectedResult = $inputFile = 'inputFile-';
-
-    //     foreach ($this->valuePlaceholders as $placeholder) {
-    //         $inputFile .= $placeholder;
-    //         $expectedResult .= $this->submitValue;
-    //     }
-
-    //     $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputFile) {
-    //         $mock->shouldAllowMockingProtectedMethods();
-    //         $mock->shouldReceive('getInputFile')
-    //             ->with('submit')
-    //             ->once()
-    //             ->andReturn($inputFile);
-    //     });
-        
-    //     $result = $mock->getSubmitInputString();
-
-    //     $this->assertNotSame($originalInputFile, $result, 'The input file should have been updated.');
-    //     $this->assertSame($expectedResult, $result, 'The submit input string is incorrect.');
-    // }
 
     /**
      * A test getting the input stub.

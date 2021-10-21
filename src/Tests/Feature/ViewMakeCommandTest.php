@@ -97,13 +97,13 @@ class ViewMakeCommandTest extends TestCase
     {
         switch ($type) {
             case 'edit':
-                return 13 + $inputsCount;
-                break;
-            case 'show':
                 return 11 + $inputsCount;
                 break;
+            case 'show':
+                return 9 + $inputsCount;
+                break;
             default:
-                return 8 + $inputsCount;
+                return 6 + $inputsCount;
                 break;
         }
     }

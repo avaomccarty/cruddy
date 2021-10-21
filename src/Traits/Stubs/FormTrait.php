@@ -51,79 +51,19 @@ trait FormTrait
     protected function replaceFormAction(string &$stub) : self
     {
         $name = $this->argument('name');
+        $route = '';
 
         if ($this->getType() === 'create' || ($this->getType() === 'index' && $this->needsVueFrontend())) {
-            $this->replaceActionPlaceholders('/' . $name, $stub);
+            $route = '/' . $name;
         } else if ($this->getType() === 'edit') {
             if ($this->needsVueFrontend()) {
                 $route = "'/$name/' + this.item.id";
-                $this->replaceActionPlaceholders($route, $stub);
             } else {
-                $this->replaceActionPlaceholders('/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}', $stub);
+                $route = '/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}';
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * Replace the editUrl for the the edit button.
-     *
-     * @param  string  &$stub
-     * @return self
-     */
-    protected function replaceFormEditUrl(string &$stub) : self
-    {
-        $name = $this->argument('name');
-
-        if ($this->needsVueFrontend()) {
-            $editUrl = "'/$name/' + item.id + '/edit'";
-            $this->replaceEditUrlPlaceholders($editUrl, $stub);
-        } else {
-            $editUrl = '/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}/edit';
-            $this->replaceEditUrlPlaceholders($editUrl, $stub);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Replace the editUrlPlaceholders with the provided value within the stub.
-     *
-     * @param  string  $value
-     * @param  string  &$stub
-     * @return self
-     */
-    protected function replaceEditUrlPlaceholders(string $value, string &$stub) : self
-    {
-        $this->replaceInStub($this->editUrlPlaceholders, $value, $stub);
-
-        return $this;
-    }
-
-    /**
-     * Replace the actionPlaceholders with the provided value within the stub.
-     *
-     * @param  string  $value
-     * @param  string  &$stub
-     * @return self
-     */
-    protected function replaceActionPlaceholders(string $value, string &$stub) : self
-    {
-        $this->replaceInStub($this->actionPlaceholders, $value, $stub);
-
-        return $this;
-    }
-
-    /**
-     * Replace the cancelUrl for the the cancel button.
-     *
-     * @param  string  &$stub
-     * @return self
-     */
-    protected function replaceFormCancelUrl(string &$stub) : self
-    {
-        $this->replaceInStub($this->cancelUrlPlaceholders, '/' . $this->argument('name'), $stub);
+        
+        $this->replaceInStub($this->actionPlaceholders, $route, $stub);
 
         return $this;
     }

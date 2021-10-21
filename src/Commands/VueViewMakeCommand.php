@@ -58,10 +58,21 @@ class VueViewMakeCommand extends GeneratorCommand
     {
         $stub = $this->files->get($this->getStub());
 
+        $type = $this->getType();
+
+        if ($type === 'index') {
+            $variableName = strtolower(Str::pluralStudly($this->getClassName()));
+        } else {
+            $variableName = strtolower($this->getClassName());
+        }
+
+        $kebabName = Str::kebab($this->argument('name'));
+        $componentName = $kebabName . '-' . $this->getType();
+
         return $this->replaceNamespace($stub, $name)
-            ->replaceComponentNameVariable($stub)
-            ->replaceProps($stub)
-            ->replaceVariableName($stub)
+            ->replaceInStub($this->componentNamePlaceholders, $componentName, $stub)
+            ->replaceInStub($this->vuePropsPlaceholders, $this->getPropsString(), $stub)
+            ->replaceInStub($this->valuePlaceholders, $variableName ?? '', $stub)
             ->replaceClass($stub, $name);
     }
 

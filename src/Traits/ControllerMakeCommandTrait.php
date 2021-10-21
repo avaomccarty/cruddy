@@ -3,11 +3,10 @@
 namespace Cruddy\Traits;
 
 use Cruddy\Traits\Stubs\InputTrait;
-use Cruddy\Traits\Stubs\ResourceTrait;
 
 trait ControllerMakeCommandTrait
 {
-    use CommandTrait, ResourceTrait, InputTrait;
+    use CommandTrait, InputTrait;
 
     /**
      * The formatting at the end of the line.
@@ -38,14 +37,15 @@ trait ControllerMakeCommandTrait
     protected function buildClass($name) : string
     {
         $stub = $this->files->get($this->getStub());
+        $inputsString = $this->getControllerInputsString();
 
         if ($this->option('model')) {
             $this->replaceModel($stub, $name);
         }
 
         return $this->replaceNamespace($stub, $name)
-            ->replaceResource($stub)
-            ->replaceControllerInputs($stub)
+            ->replaceInStub($this->resourcePlaceholders, $this->getResource(), $stub)
+            ->replaceInStub($this->inputPlaceholders, $inputsString, $stub)
             ->replaceClass($stub, $name);
     }
 
@@ -77,36 +77,9 @@ trait ControllerMakeCommandTrait
         }
 
         $modelClassName = $this->getClassBasename($modelClass);
-
-        $this->replaceModelPlaceholders($modelClassName, $stub)
-            ->replaceModelVariablePlaceholders($modelClassName, $stub)
-            ->replaceFullModelPlaceholders($modelClass, $stub);
-
-        return $this;
-    }
-
-    /**
-     * Replace the inputs for the given stub.
-     *
-     * @param  string  &$stub
-     * @return self
-     */
-    protected function replaceControllerInputs(string &$stub) : self
-    {
-        $inputs = $this->option('inputs');
-        $inputsString = '';
-
-        foreach ($inputs as $input) {
-            $inputsString .= $this->getControllerInputString($input);
-        }
-
-        if (count($inputs) > 0) {
-            // Remove extra formatting at the end of string
-            $inputsString = substr($inputsString, 0, strlen($inputsString) - 5);
-        }
-
-        $this->replaceInStub($this->inputPlaceholders, $inputsString, $stub);
-
-        return $this;
+        
+        return $this->replaceInStub($this->modelPlaceholders, $modelClassName, $stub)
+            ->replaceInStub($this->modelVariablePlaceholders, $modelClassName, $stub)
+            ->replaceInStub($this->fullModelClassPlaceholders, $modelClass, $stub);
     }
 }
