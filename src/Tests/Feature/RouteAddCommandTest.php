@@ -24,7 +24,7 @@ class RouteAddCommandTest extends TestCase
      *
      * @var string
      */
-    protected $name = 'name';
+    protected $name;
 
     /**
      * The file location.
@@ -43,6 +43,7 @@ class RouteAddCommandTest extends TestCase
     public function setUp() : void
     {
         parent::setUp();
+        $this->name = 'name';
         $this->file = $this->getRouteFile();
         $this->resourceRoute = $this->getResourceRoute();
     }
