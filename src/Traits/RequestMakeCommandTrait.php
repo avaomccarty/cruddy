@@ -30,16 +30,6 @@ trait RequestMakeCommandTrait
     }
 
     /**
-     * Get the type of request.
-     *
-     * @return string
-     */
-    protected function getType() : string
-    {
-        return (string)$this->argument('type');
-    }
-
-    /**
      * Get the desired class name from the input.
      *
      * @return string

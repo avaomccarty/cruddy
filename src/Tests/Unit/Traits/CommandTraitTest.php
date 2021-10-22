@@ -335,4 +335,26 @@ class CommandTraitTest extends TestCase
         $this->assertSame($expectedResult, $result, 'The stub is incorrect.');
     }
 
+    /**
+     * A test for getting the name string.
+     *
+     * @return void
+     */
+    public function test_get_name_string()
+    {
+        $expectedResult = $name = 'name';
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($name) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('argument')
+                ->with('name')
+                ->once()
+                ->andReturn($name);
+        });
+        
+        $result = $mock->getNameString();
+
+        $this->assertSame($expectedResult, $result, 'The name is incorrect.');
+    }
+
 }

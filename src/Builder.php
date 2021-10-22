@@ -7,7 +7,6 @@ use Closure;
 use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\ConfigTrait;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Str;
 
 class Builder extends BaseBuilder
 {

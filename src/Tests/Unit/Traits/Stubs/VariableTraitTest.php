@@ -41,4 +41,102 @@ class VariableTraitTest extends TestCase
 
         $this->assertSame($expectedResult, $result);
     }
+
+    /**
+     * A test for getting the Vue variable name for the index type.
+     *
+     * @return void
+     */
+    public function test_get_vue_variable_name_for_index_type()
+    {
+        $className = 'className';
+        $expectedResult = 'classnames';
+        $type = 'index';
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($className) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('getClassName')
+                ->once()
+                ->andReturn($className);
+        });
+        
+        $result = $mock->getVueVariableName($type);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * A test for getting the Vue variable name for any non-index type.
+     *
+     * @return void
+     */
+    public function test_get_vue_variable_name_for_non_index_type()
+    {
+        $className = 'className';
+        $expectedResult = 'classname';
+        $type = 'non-index';
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($className) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('getClassName')
+                ->once()
+                ->andReturn($className);
+        });
+        
+        $result = $mock->getVueVariableName($type);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+
+    /**
+     * A test to get the edit URL for any non-Vue frontend.
+     *
+     * @return void
+     */
+    public function test_get_edit_url_for_non_vue_frontend()
+    {
+        $name = 'name';
+        $camelCaseSingular = 'camelCaseSingular';
+        $expectedResult = '/' . $name . '/{{ $' . $camelCaseSingular . '->id }}/edit';
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($name, $camelCaseSingular) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('needsVueFrontend')
+                ->once()
+                ->andReturn(false);
+            $mock->shouldReceive('getCamelCaseSingular')
+                ->with($name)
+                ->once()
+                ->andReturn($camelCaseSingular);
+        });
+
+        $result = $mock->getEditUrl($name);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * A test to get the edit URL for any Vue frontend.
+     *
+     * @return void
+     */
+    public function test_get_edit_url_for_vue_frontend()
+    {
+        $name = 'name';
+        $expectedResult = "'/$name/' + item.id + '/edit'";
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('needsVueFrontend')
+                ->once()
+                ->andReturn(true);
+            $mock->shouldReceive('getCamelCaseSingular')
+                ->never();
+        });
+
+        $result = $mock->getEditUrl($name);
+
+        $this->assertSame($expectedResult, $result);
+    }
 }

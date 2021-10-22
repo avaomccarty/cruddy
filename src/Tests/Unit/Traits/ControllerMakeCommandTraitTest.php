@@ -128,16 +128,14 @@ class ControllerMakeCommandTraitTest extends TestCase
         ];
         $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($model, $modelClass, $inputs, $stub, $callArguments) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('option')
-                ->with('model')
+            $mock->shouldReceive('getModel')
                 ->once()
                 ->andReturn($model);
             $mock->shouldReceive('parseModel')
                 ->with($model)
                 ->once()
                 ->andReturn($modelClass);
-            $mock->shouldReceive('option')
-                ->with('inputs')
+            $mock->shouldReceive('getInputs')
                 ->once()
                 ->andReturn($inputs);
             $mock->shouldReceive('call')
@@ -161,5 +159,27 @@ class ControllerMakeCommandTraitTest extends TestCase
 
         $this->assertIsObject($result, 'The result from replacing the model was not an object.');
         $this->assertInstanceOf(self::class, $result, 'The result of replacing the model did not return an instance of the correct class.');
+    }
+
+    /**
+     * A test for getting the model.
+     *
+     * @return void
+     */
+    public function test_get_model()
+    {
+        $expectedResult = $model = 'model';
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($model) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('option')
+                ->with('model')
+                ->once()
+                ->andReturn($model);
+        });
+        
+        $result = $mock->getModel();
+
+        $this->assertSame($expectedResult, $result, 'The model is incorrect.');
     }
 }

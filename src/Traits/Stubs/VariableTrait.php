@@ -2,11 +2,12 @@
 
 namespace Cruddy\Traits\Stubs;
 
+use Cruddy\Traits\ConfigTrait;
 use Illuminate\Support\Str;
 
 trait VariableTrait
 {
-    use StubTrait;
+    use StubTrait, ConfigTrait;
 
     /**
      * The acceptable value placeholders within a stub.
@@ -72,5 +73,36 @@ trait VariableTrait
     protected function getCamelCasePlural(string $value) : string
     {
         return lcfirst(Str::pluralStudly(trim($value))) ?? '';
+    }
+
+    /**
+     * Get the Vue variable name.
+     *
+     * @param  string  $type
+     * @return string
+     */
+    public function getVueVariableName(string $type = 'index') : string
+    {
+        // Note: This feels like it should belong somehwere else since this trait is unaware of the getClassName method.
+        if ($type === 'index') {
+            return strtolower(Str::pluralStudly($this->getClassName()));
+        }
+        
+        return strtolower($this->getClassName()); 
+    }
+
+    /**
+     * Get the edit URL from the name.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    protected function getEditUrl(string $name) : string
+    {
+        if ($this->needsVueFrontend()) {
+            return "'/$name/' + item.id + '/edit'";
+        }
+
+        return '/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}/edit';
     }
 }

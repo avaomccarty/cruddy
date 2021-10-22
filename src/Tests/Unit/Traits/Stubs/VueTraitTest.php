@@ -72,4 +72,28 @@ class VueTraitTest extends TestCase
 
         $this->assertSame($expectedResult, $result, 'The Vue post data string was incorrect.');
     }
+
+    /**
+     * A test for getting the component name.
+     *
+     * @return void
+     */
+    public function test_get_component_name()
+    {
+        $name = 'nameForTest';
+        $type = 'type';
+        $expectedResult = 'name-for-test-' . $type;
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($type) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('getType')
+                ->once()
+                ->andReturn($type);
+        });
+        
+        $result = $mock->getComponentName($name);
+
+        $this->assertIsString($result);
+        $this->assertSame($expectedResult, $result);
+    }
 }

@@ -110,9 +110,9 @@ trait InputTrait
     /**
      * Get the inputs.
      *
-     * @return array
+     * @return mixed
      */
-    protected function getInputs() : array
+    protected function getInputs() : mixed
     {
         return $this->argument('inputs') ?? [];
     }

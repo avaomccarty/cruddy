@@ -44,7 +44,7 @@ class RequestMakeCommand extends GeneratorCommand
      */
     protected function buildClass($name) : string
     {
-        $stub = $this->files->get($this->getStub());
+        $stub = $this->getStubFile();
 
         return $this->replaceNamespace($stub, $name)
             ->replaceRules($stub)
@@ -63,5 +63,15 @@ class RequestMakeCommand extends GeneratorCommand
             ['type', InputArgument::OPTIONAL, 'The type of request class'],
             ['rules', InputArgument::OPTIONAL, 'The validation rules of request class'],
         ];
+    }
+
+    /**
+     * Get the stub file for the generator.
+     *
+     * @return string
+     */
+    protected function getStub() : string
+    {
+        return $this->resolveStubPath($this->getStubsLocation() . '/request.stub');
     }
 }

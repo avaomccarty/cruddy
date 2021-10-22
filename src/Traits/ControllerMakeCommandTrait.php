@@ -36,10 +36,10 @@ trait ControllerMakeCommandTrait
      */
     protected function buildClass($name) : string
     {
-        $stub = $this->files->get($this->getStub());
+        $stub = $this->getStubFile();
         $inputsString = $this->getControllerInputsString();
 
-        if ($this->option('model')) {
+        if ($this->getModel()) {
             $this->replaceModel($stub, $name);
         }
 
@@ -56,7 +56,7 @@ trait ControllerMakeCommandTrait
      */
     protected function getResource() : string
     {
-        return str_ireplace('controller', '', $this->argument('name'));
+        return str_ireplace('controller', '', $this->getNameString());
     }
 
     /**
@@ -67,12 +67,12 @@ trait ControllerMakeCommandTrait
      */
     protected function replaceModel(string &$stub) : self
     {
-        $modelClass = $this->parseModel($this->option('model'));
+        $modelClass = $this->parseModel($this->getModel());
 
         if (! class_exists($modelClass)) {
             $this->call('cruddy:model', [
                 'name' => $modelClass,
-                '--inputs' => $this->option('inputs'),
+                '--inputs' => $this->getInputs(),
             ]);
         }
 
@@ -81,5 +81,15 @@ trait ControllerMakeCommandTrait
         return $this->replaceInStub($this->modelPlaceholders, $modelClassName, $stub)
             ->replaceInStub($this->modelVariablePlaceholders, $modelClassName, $stub)
             ->replaceInStub($this->fullModelClassPlaceholders, $modelClass, $stub);
+    }
+
+    /**
+     * Get the model.
+     *
+     * @return string
+     */
+    protected function getModel() : string
+    {
+        return (string)$this->option('model') ?? '';
     }
 }

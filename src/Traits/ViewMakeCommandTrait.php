@@ -3,6 +3,8 @@
 namespace Cruddy\Traits;
 trait ViewMakeCommandTrait
 {
+    use ConfigTrait;
+
     /**
      * Get the default namespace for the class.
      *
@@ -13,5 +15,4 @@ trait ViewMakeCommandTrait
     {
         return $rootNamespace . '\resources\views';
     }
-
 }

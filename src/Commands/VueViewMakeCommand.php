@@ -2,6 +2,7 @@
 
 namespace Cruddy\Commands;
 
+use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\Stubs\VueTrait;
 use Cruddy\Traits\VueViewMakeCommandTrait;
 use Illuminate\Console\GeneratorCommand;
@@ -10,7 +11,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class VueViewMakeCommand extends GeneratorCommand
 {
-    use VueViewMakeCommandTrait, VueTrait;
+    use VueViewMakeCommandTrait, VueTrait, CommandTrait;
 
     /**
      * The console command signature.
@@ -56,22 +57,15 @@ class VueViewMakeCommand extends GeneratorCommand
      */
     protected function buildClass($name) : string
     {
-        $stub = $this->files->get($this->getStub());
-
+        $stub = $this->getStubFile();
         $type = $this->getType();
-
-        if ($type === 'index') {
-            $variableName = strtolower(Str::pluralStudly($this->getClassName()));
-        } else {
-            $variableName = strtolower($this->getClassName());
-        }
-
-        $kebabName = Str::kebab($this->argument('name'));
-        $componentName = $kebabName . '-' . $this->getType();
+        $variableName = $this->getVueVariableName($type);
+        $componentName = $this->getComponentName();
+        $propsString = $this->getPropsString();
 
         return $this->replaceNamespace($stub, $name)
             ->replaceInStub($this->componentNamePlaceholders, $componentName, $stub)
-            ->replaceInStub($this->vuePropsPlaceholders, $this->getPropsString(), $stub)
+            ->replaceInStub($this->vuePropsPlaceholders, $propsString, $stub)
             ->replaceInStub($this->valuePlaceholders, $variableName ?? '', $stub)
             ->replaceClass($stub, $name);
     }

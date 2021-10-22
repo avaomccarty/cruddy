@@ -43,7 +43,7 @@ class ModelMakeCommand extends BaseModelMakeCommand
      */
     protected function buildClass($name) : string
     {
-        $stub = $this->files->get($this->getStub());
+        $stub = $this->getStubFile();
 
         return $this->replaceNamespace($stub, $name)
             ->replaceInStub($this->inputPlaceholders, $this->getInputsString(), $stub)

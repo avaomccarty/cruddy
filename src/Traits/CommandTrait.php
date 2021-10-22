@@ -50,21 +50,30 @@ trait CommandTrait
      */
     protected function getType() : string
     {
+        $type = $this->argument('type') ?? '';
         if (isset($this->types) && is_array($this->types)) {
-            if (in_array($this->argument('type'), $this->types)) {
-                return $this->argument('type');
-            }
-
-            return $this->types[0];
+            return $this->isValidType($type, $this->types) ? $type : $this->types[0];
         }
 
-        if ($this->argument('type')) {
-            if (in_array($this->argument('type'), $this->getDefaultTypes())) {
-                return $this->argument('type');
+        if ($type) {
+            if ($this->isValidType($type, $this->getDefaultTypes())) {
+                return $type;
             }
         }
 
         return $this->getDefaultTypes()[0];
+    }
+
+    /**
+     * Determine if the type is valid.
+     *
+     * @param  string  $type
+     * @param  array  $types
+     * @return boolean
+     */
+    protected function isValidType(string $type, array $types = []) : bool
+    {
+        return in_array($type, $types);
     }
 
     /**
@@ -96,6 +105,16 @@ trait CommandTrait
     }
 
     /**
+     * Get the stub file.
+     *
+     * @return string
+     */
+    protected function getStubFile() : string
+    {
+        return $this->files->get($this->getStub());
+    }
+
+    /**
      * Resolve the fully-qualified path to the stub.
      *
      * @param  string  $stub
@@ -106,5 +125,15 @@ trait CommandTrait
         return File::exists($customPath = base_path(trim($stub, '/')))
             ? $customPath
             : dirname(__DIR__) . '/Commands/' . $stub;
+    }
+
+    /**
+     * Get the name.
+     *
+     * @return string
+     */
+    protected function getNameString() : string
+    {
+        return (string)$this->argument('name') ?? '';
     }
 }

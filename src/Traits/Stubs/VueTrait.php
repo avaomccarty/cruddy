@@ -109,4 +109,16 @@ trait VueTrait
 
         return str_replace('  ', ' ', $vueDataString);
     }
+
+    /**
+     * Get the component name.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    protected function getComponentName(string $name) : string
+    {
+        $kebabName = Str::kebab($name);
+        return $kebabName . '-' . $this->getType();
+    }
 }

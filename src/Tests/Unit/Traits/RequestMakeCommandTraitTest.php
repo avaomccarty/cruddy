@@ -28,27 +28,6 @@ class RequestMakeCommandTraitTest extends TestCase
     }
 
     /**
-     * A test to get the type.
-     *
-     * @return void
-     */
-    public function test_get_type()
-    {
-        $type = 'type';
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($type) {
-            $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('argument')
-                ->with('type')
-                ->once()
-                ->andReturn($type);
-        });
-
-        $result = $mock->getType();
-
-        $this->assertSame($type, $result, 'The type does not match.');
-    }
-
-    /**
      * A test to get the name input.
      *
      * @return void

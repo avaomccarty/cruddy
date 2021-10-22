@@ -28,10 +28,11 @@ trait ModelMakeCommandTrait
      */
     protected function buildClass($name) : string
     {
-        $stub = $this->files->get($this->getStub());
+        $stub = $this->getStubFile();
+        $modelInputs = $this->getModelInputs();
 
         return $this->replaceNamespace($stub, $name)
-            ->replaceInStub($this->modelPlaceholders, $this->getModelInputs(), $stub)
+            ->replaceInStub($this->modelPlaceholders, $modelInputs, $stub)
             ->replaceClass($stub, $name);
     }
 

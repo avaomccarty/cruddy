@@ -8,13 +8,14 @@ use Cruddy\Traits\Stubs\ModelTrait;
 use Cruddy\Traits\Stubs\VariableTrait;
 use Cruddy\Traits\Stubs\VueTrait;
 use Cruddy\Traits\ViewMakeCommandTrait;
+use Cruddy\Traits\VueCommandTrait;
 use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Support\Str;
 
 class ViewMakeCommand extends GeneratorCommand
 {
-    use ViewMakeCommandTrait, ModelTrait, VariableTrait, CommandTrait, FormTrait, VueTrait;
+    use ViewMakeCommandTrait, ModelTrait, VariableTrait, FormTrait, VueTrait, VueCommandTrait;
 
     /**
      * The console command signature.
@@ -51,52 +52,29 @@ class ViewMakeCommand extends GeneratorCommand
      */
     protected function buildClass($name) : string
     {
-        $stub = $this->files->get($this->getStub());
+        $stub = $this->getStubFile();
         $name = $this->getNameInput();
         $model = $this->getClassBasename($name);
-
-        if ($this->needsVueFrontend()) {
-            $editUrl = "'/$name/' + item.id + '/edit'";
-        } else {
-            $editUrl = '/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}/edit';
-        }
-
+        $editUrl = $this->getEditUrl($name);
         $cancelUrl = '/' . $name;
-
-
-        $route = '';
-
-        if ($this->getType() === 'create' || ($this->getType() === 'index' && $this->needsVueFrontend())) {
-            $route = '/' . $name;
-        } else if ($this->getType() === 'edit') {
-            if ($this->needsVueFrontend()) {
-                $route = "'/$name/' + this.item.id";
-            } else {
-                $route = '/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}';
-            }
-        }
-
-
+        $actionRoute = $this->getActionRoute($name);
         $vueDataString = '';
         $vuePostDataString = '';
-        $componentName = '';
+        
         if ($this->needsVueFrontend()) {
             $inputs = $this->argument('inputs');
-
+            
             foreach ($inputs as $input) {
                 $vueDataString .= $this->getVueDataString($input);
                 $vuePostDataString .= $this->getVuePostDataString($input);
             }
-
-            $studylyTableName = $this->getStudlySingular($this->getTableName());
-            $ucFirstType = Str::ucfirst($this->getType());
-            $componentName = $studylyTableName . $ucFirstType;
         }
 
+        $componentName = $this->getStudlyComponentName($name);
 
         return $this->replaceNamespace($stub, $name)
             ->replaceInStub($this->inputPlaceholders, $this->getInputsString(), $stub)
-            ->replaceInStub($this->actionPlaceholders, $route, $stub)
+            ->replaceInStub($this->actionPlaceholders, $actionRoute, $stub)
             ->replaceInStub($this->editUrlPlaceholders, $editUrl, $stub)
             ->replaceInStub($this->variableCollectionPlaceholders, $this->getCamelCasePlural($name), $stub)
             ->replaceInStub($this->variablePlaceholders, $name, $stub)
@@ -129,7 +107,7 @@ class ViewMakeCommand extends GeneratorCommand
         $name = Str::replaceFirst($this->rootNamespace(), '', $name);
         $name = strtolower($name);
 
-        if ($this->needsVueFrontend(true)) {
+        if ($this->needsVueFrontend()) {
             return $this->getVueFolder() . '/' . $this->getClassName() . '/' . $this->getType() . '.vue';
         }
 
