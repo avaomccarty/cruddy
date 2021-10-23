@@ -386,7 +386,7 @@ class RuleTraitTest extends TestCase
             $expectedRulesString .= $rule->name;
         }
 
-        foreach ($this->rulePlaceholders as $placeholder) {
+        foreach ($this->rulesPlaceholders as $placeholder) {
             $stub .= $placeholder;
             $expectedStub .= $expectedRulesString;
         }

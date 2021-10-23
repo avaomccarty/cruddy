@@ -84,7 +84,7 @@ class RequestMakeCommandTest extends TestCase
 
         
         // Assert that the expected request file does not have any stub rule placeholders remaining
-        foreach ($this->rulePlaceholders as $placeholder) {
+        foreach ($this->rulesPlaceholders as $placeholder) {
             $this->assertFalse(strpos($expectedRequestFile, $placeholder));
         }
     }

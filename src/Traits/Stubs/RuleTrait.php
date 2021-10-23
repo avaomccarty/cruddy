@@ -28,7 +28,7 @@ trait RuleTrait
      *
      * @var array
      */
-    protected $rulePlaceholders = [
+    protected $rulesPlaceholders = [
         'DummyRules',
         '{{ rules }}',
         '{{rules}}'
@@ -168,7 +168,7 @@ trait RuleTrait
 
         $this->removeEndOfLineFormatting($rulesString);
 
-        $this->replaceInStub($this->rulePlaceholders, $rulesString, $stub);
+        $this->replaceInStub($this->rulesPlaceholders, $rulesString, $stub);
     }
 
     /**
