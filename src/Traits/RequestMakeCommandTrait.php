@@ -37,7 +37,7 @@ trait RequestMakeCommandTrait
     protected function getNameInput() : string
     {
         $type = $this->getType();
-        $name = $this->argument('name');
+        $name = $this->getResourceName();
 
         return $this->getStudlySingular($type) . $this->getStudlySingular($name);
     }

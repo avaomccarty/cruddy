@@ -35,23 +35,4 @@ trait ModelMakeCommandTrait
             ->replaceInStub($this->modelPlaceholders, $modelInputs, $stub)
             ->replaceClass($stub, $name);
     }
-
-    /**
-     * Get the model inputs string.
-     *
-     * @return string
-     */
-    protected function getModelInputs() : string
-    {
-        $inputs = $this->getInputs();
-        $inputsString = '';
-
-        foreach ($inputs as $input) {
-            $inputsString .= $this->getInputString($input);
-        }
-
-        $this->removeEndOfLineFormatting($inputsString);
-
-        return $inputsString;
-    }
 }

@@ -96,4 +96,40 @@ class VueTraitTest extends TestCase
         $this->assertIsString($result);
         $this->assertSame($expectedResult, $result);
     }
+
+    /**
+     * A test to replace the Vue data.
+     *
+     * @return void
+     */
+    public function test_replace_vue_data()
+    {
+        $inputs = $this->getMockColumns();
+        $originalVueDataString = $expectedVueDataString = '';
+        $originalVuePostDataString = $expectedVuePostDataString = '';
+
+        foreach ($inputs as $input) {
+            $expectedVueDataString .= $input->name;
+            $expectedVuePostDataString .= $input->name;
+        }
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputs) {
+            $mock->shouldAllowMockingProtectedMethods();
+            foreach ($inputs as $input) {
+                $mock->shouldReceive('getVueDataString')
+                    ->with($input)
+                    ->once()
+                    ->andReturn($input->name);
+                $mock->shouldReceive('getVuePostDataString')
+                    ->with($input)
+                    ->once()
+                    ->andReturn($input->name);
+            }
+        });
+        
+        $mock->replaceVueData($inputs, $originalVueDataString, $originalVuePostDataString);
+
+        $this->assertSame($expectedVueDataString, $originalVueDataString);
+        $this->assertSame($expectedVuePostDataString, $originalVuePostDataString);
+    }
 }

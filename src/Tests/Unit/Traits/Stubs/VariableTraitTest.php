@@ -43,53 +43,6 @@ class VariableTraitTest extends TestCase
     }
 
     /**
-     * A test for getting the Vue variable name for the index type.
-     *
-     * @return void
-     */
-    public function test_get_vue_variable_name_for_index_type()
-    {
-        $className = 'className';
-        $expectedResult = 'classnames';
-        $type = 'index';
-
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($className) {
-            $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getClassName')
-                ->once()
-                ->andReturn($className);
-        });
-        
-        $result = $mock->getVueVariableName($type);
-
-        $this->assertSame($expectedResult, $result);
-    }
-
-    /**
-     * A test for getting the Vue variable name for any non-index type.
-     *
-     * @return void
-     */
-    public function test_get_vue_variable_name_for_non_index_type()
-    {
-        $className = 'className';
-        $expectedResult = 'classname';
-        $type = 'non-index';
-
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($className) {
-            $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getClassName')
-                ->once()
-                ->andReturn($className);
-        });
-        
-        $result = $mock->getVueVariableName($type);
-
-        $this->assertSame($expectedResult, $result);
-    }
-
-
-    /**
      * A test to get the edit URL for any non-Vue frontend.
      *
      * @return void

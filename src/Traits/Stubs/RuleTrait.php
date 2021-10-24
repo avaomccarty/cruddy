@@ -60,16 +60,6 @@ trait RuleTrait
     }
 
     /**
-     * Get the rules.
-     *
-     * @return array
-     */
-    public function getRules() : array
-    {
-        return (array)$this->argument('rules') ?? [];
-    }
-
-    /**
      * Get a validation rule string from a rule.
      *
      * @param  ColumnDefinition  $rule

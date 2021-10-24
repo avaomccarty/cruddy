@@ -76,22 +76,6 @@ trait VariableTrait
     }
 
     /**
-     * Get the Vue variable name.
-     *
-     * @param  string  $type
-     * @return string
-     */
-    public function getVueVariableName(string $type = 'index') : string
-    {
-        // Note: This feels like it should belong somehwere else since this trait is unaware of the getClassName method.
-        if ($type === 'index') {
-            return strtolower(Str::pluralStudly($this->getClassName()));
-        }
-        
-        return strtolower($this->getClassName()); 
-    }
-
-    /**
      * Get the edit URL from the name.
      *
      * @param  string  $name

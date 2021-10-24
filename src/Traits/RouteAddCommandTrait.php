@@ -70,23 +70,13 @@ trait RouteAddCommandTrait
     }
 
     /**
-     * Get the resource name.
-     *
-     * @return string
-     */
-    protected function getResourceName() : string
-    {
-        return $this->argument('name') ?? '';
-    }
-
-    /**
      * Get the type of route resource needed.
      *
      * @return string
      */
     protected function getResourceType() : string
     {
-        return $this->option('api') ? 'apiResource' : $this->defaultResourceType;
+        return $this->getApi() ? 'apiResource' : $this->defaultResourceType;
     }
 
     /**
@@ -96,7 +86,7 @@ trait RouteAddCommandTrait
      */
     protected function getRouteFileName() : string
     {
-        return $this->option('api') ? 'api' : $this->defaultRouteFileName;
+        return $this->getApi() ? 'api' : $this->defaultRouteFileName;
     }
 
     /**

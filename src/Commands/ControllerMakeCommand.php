@@ -40,7 +40,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      */
     protected function getStub() : string
     {
-        if ($this->option('api')) {
+        if ($this->getApi()) {
             return $this->resolveStubPath($this->getStubsLocation() . '/controller.api.stub');
         }
 

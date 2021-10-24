@@ -108,16 +108,6 @@ trait InputTrait
     }
 
     /**
-     * Get the inputs.
-     *
-     * @return mixed
-     */
-    protected function getInputs() : mixed
-    {
-        return $this->argument('inputs') ?? [];
-    }
-
-    /**
      * Get the inputs as a string.
      *
      * @return string
@@ -305,7 +295,7 @@ trait InputTrait
      */
     protected function getValueFromColumn(ColumnDefinition $column)
     {
-        return 'value="{{ $' . $this->getCamelCaseSingular($this->argument('name')) . '->' . $column['name'] . ' }}"';
+        return 'value="{{ $' . $this->getCamelCaseSingular($this->getResourceName()) . '->' . $column['name'] . ' }}"';
     }
 
     /**
@@ -383,7 +373,7 @@ trait InputTrait
      */
     protected function getControllerInputsString() : string
     {
-        $inputs = $this->option('inputs') ?? [];
+        $inputs = $this->getInputs() ?? [];
         $inputsString = '';
 
         foreach ($inputs as $input) {
@@ -434,5 +424,36 @@ trait InputTrait
     protected function isIdColumn(ColumnDefinition $input) : bool
     {
         return $input->name === 'id';
+    }
+
+    /**
+     * Get the model inputs string.
+     *
+     * @return string
+     */
+    protected function getModelInputs() : string
+    {
+        $inputs = $this->getInputs();
+
+        return $this->getModelInputsString($inputs);
+    }
+
+    /**
+     * Get the iput string from the inputs.
+     *
+     * @param  array  $inputs
+     * @return string
+     */
+    protected function getModelInputsString(array $inputs) : string
+    {
+        $inputsString = '';
+
+        foreach ($inputs as $input) {
+            $inputsString .= $this->getInputString($input);
+        }
+
+        $this->removeEndOfLineFormatting($inputsString);
+
+        return $inputsString;
     }
 }

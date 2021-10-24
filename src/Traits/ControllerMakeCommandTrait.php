@@ -82,14 +82,4 @@ trait ControllerMakeCommandTrait
             ->replaceInStub($this->modelVariablePlaceholders, $modelClassName, $stub)
             ->replaceInStub($this->fullModelClassPlaceholders, $modelClass, $stub);
     }
-
-    /**
-     * Get the model.
-     *
-     * @return string
-     */
-    protected function getModel() : string
-    {
-        return (string)$this->option('model') ?? '';
-    }
 }

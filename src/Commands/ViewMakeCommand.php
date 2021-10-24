@@ -62,15 +62,8 @@ class ViewMakeCommand extends GeneratorCommand
         $vuePostDataString = '';
         
         if ($this->needsVueFrontend()) {
-            $inputs = $this->argument('inputs');
-            
-            foreach ($inputs as $input) {
-                $vueDataString .= $this->getVueDataString($input);
-                $vuePostDataString .= $this->getVuePostDataString($input);
-            }
+            $this->replaceVueData($this->getInputs(), $vueDataString, $vuePostDataString);
         }
-
-        $componentName = $this->getStudlyComponentName($name);
 
         return $this->replaceNamespace($stub, $name)
             ->replaceInStub($this->inputPlaceholders, $this->getInputsString(), $stub)
@@ -80,7 +73,7 @@ class ViewMakeCommand extends GeneratorCommand
             ->replaceInStub($this->variablePlaceholders, $name, $stub)
             ->replaceInStub($this->cancelUrlPlaceholders, $cancelUrl, $stub)
             ->replaceInStub($this->modelPlaceholders, $model, $stub)
-            ->replaceInStub($this->vueComponentPlaceholders, $componentName, $stub)
+            ->replaceInStub($this->vueComponentPlaceholders, $this->getStudlyComponentName($name), $stub)
             ->replaceInStub($this->vueDataPlaceholders, $vueDataString, $stub)
             ->replaceInStub($this->vuePostDataPlaceholders, $vuePostDataString, $stub)
             ->replaceClass($stub, $name);

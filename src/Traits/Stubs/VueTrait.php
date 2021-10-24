@@ -78,6 +78,34 @@ trait VueTrait
     ];
 
     /**
+     * Get the component name.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    protected function getComponentName(string $name) : string
+    {
+        $kebabName = Str::kebab($name);
+        return $kebabName . '-' . $this->getType();
+    }
+
+    /**
+     * Replace the Vue strings with the needed values.
+     *
+     * @param  array  $inputs
+     * @param  string  &$vueDataString
+     * @param  string  &$vuePostDataString
+     * @return void
+     */
+    protected function replaceVueData(array $inputs = [], string &$vueDataString = '', string &$vuePostDataString = '') : void
+    {
+        foreach ($inputs as $input) {
+            $vueDataString .= $this->getVueDataString($input);
+            $vuePostDataString .= $this->getVuePostDataString($input);
+        }
+    }
+
+    /**
      * Get the Vue post data needed as a string.
      *
      * @param  ColumnDefinition  $input
@@ -108,17 +136,5 @@ trait VueTrait
         $vueDataString = $input['name'] . ': null,' . $this->endOfDataLine;
 
         return str_replace('  ', ' ', $vueDataString);
-    }
-
-    /**
-     * Get the component name.
-     *
-     * @param  string  $name
-     * @return string
-     */
-    protected function getComponentName(string $name) : string
-    {
-        $kebabName = Str::kebab($name);
-        return $kebabName . '-' . $this->getType();
     }
 }

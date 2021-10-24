@@ -50,7 +50,7 @@ trait FormTrait
      */
     protected function replaceFormAction(string &$stub) : self
     {
-        $name = $this->argument('name');
+        $name = $this->getResourceName();
         $route = '';
 
         if ($this->getType() === 'create' || ($this->getType() === 'index' && $this->needsVueFrontend())) {

@@ -22,6 +22,16 @@ trait CommandTrait
     }
 
     /**
+     * Get the name.
+     *
+     * @return string
+     */
+    protected function getResourceName() : string
+    {
+        return (string)$this->argument('name') ?? '';
+    }
+
+    /**
      * Get the lower singular version of the value.
      *
      * @param  string  $value
@@ -128,12 +138,52 @@ trait CommandTrait
     }
 
     /**
-     * Get the name.
+     * Get the name string.
      *
      * @return string
      */
     protected function getNameString() : string
     {
         return (string)$this->argument('name') ?? '';
+    }
+
+    /**
+     * Get the inputs.
+     *
+     * @return array
+     */
+    protected function getInputs() : array
+    {
+        return $this->argument('inputs') ?? [];
+    }
+
+    /**
+     * Get the rules.
+     *
+     * @return array
+     */
+    public function getRules() : array
+    {
+        return (array)$this->argument('rules') ?? [];
+    }
+
+    /**
+     * Determine if the resource should be an API.
+     *
+     * @return boolean
+     */
+    public function getApi() : bool
+    {
+        return (bool)$this->option('api') ?? false;
+    }
+
+    /**
+     * Get the model.
+     *
+     * @return string
+     */
+    protected function getModel() : string
+    {
+        return (string)$this->option('model') ?? '';
     }
 }

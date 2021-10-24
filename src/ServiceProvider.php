@@ -10,7 +10,6 @@ use Cruddy\Commands\ViewMakeCommand;
 use Cruddy\Commands\VueImportAddCommand;
 use Cruddy\Commands\VueViewMakeCommand;
 use Cruddy\Traits\ConfigTrait;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
@@ -40,16 +39,15 @@ class ServiceProvider extends BaseServiceProvider
     {
         // Publish config file
         $this->publishes([
-            __DIR__.'/../config/cruddy.php' => config_path('cruddy.php'),
+            __DIR__ . '/../config/cruddy.php' => config_path('cruddy.php'),
         ]);
 
         // Publish stub files
         $this->publishes([
-            __DIR__.'/Commands/stubs/' => base_path('/stubs/cruddy/'),
+            __DIR__ . '/Commands/stubs/' => base_path('/stubs/cruddy/'),
         ]);
 
         // Add new Cruddy database configuration to the config.
-        // Note: This seems off. Won't this just cache this confguration? But then the driver would be removed if the cache is busted.
         $this->setDatabaseConnection();
 
         // Include commands

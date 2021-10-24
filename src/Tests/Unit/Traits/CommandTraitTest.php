@@ -357,4 +357,25 @@ class CommandTraitTest extends TestCase
         $this->assertSame($expectedResult, $result, 'The name is incorrect.');
     }
 
+    /**
+     * A test for getting the inputs.
+     *
+     * @return void
+     */
+    public function test_get_inputs()
+    {
+        $expectedResult = $inputs = ['inputs'];
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputs) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('argument')
+                ->with('inputs')
+                ->once()
+                ->andReturn($inputs);
+        });
+        
+        $result = $mock->getInputs();
+
+        $this->assertSame($expectedResult, $result, 'The default input type is incorrect.');
+    }
 }

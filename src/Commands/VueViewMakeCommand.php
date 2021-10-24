@@ -60,7 +60,7 @@ class VueViewMakeCommand extends GeneratorCommand
         $stub = $this->getStubFile();
         $type = $this->getType();
         $variableName = $this->getVueVariableName($type);
-        $componentName = $this->getComponentName();
+        $componentName = $this->getComponentName($name);
         $propsString = $this->getPropsString();
 
         return $this->replaceNamespace($stub, $name)
@@ -105,6 +105,6 @@ class VueViewMakeCommand extends GeneratorCommand
      */
     protected function getClassName() : string
     {
-        return $this->getLowerSingular($this->argument('table'));
+        return $this->getLowerSingular($this->getTableName());
     }
 }

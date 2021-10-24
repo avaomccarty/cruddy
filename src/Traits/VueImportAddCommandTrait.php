@@ -16,7 +16,7 @@ trait VueImportAddCommandTrait
      */
     protected function getComponent(string $style = null) : string
     {
-        $name = $this->argument('name');
+        $name = $this->getResourceName();
         $type = $this->getType();
 
         if ($style === 'kebab') {
@@ -43,7 +43,8 @@ trait VueImportAddCommandTrait
      */
     protected function getImportStatement() : string
     {
-        $lowerName = $this->getLowerSingular($this->argument('name'));
+        $name = $this->getResourceName();
+        $lowerName = $this->getLowerSingular($name);
         $importString = "import " . $this->getComponent() . " from '@/components/" . $lowerName . "/" . $this->getType() . ".vue';\n";
 
         return $importString;

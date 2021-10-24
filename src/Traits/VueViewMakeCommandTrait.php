@@ -41,4 +41,20 @@ trait VueViewMakeCommandTrait {
 
         return '';
     }
+
+    /**
+     * Get the Vue variable name.
+     *
+     * @param  string  $type
+     * @return string
+     */
+    public function getVueVariableName(string $type = 'index') : string
+    {
+        $className = $this->getClassName();
+        if ($type === 'index') {
+            return strtolower(Str::pluralStudly($className));
+        }
+        
+        return strtolower($className);
+    }
 }
