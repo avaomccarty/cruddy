@@ -2,12 +2,11 @@
 
 namespace Cruddy\Traits\Stubs;
 
-use Cruddy\Traits\ConfigTrait;
 use Illuminate\Database\Schema\ColumnDefinition;
 
 trait RuleTrait
 {
-    use ConfigTrait, StubTrait;
+    use StubTrait;
 
     /**
      * The spacer used between validation rules.
@@ -15,13 +14,6 @@ trait RuleTrait
      * @var string
      */
     protected $ruleSpacer = '|';
-
-    /**
-     * The formatting at the end of the line.
-     *
-     * @var string
-     */
-    protected $endOfLine = "\n\t\t\t";
 
     /**
      * The acceptable rule placeholders within a stub.
@@ -35,31 +27,6 @@ trait RuleTrait
     ];
 
     /**
-     * Replace the rules for the given stub.
-     *
-     * @param  string  &$stub
-     * @return self
-     */
-    protected function replaceRules(string &$stub) : self
-    {
-        $this->updateStubWithRules($stub, $this->getNonIdRules());
-
-        return $this;
-    }
-
-    /**
-     * Get the rules without ID columns.
-     *
-     * @return array
-     */
-    public function getNonIdRules() : array
-    {
-        return array_filter($this->getRules(), function ($rule) {
-            return $rule->name !== 'id';
-        });
-    }
-
-    /**
      * Get a validation rule string from a rule.
      *
      * @param  ColumnDefinition  $rule
@@ -67,7 +34,10 @@ trait RuleTrait
      */
     protected function getValidationRule(ColumnDefinition $rule, string $validationRules)
     {
-        return "'$rule->name' => '$validationRules'," . $this->endOfLine;
+        $rule = "'$rule->name' => '$validationRules',";
+        $this->addEndOfLineFormatting($rule);
+
+        return $rule;
     }
 
     /**

@@ -2,14 +2,14 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\Traits\CommandTrait;
+use Cruddy\Traits\ModelMakeCommandTrait;
 use Cruddy\Traits\Stubs\InputTrait;
 use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Foundation\Console\ModelMakeCommand as BaseModelMakeCommand;
 
 class ModelMakeCommand extends BaseModelMakeCommand
 {
-    use CommandTrait, InputTrait;
+    use ModelMakeCommandTrait, InputTrait;
 
     /**
      * The console command name.
@@ -44,9 +44,10 @@ class ModelMakeCommand extends BaseModelMakeCommand
     protected function buildClass($name) : string
     {
         $stub = $this->getStubFile();
+        $inputsString = $this->getInputsString($this->typeNeedsSubmitInput());
 
         return $this->replaceNamespace($stub, $name)
-            ->replaceInStub($this->inputPlaceholders, $this->getInputsString(), $stub)
+            ->replaceInStub($this->inputPlaceholders, $inputsString, $stub)
             ->replaceClass($stub, $name);
     }
 }

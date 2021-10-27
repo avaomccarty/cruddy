@@ -3,10 +3,7 @@
 namespace Cruddy;
 
 use Illuminate\Database\Connection as BaseConnection;
-use Illuminate\Database\Connectors\ConnectionFactory;
 use Illuminate\Database\Schema\Grammars\MySqlGrammar;
-use Illuminate\Database\Schema\MySqlBuilder;
-use Illuminate\Support\Facades\App;
 
 class Connection extends BaseConnection
 {

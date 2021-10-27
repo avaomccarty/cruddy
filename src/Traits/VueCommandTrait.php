@@ -2,7 +2,6 @@
 
 namespace Cruddy\Traits;
 
-use Illuminate\Support\Str;
 
 trait VueCommandTrait {
 
@@ -17,7 +16,7 @@ trait VueCommandTrait {
     public function getStudlyComponentName() : string
     {
         $studylyTableName = $this->getStudlySingular($this->getTableName());
-        $ucFirstType = Str::ucfirst($this->getType());
+        $ucFirstType = ucfirst($this->getType());
 
         return $studylyTableName . $ucFirstType;
     }

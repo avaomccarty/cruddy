@@ -378,4 +378,75 @@ class CommandTraitTest extends TestCase
 
         $this->assertSame($expectedResult, $result, 'The default input type is incorrect.');
     }
+
+    /**
+     * A test to get the inputs string with a submit needed.
+     *
+     * @return void
+     */
+    public function test_get_inputs_string_with_submit()
+    {
+        $inputs = $this->getMockColumns();
+        $expectedResult = '';
+        $getInputFile = '-getInputFile';
+
+        foreach ($inputs as $input) {
+            $expectedResult .= $input['name'];
+        }
+
+        $expectedResult .= $getInputFile;
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputs, $getInputFile, $expectedResult) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('getInputs')
+                ->once()
+                ->andReturn($inputs);
+            $mock->shouldReceive('isVueEditOrShow')
+                ->andReturn(false);
+
+            foreach ($inputs as $input) {
+                $mock->shouldReceive('getInputString')
+                    ->with($input, false)
+                    ->once()
+                    ->andReturn($input['name']);
+            }
+
+            $mock->shouldReceive('getInputFile')
+                ->with('submit')
+                ->once()
+                ->andReturn($getInputFile);
+
+            $mock->shouldReceive('replaceInStub')
+                ->with($this->valuePlaceholders, 'Submit', $getInputFile)
+                ->once();
+        });
+
+        $result = $mock->getInputsString(true);
+
+        $this->assertIsString($result, 'The result should be a string.');
+        $this->assertNotEmpty($result, 'The inputs string should not be empty when there are inputs.');
+        $this->assertSame($expectedResult, $result, 'The result is not correct.');
+    }
+
+    /**
+     * A test for should add value to input when not Vue frontend needed and is edit/show.
+     *
+     * @return void
+     */
+    public function test_should_add_value_to_input_when_no_vue_frontend_and_is_edit_or_show()
+    {
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('isEditOrShow')
+                ->once()
+                ->andReturn(true);
+            $mock->shouldReceive('needsVueFrontend')
+                ->once()
+                ->andReturn(false);
+        });
+        
+        $result = $mock->shouldAddValueToInput();
+
+        $this->assertTrue($result);
+    }
 }

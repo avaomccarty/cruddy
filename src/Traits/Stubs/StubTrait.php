@@ -2,8 +2,12 @@
 
 namespace Cruddy\Traits\Stubs;
 
+use Cruddy\Traits\ConfigTrait;
+
 trait StubTrait
 {
+    use ConfigTrait;
+
     /**
      * The default end of line formatting.
      *
@@ -33,8 +37,21 @@ trait StubTrait
      */
     protected function removeEndOfLineFormatting(string &$value) : void
     {
-        if ($this->needsFormattingRemoved($value)) {
+        if ($this->hasEndOfLineFormatting($value)) {
             $value = substr($value, 0, -strlen($this->getEndOfLine()));
+        }
+    }
+
+    /**
+     * Add the formatting to the end of the value.
+     *
+     * @param  string  &$value
+     * @return void
+     */
+    protected function addEndOfLineFormatting(string &$value) : void
+    {
+        if (!$this->hasEndOfLineFormatting($value)) {
+            $value .= $this->getEndOfLine();
         }
     }
 
@@ -44,7 +61,7 @@ trait StubTrait
      * @param  string  $value
      * @return boolean
      */
-    protected function needsFormattingRemoved(string $value) : bool
+    protected function hasEndOfLineFormatting(string $value) : bool
     {
         return substr($value, -strlen($this->getEndOfLine())) === $this->getEndOfLine();
     }

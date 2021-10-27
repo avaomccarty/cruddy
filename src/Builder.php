@@ -25,6 +25,34 @@ class Builder extends BaseBuilder
     ];
 
     /**
+     * The table.
+     *
+     * @var string
+     */
+    protected $table;
+
+    /**
+     * The class name.
+     *
+     * @var string
+     */
+    protected $className;
+
+    /**
+     * The blueprint.
+     *
+     * @var \Illuminate\Database\Schema\Blueprint
+     */
+    protected $blueprint;
+
+    /**
+     * The migration columns.
+     *
+     * @var array
+     */
+    protected $columns;
+
+    /**
      * Create a new table on the schema.
      *
      * @param  string  $table
@@ -41,68 +69,92 @@ class Builder extends BaseBuilder
      * Prehook for the create method. Calls the Artisan commands needed to create the Cruddy files.
      *
      * @param  string  $table
+     * @param  \Closure  $callback
      * @return void
      */
-    protected function createPreHook(string $table, Closure $callback)
+    protected function createPreHook(string $table, Closure $callback) : void
     {
-        $className = $this->getStudlySingular($table);
-        $blueprint = $this->createBlueprint($table, $callback);
+        $this->table = $table;
+        $this->className = $this->getStudlySingular($this->table);
+        $this->blueprint = $this->createBlueprint($this->table, $callback);
+        $this->columns = $this->blueprint->getColumns();
 
         Artisan::call('cruddy:controller', [
-            'name' => $className . 'Controller',
+            'name' => $this->className . 'Controller',
             '--resource' => true,
-            '--model' => $className,
+            '--model' => $this->className,
             '--api' => $this->isApi(),
-            'inputs' => $blueprint->getColumns(),
+            'inputs' => $this->columns,
         ]);
 
         // Create update request class
         Artisan::call('cruddy:request', [
-            'name' => $className,
+            'name' => $this->className,
             'type' => 'update',
-            'rules' => $blueprint->getColumns(),
+            'rules' => $this->columns,
         ]);
 
         // Create store request class
         Artisan::call('cruddy:request', [
-            'name' => $className,
+            'name' => $this->className,
             'type' => 'store',
-            'rules' => $blueprint->getColumns(),
+            'rules' => $this->columns,
         ]);
 
         Artisan::call('cruddy:route', [
-            'name' => $className,
+            'name' => $this->className,
             '--api' => $this->isApi(),
         ]);
 
         if ($this->needsUI()) {
-            foreach ($this->views as $view) {
-                if (! $this->isApi() || $view !== 'edit') {
-                    // Make standard views
-                    Artisan::call('cruddy:view', [
-                        'name' => $className,
-                        'table' => $table,
+            $this->createFrontendViews();
+        }
+    }
+
+    /**
+     * Create the frontend views.
+     *
+     * @return void
+     */
+    protected function createFrontendViews() : void
+    {
+        foreach ($this->views as $view) {
+            if ($this->shouldHaveEditView($view)) {
+                // Make standard view
+                Artisan::call('cruddy:view', [
+                    'name' => $this->className,
+                    'table' => $this->table,
+                    'type' => $view,
+                    'inputs' => $this->columns,
+                ]);
+            }
+
+            if ($this->needsVueFrontend()) {
+                if ($this->shouldHaveEditView($view)) {
+                    // Make Vue view
+                    Artisan::call('cruddy:vue-view', [
+                        'name' => $this->className,
+                        'table' => $this->table,
                         'type' => $view,
-                        'inputs' => $blueprint->getColumns(),
                     ]);
                 }
 
-                if ($this->needsVueFrontend()) {
-                    if (! $this->isApi() || $view !== 'edit') {
-                        // Make Vue views
-                        Artisan::call('cruddy:vue-view', [
-                            'name' => $className,
-                            'table' => $table,
-                            'type' => $view,
-                        ]);
-                    }
-
-                    Artisan::call('cruddy:vue-import', [
-                        'name' => $className,
-                        'type' => $view,
-                    ]);
-                }
+                Artisan::call('cruddy:vue-import', [
+                    'name' => $this->className,
+                    'type' => $view,
+                ]);
             }
         }
+    }
+
+    /**
+     * Determine if an edit view is needed.
+     *
+     * @param  string  $view
+     * @return bool
+     */
+    protected function shouldHaveEditView(string $view) : bool
+    {
+        return ! $this->isApi() || $view !== 'edit';
     }
 }

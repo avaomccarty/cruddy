@@ -35,7 +35,7 @@ trait VueViewMakeCommandTrait {
             $prop = strtolower(trim($table));
             return ' :prop-items="{{ json_encode($' . $prop . '->toArray()[\'data\']) }}"';
         } else if ($type === 'show' || $type === 'edit') {
-            $prop = strtolower(Str::singular(trim($table)));
+            $prop = $this->getLowerSingular($table);
             return ' :prop-item="{{ $' . $prop . ' }}"';
         }
 
@@ -52,9 +52,22 @@ trait VueViewMakeCommandTrait {
     {
         $className = $this->getClassName();
         if ($type === 'index') {
-            return strtolower(Str::pluralStudly($className));
+            return $this->getLowerPlural($className);
         }
         
         return strtolower($className);
+    }
+
+    /**
+     * Get the component name.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    protected function getComponentName(string $name) : string
+    {
+        $kebabName = Str::kebab($name);
+
+        return $kebabName . '-' . $this->getType();
     }
 }

@@ -2,11 +2,9 @@
 
 namespace Cruddy\Traits;
 
-use Cruddy\Traits\Stubs\InputTrait;
-
 trait ControllerMakeCommandTrait
 {
-    use CommandTrait, InputTrait;
+    use CommandTrait;
 
     /**
      * The formatting at the end of the line.

@@ -4,12 +4,14 @@ namespace Cruddy\Traits;
 
 use Cruddy\Traits\Stubs\InputTrait;
 use Cruddy\Traits\Stubs\ModelTrait;
+use Cruddy\Traits\Stubs\RuleTrait;
+use Cruddy\Traits\Stubs\VariableTrait;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 trait CommandTrait
 {
-    use InputTrait, ModelTrait, ConfigTrait;
+    use InputTrait, ModelTrait, ConfigTrait, VariableTrait, RuleTrait;
 
     /**
      * Get the table.
@@ -43,6 +45,17 @@ trait CommandTrait
     }
 
     /**
+     * Get the lower plural version of the value.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    protected function getLowerPlural(string $value) : string
+    {
+        return strtolower(Str::pluralStudly($value)) ?? '';
+    }
+
+    /**
      * Get the studly singular version of the value.
      *
      * @param  string  $value
@@ -51,6 +64,28 @@ trait CommandTrait
     protected function getStudlySingular(string $value) : string
     {
         return Str::studly(Str::singular(trim($value))) ?? '';
+    }
+
+    /**
+     * Get the studly singular version of the string with the first character lower-case.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    protected function getCamelCaseSingular(string $value) : string
+    {
+        return lcfirst(Str::studly(Str::singular(trim($value)))) ?? '';
+    }
+
+    /**
+     * Get the studly plural version of the string with the first character lower-case.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    protected function getCamelCasePlural(string $value) : string
+    {
+        return lcfirst(Str::pluralStudly(trim($value))) ?? '';
     }
 
     /**
@@ -72,6 +107,42 @@ trait CommandTrait
         }
 
         return $this->getDefaultTypes()[0];
+    }
+
+    /**
+     * Get the inputs as a string.
+     *
+     * @param  boolean  $needsSubmitInput
+     * @return string
+     */
+    protected function getInputsString(bool $needsSubmitInput = false) : string
+    {
+        $inputsString = '';
+        $inputs = $this->getInputs();
+
+        foreach ($inputs as $key => $input) {
+            $inputsString .= $this->getInputString($input, $this->isVueEditOrShow());
+
+            if ($key === array_key_last($inputs) && $needsSubmitInput) {
+                $submitInputFile = $this->getInputFile('submit');
+                $this->replaceInStub($this->valuePlaceholders, 'Submit', $submitInputFile);
+                $inputsString .= $submitInputFile;
+            }
+        }
+
+        return $inputsString;
+    }
+
+    /**
+     * Should the view include a submit input.
+     *
+     * @return boolean
+     */
+    protected function typeNeedsSubmitInput() : bool
+    {
+        $type = $this->getType();
+
+        return $type !== 'index' && $type !== 'show';
     }
 
     /**
@@ -185,5 +256,40 @@ trait CommandTrait
     protected function getModel() : string
     {
         return (string)$this->option('model') ?? '';
+    }
+
+    /**
+     * Determine if the resource is of the edit or show type.
+     *
+     * @return boolean
+     */
+    protected function isEditOrShow() : bool
+    {
+        $types = [
+            'edit',
+            'show',
+        ];
+
+        return in_array($this->getType(), $types);
+    }
+
+    /**
+     * Determine if the value should be included within the input. 
+     *
+     * @return boolean
+     */
+    protected function shouldAddValueToInput() : bool
+    {
+        return $this->isEditOrShow() && !$this->needsVueFrontend();
+    }
+
+    /**
+     * Determine if it is a Vue edit/show file type.
+     *
+     * @return bool
+     */
+    protected function isVueEditOrShow() : bool
+    {
+        return $this->isEditOrShow() && $this->needsVueFrontend();
     }
 }

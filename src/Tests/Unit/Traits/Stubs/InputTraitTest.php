@@ -124,64 +124,9 @@ class InputTraitTest extends TestCase
                     ->once()
                     ->andReturn($input['name']);
             }
-
-            $mock->shouldReceive('typeNeedsSubmitInput')
-                ->once()
-                ->andReturn(false);
         });
 
-        $result = $mock->getInputsString();
-
-        $this->assertIsString($result, 'The result should be a string.');
-        $this->assertNotEmpty($result, 'The inputs string should not be empty when there are inputs.');
-        $this->assertSame($expectedResult, $result, 'The result is not correct.');
-    }
-
-    /**
-     * A test to get the inputs string with a submit needed.
-     *
-     * @return void
-     */
-    public function test_get_inputs_string_with_submit()
-    {
-        $inputs = $this->getMockColumns();
-        $expectedResult = '';
-        $getInputFile = '-getInputFile';
-
-        foreach ($inputs as $input) {
-            $expectedResult .= $input['name'];
-        }
-
-        $expectedResult .= $getInputFile;
-
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputs, $getInputFile, $expectedResult) {
-            $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getInputs')
-                ->once()
-                ->andReturn($inputs);
-
-            foreach ($inputs as $input) {
-                $mock->shouldReceive('getInputString')
-                    ->with($input)
-                    ->once()
-                    ->andReturn($input['name']);
-            }
-
-            $mock->shouldReceive('typeNeedsSubmitInput')
-                ->once()
-                ->andReturn(true);
-
-            $mock->shouldReceive('getInputFile')
-                ->with('submit')
-                ->once()
-                ->andReturn($getInputFile);
-
-            $mock->shouldReceive('replaceInStub')
-                ->with($this->valuePlaceholders, 'Submit', $getInputFile)
-                ->once();
-        });
-
-        $result = $mock->getInputsString();
+        $result = $mock->getInputsString(false);
 
         $this->assertIsString($result, 'The result should be a string.');
         $this->assertNotEmpty($result, 'The inputs string should not be empty when there are inputs.');
@@ -303,7 +248,7 @@ class InputTraitTest extends TestCase
                 ->once()
                 ->andReturn($inputString);
             $mock->shouldReceive('getReplaceString')
-                ->with($input)
+                ->with($input, true)
                 ->once()
                 ->andReturn($replaceString);
             $mock->shouldReceive('getExtraInputInfo')
@@ -312,7 +257,7 @@ class InputTraitTest extends TestCase
                 ->andReturn($extraInputString);
         });
      
-        $result = $mock->getInputString($input);
+        $result = $mock->getInputString($input, true);
 
         $this->assertNotSame($originalInputString, $inputString, 'The input string should have been updated.');
         $this->assertSame($expectedResult, $result, 'The string for the input is incorrect.');
@@ -330,15 +275,9 @@ class InputTraitTest extends TestCase
 
         $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($input) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('isEditOrShow')
-                ->once()
-                ->andReturn(true);
-            $mock->shouldReceive('needsVueFrontend')
-                ->once()
-                ->andReturn(true);
         });
         
-        $result = $mock->getReplaceString($input);
+        $result = $mock->getReplaceString($input, true);
 
         $this->assertSame($expectedResult, $result, 'The replace string for the input is incorrect.');
     }
@@ -355,15 +294,9 @@ class InputTraitTest extends TestCase
 
         $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($input) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('isEditOrShow')
-                ->once()
-                ->andReturn(true);
-            $mock->shouldReceive('needsVueFrontend')
-                ->once()
-                ->andReturn(false);
         });
         
-        $result = $mock->getReplaceString($input);
+        $result = $mock->getReplaceString($input, false);
 
         $this->assertSame($expectedResult, $result, 'The replace string for the input is incorrect.');
     }
@@ -380,9 +313,6 @@ class InputTraitTest extends TestCase
 
         $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($input) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('isEditOrShow')
-                ->once()
-                ->andReturn(false);
             $mock->shouldReceive('needsVueFrontend')
                 ->never();
         });
@@ -400,19 +330,17 @@ class InputTraitTest extends TestCase
     public function test_get_input_as_string()
     {
         $input = $this->getMockColumns()[0];
-        $inputFile = 'inputFile';
-        $endOfLine = $this->getEndOfLine();
-        $expectedResult = $inputFile . $endOfLine;
+        $expectedResult = $inputFile = 'inputFile';
 
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($input, $inputFile, $endOfLine) {
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($input, $inputFile) {
             $mock->shouldAllowMockingProtectedMethods();
             $mock->shouldReceive('getInputFile')
                 ->with($input['type'])
                 ->once()
                 ->andReturn($inputFile);
-            $mock->shouldReceive('getEndOfLine')
-                ->once()
-                ->andReturn($endOfLine);
+            $mock->shouldReceive('addEndOfLineFormatting')
+                ->with($inputFile)
+                ->once();
         });
 
         $result = $mock->getInputAsString($input);
@@ -680,9 +608,6 @@ class InputTraitTest extends TestCase
     {
         $mock = $this->partialMock(self::class, function (MockInterface $mock) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('isEditOrShow')
-                ->once()
-                ->andReturn(false);
         });
         
         $result = $mock->shouldAddValueToInput();
@@ -699,39 +624,11 @@ class InputTraitTest extends TestCase
     {
         $mock = $this->partialMock(self::class, function (MockInterface $mock) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('isEditOrShow')
-                ->once()
-                ->andReturn(true);
-            $mock->shouldReceive('needsVueFrontend')
-                ->once()
-                ->andReturn(true);
         });
         
         $result = $mock->shouldAddValueToInput();
 
         $this->assertFalse($result);
-    }
-
-    /**
-     * A test for should add value to input when not Vue frontend needed and is edit/show.
-     *
-     * @return void
-     */
-    public function test_should_add_value_to_input_when_no_vue_frontend_and_is_edit_or_show()
-    {
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) {
-            $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('isEditOrShow')
-                ->once()
-                ->andReturn(true);
-            $mock->shouldReceive('needsVueFrontend')
-                ->once()
-                ->andReturn(false);
-        });
-        
-        $result = $mock->shouldAddValueToInput();
-
-        $this->assertTrue($result);
     }
 
     /**

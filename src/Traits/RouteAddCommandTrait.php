@@ -2,8 +2,6 @@
 
 namespace Cruddy\Traits;
 
-use Illuminate\Support\Str;
-
 trait RouteAddCommandTrait
 {
     use CommandTrait;
@@ -52,21 +50,10 @@ trait RouteAddCommandTrait
     {
         $name = $this->getResourceName();
         $lowerPluralName = $this->getLowerPlural($name);
-        $ucFirstName = Str::ucfirst($name);
+        $ucFirstName = ucfirst($name);
 
         return "\n\n// $ucFirstName Resource\n"
             . "Route::" . $this->getResourceType() . "('$lowerPluralName', 'App\Http\Controllers\\" . $ucFirstName . "Controller');";
-    }
-
-    /**
-     * Get the lower plural version of the value.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    protected function getLowerPlural(string $value) : string
-    {
-        return strtolower(Str::pluralStudly($value)) ?? '';
     }
 
     /**

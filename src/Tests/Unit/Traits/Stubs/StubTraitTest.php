@@ -57,7 +57,7 @@ class StubTraitTest extends TestCase
 
         $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($value, $endOfLine) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('needsFormattingRemoved')
+            $mock->shouldReceive('hasEndOfLineFormatting')
                 ->with($value)
                 ->once()
                 ->andReturn(true);
@@ -90,7 +90,7 @@ class StubTraitTest extends TestCase
         });
         
 
-        $result = $mock->needsFormattingRemoved($value);
+        $result = $mock->hasEndOfLineFormatting($value);
 
         $this->assertTrue($result);
     }
@@ -113,7 +113,7 @@ class StubTraitTest extends TestCase
         });
         
 
-        $result = $mock->needsFormattingRemoved($value);
+        $result = $mock->hasEndOfLineFormatting($value);
 
         $this->assertFalse($result);
     }
@@ -136,7 +136,7 @@ class StubTraitTest extends TestCase
         });
         
 
-        $result = $mock->needsFormattingRemoved($value);
+        $result = $mock->hasEndOfLineFormatting($value);
 
         $this->assertFalse($result);
     }

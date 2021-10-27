@@ -9,6 +9,13 @@ trait RequestMakeCommandTrait
     use CommandTrait, RuleTrait;
 
     /**
+     * The formatting at the end of the line.
+     *
+     * @var string
+     */
+    protected $endOfLine = "\n\t\t\t";
+
+    /**
      * The acceptable types of requests.
      *
      * @var array
@@ -50,5 +57,30 @@ trait RequestMakeCommandTrait
     protected function getStub() : string
     {
         return $this->resolveStubPath($this->getStubsLocation() . '/request.stub');
+    }
+
+    /**
+     * Replace the rules for the given stub.
+     *
+     * @param  string  &$stub
+     * @return self
+     */
+    protected function replaceRules(string &$stub) : self
+    {
+        $this->updateStubWithRules($stub, $this->getNonIdRules());
+
+        return $this;
+    }
+
+    /**
+     * Get the rules without ID columns.
+     *
+     * @return array
+     */
+    public function getNonIdRules() : array
+    {
+        return array_filter($this->getRules(), function ($rule) {
+            return $rule->name !== 'id';
+        });
     }
 }

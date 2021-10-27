@@ -2,12 +2,9 @@
 
 namespace Cruddy\Traits\Stubs;
 
-use Cruddy\Traits\ConfigTrait;
-use Illuminate\Support\Str;
-
 trait VariableTrait
 {
-    use StubTrait, ConfigTrait;
+    use StubTrait;
 
     /**
      * The acceptable value placeholders within a stub.
@@ -52,41 +49,4 @@ trait VariableTrait
        '{{ resource }}',
        '{{resource}}'
    ];
-
-    /**
-     * Get the studly singular version of the string with the first character lower-case.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    protected function getCamelCaseSingular(string $value) : string
-    {
-        return lcfirst(Str::studly(Str::singular(trim($value)))) ?? '';
-    }
-
-    /**
-     * Get the studly plural version of the string with the first character lower-case.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    protected function getCamelCasePlural(string $value) : string
-    {
-        return lcfirst(Str::pluralStudly(trim($value))) ?? '';
-    }
-
-    /**
-     * Get the edit URL from the name.
-     *
-     * @param  string  $name
-     * @return string
-     */
-    protected function getEditUrl(string $name) : string
-    {
-        if ($this->needsVueFrontend()) {
-            return "'/$name/' + item.id + '/edit'";
-        }
-
-        return '/' . $name . '/{{ $' . $this->getCamelCaseSingular($name) . '->id }}/edit';
-    }
 }

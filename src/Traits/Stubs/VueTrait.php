@@ -2,8 +2,6 @@
 
 namespace Cruddy\Traits\Stubs;
 
-use Illuminate\Support\Str;
-use Illuminate\Database\Schema\ColumnDefinition;
 trait VueTrait
 {
     use StubTrait;
@@ -76,65 +74,4 @@ trait VueTrait
         '{{ componentName }}',
         '{{componentName}}'
     ];
-
-    /**
-     * Get the component name.
-     *
-     * @param  string  $name
-     * @return string
-     */
-    protected function getComponentName(string $name) : string
-    {
-        $kebabName = Str::kebab($name);
-        return $kebabName . '-' . $this->getType();
-    }
-
-    /**
-     * Replace the Vue strings with the needed values.
-     *
-     * @param  array  $inputs
-     * @param  string  &$vueDataString
-     * @param  string  &$vuePostDataString
-     * @return void
-     */
-    protected function replaceVueData(array $inputs = [], string &$vueDataString = '', string &$vuePostDataString = '') : void
-    {
-        foreach ($inputs as $input) {
-            $vueDataString .= $this->getVueDataString($input);
-            $vuePostDataString .= $this->getVuePostDataString($input);
-        }
-    }
-
-    /**
-     * Get the Vue post data needed as a string.
-     *
-     * @param  ColumnDefinition  $input
-     * @return string
-     */
-    protected function getVuePostDataString(ColumnDefinition $input) : string
-    {
-        $vuePostDataString = '';
-
-        if ($this->getType() === 'edit') {
-            $vuePostDataString .= $input['name'] . ': this.item.' . $input['name'] . ',';
-        } else {
-            $vuePostDataString .= $input['name'] . ': this.' . $input['name'] . ',';
-        }
-
-        $vuePostDataString .= $this->endOfPostDataLine;
-        return str_replace('  ', ' ', $vuePostDataString);
-    }
-
-    /**
-     * Get the Vue data needed as a string.
-     *
-     * @param  ColumnDefinition  $input
-     * @return string
-     */
-    protected function getVueDataString(ColumnDefinition $input) : string
-    {
-        $vueDataString = $input['name'] . ': null,' . $this->endOfDataLine;
-
-        return str_replace('  ', ' ', $vueDataString);
-    }
 }

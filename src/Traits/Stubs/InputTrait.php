@@ -2,13 +2,12 @@
 
 namespace Cruddy\Traits\Stubs;
 
-use Cruddy\Traits\ConfigTrait;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\File;
 
 trait InputTrait
 {
-    use ConfigTrait, VariableTrait, StubTrait;
+    use VariableTrait, StubTrait;
 
     /**
      * The acceptable input placeholders within a stub.
@@ -86,18 +85,6 @@ trait InputTrait
     protected $unsignedExtraInputInfo = 'min="0"';
 
     /**
-     * Should the view include a submit input.
-     *
-     * @return boolean
-     */
-    protected function typeNeedsSubmitInput() : bool
-    {
-        $type = $this->getType();
-
-        return $type !== 'index' && $type !== 'show';
-    }
-
-    /**
      * Get the default input type.
      *
      * @return string
@@ -105,29 +92,6 @@ trait InputTrait
     protected function getDefaultInput() : string
     {
         return 'text';
-    }
-
-    /**
-     * Get the inputs as a string.
-     *
-     * @return string
-     */
-    protected function getInputsString() : string
-    {
-        $inputsString = '';
-        $inputs = $this->getInputs();
-
-        foreach ($inputs as $key => $input) {
-            $inputsString .= $this->getInputString($input);
-
-            if ($key === array_key_last($inputs) && $this->typeNeedsSubmitInput()) {
-                $submitInputFile = $this->getInputFile('submit');
-                $this->replaceInStub($this->valuePlaceholders, 'Submit', $submitInputFile);
-                $inputsString .= $submitInputFile;
-            }
-        }
-
-        return $inputsString;
     }
 
     /**
@@ -146,26 +110,16 @@ trait InputTrait
     }
 
     /**
-     * Get the input file.
-     *
-     * @param  string  $type
-     * @return string
-     */
-    protected function getInputFile(string $type) : string
-    {
-        return File::get($this->getInputStub($type));
-    }
-
-    /**
      * Get the input needed as a string.
      *
      * @param  ColumnDefinition  $column
+     * @param  boolean  $isVueEditOrShow
      * @return string
      */
-    protected function getInputString(ColumnDefinition $column) : string
+    protected function getInputString(ColumnDefinition $column, bool $isVueEditOrShow = false) : string
     {
         $inputString = $this->getInputAsString($column);
-        $replaceString = $this->getReplaceString($column);
+        $replaceString = $this->getReplaceString($column, $isVueEditOrShow);
 
         $this->replaceInStub($this->modelNamePlaceholders, $replaceString, $inputString)
             ->replaceInStub($this->namePlaceholders, $column['name'], $inputString)
@@ -178,11 +132,12 @@ trait InputTrait
      * Get the replace string for an input.
      *
      * @param  ColumnDefinition  $column
+     * @param  boolean  $isVueEditOrShow
      * @return string
      */
-    protected function getReplaceString(ColumnDefinition $column)
+    protected function getReplaceString(ColumnDefinition $column, bool $isVueEditOrShow = false) : string
     {
-        if ($this->isEditOrShow() && $this->needsVueFrontend()) {
+        if ($isVueEditOrShow) {
             return 'item.' . $column['name'];
         }
         
@@ -197,22 +152,21 @@ trait InputTrait
      */
     protected function getInputAsString(ColumnDefinition $column) : string
     {
-        return $this->getInputFile($column['type']) . $this->getEndOfLine();
+        $file = $this->getInputFile($column['type']);
+        $this->addEndOfLineFormatting($file);
+
+        return $file;
     }
 
     /**
-     * Determine if the resource is of the edit or show type.
+     * Get the input file.
      *
-     * @return boolean
+     * @param  string  $type
+     * @return string
      */
-    protected function isEditOrShow() : bool
+    protected function getInputFile(string $type) : string
     {
-        $types = [
-            'edit',
-            'show',
-        ];
-
-        return in_array($this->getType(), $types);
+        return File::get($this->getInputStub($type));
     }
 
     /**
@@ -223,6 +177,7 @@ trait InputTrait
      */
     protected function getInputStub(string $input) : string
     {
+        // Note: this should be moved.
         return $this->resolveStubPath($this->getInputStubLocation($input));
     }
 
@@ -293,8 +248,9 @@ trait InputTrait
      * @param  ColumnDefinition  $column
      * @return string
      */
-    protected function getValueFromColumn(ColumnDefinition $column)
+    protected function getValueFromColumn(ColumnDefinition $column) : string
     {
+        // Note: this should be moved
         return 'value="{{ $' . $this->getCamelCaseSingular($this->getResourceName()) . '->' . $column['name'] . ' }}"';
     }
 
@@ -322,16 +278,6 @@ trait InputTrait
     protected function prepString(string &$value) : void
     {
         $value .= ' ';
-    }
-
-    /**
-     * Determine if the value should be included within the input. 
-     *
-     * @return boolean
-     */
-    protected function shouldAddValueToInput() : bool
-    {
-        return $this->isEditOrShow() && !$this->needsVueFrontend();
     }
 
     /**
@@ -424,36 +370,5 @@ trait InputTrait
     protected function isIdColumn(ColumnDefinition $input) : bool
     {
         return $input->name === 'id';
-    }
-
-    /**
-     * Get the model inputs string.
-     *
-     * @return string
-     */
-    protected function getModelInputs() : string
-    {
-        $inputs = $this->getInputs();
-
-        return $this->getModelInputsString($inputs);
-    }
-
-    /**
-     * Get the iput string from the inputs.
-     *
-     * @param  array  $inputs
-     * @return string
-     */
-    protected function getModelInputsString(array $inputs) : string
-    {
-        $inputsString = '';
-
-        foreach ($inputs as $input) {
-            $inputsString .= $this->getInputString($input);
-        }
-
-        $this->removeEndOfLineFormatting($inputsString);
-
-        return $inputsString;
     }
 }

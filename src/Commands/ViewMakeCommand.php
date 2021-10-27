@@ -2,7 +2,6 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\Stubs\FormTrait;
 use Cruddy\Traits\Stubs\ModelTrait;
 use Cruddy\Traits\Stubs\VariableTrait;
@@ -58,6 +57,7 @@ class ViewMakeCommand extends GeneratorCommand
         $editUrl = $this->getEditUrl($name);
         $cancelUrl = '/' . $name;
         $actionRoute = $this->getActionRoute($name);
+        $inputsString = $this->getInputsString($this->typeNeedsSubmitInput());
         $vueDataString = '';
         $vuePostDataString = '';
         
@@ -66,7 +66,7 @@ class ViewMakeCommand extends GeneratorCommand
         }
 
         return $this->replaceNamespace($stub, $name)
-            ->replaceInStub($this->inputPlaceholders, $this->getInputsString(), $stub)
+            ->replaceInStub($this->inputPlaceholders, $inputsString, $stub)
             ->replaceInStub($this->actionPlaceholders, $actionRoute, $stub)
             ->replaceInStub($this->editUrlPlaceholders, $editUrl, $stub)
             ->replaceInStub($this->variableCollectionPlaceholders, $this->getCamelCasePlural($name), $stub)
