@@ -2,12 +2,13 @@
 
 namespace Cruddy\Traits\Stubs;
 
+use Cruddy\Traits\CommandTrait;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\File;
 
 trait InputTrait
 {
-    use VariableTrait, StubTrait;
+    use CommandTrait, StubTrait;
 
     /**
      * The acceptable input placeholders within a stub.
@@ -177,7 +178,6 @@ trait InputTrait
      */
     protected function getInputStub(string $input) : string
     {
-        // Note: this should be moved.
         return $this->resolveStubPath($this->getInputStubLocation($input));
     }
 
@@ -250,7 +250,6 @@ trait InputTrait
      */
     protected function getValueFromColumn(ColumnDefinition $column) : string
     {
-        // Note: this should be moved
         return 'value="{{ $' . $this->getCamelCaseSingular($this->getResourceName()) . '->' . $column['name'] . ' }}"';
     }
 

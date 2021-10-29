@@ -4,6 +4,7 @@ namespace Cruddy\Tests\Unit\Traits\Stubs;
 
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\Stubs\StubTrait;
+use Illuminate\Support\Facades\File;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
@@ -139,5 +140,64 @@ class StubTraitTest extends TestCase
         $result = $mock->hasEndOfLineFormatting($value);
 
         $this->assertFalse($result);
+    }
+
+    /**
+     * A test getting the class basename.
+     *
+     * @return void
+     */
+    public function test_get_class_basename()
+    {
+        $className = 'Class';
+        $model = 'Foo\Bar\Baz\\' . $className;
+
+        $result = $this->getClassBasename($model);
+
+        $this->assertSame(strtolower($className), $result);
+    }
+
+
+    /**
+     * A test to resolve the path to the stub when file exists.
+     *
+     * @return void
+     */
+    public function test_resolve_stub_path()
+    {
+        $stub = 'stub';
+        $expectedResult = $path = base_path(trim($stub, '/'));
+
+        File::shouldReceive('exists')
+            ->with($path)
+            ->once()
+            ->andReturn(true);
+
+        $result = $this->resolveStubPath($stub);
+
+        $this->assertIsString($result, 'The type should be a string.');
+        $this->assertNotEmpty($result, 'The type should not be empty.');
+        $this->assertSame($expectedResult, $result, 'The stub is incorrect.');
+    }
+
+    /**
+     * A test to resolve the path to the stub when file does not exists.
+     *
+     * @return void
+     */
+    public function test_resolve_stub_path_when_file_not_found()
+    {
+        $stub = 'stub';
+        $expectedResult = dirname(dirname(dirname(dirname(__DIR__)))) . '/Commands/' . $stub;
+
+        File::shouldReceive('exists')
+            ->once()
+            ->andReturn(false);
+
+        $result = $this->resolveStubPath($stub);
+
+        $this->assertIsString($result, 'The type should be a string.');
+        $this->assertNotEmpty($result, 'The type should not be empty.');
+        $this->assertSame($expectedResult, $result, 'The stub is incorrect.');
     }
 }

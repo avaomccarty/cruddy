@@ -57,7 +57,7 @@ trait ConfigTrait
     }
 
     /**
-     * Get the vue folder.
+     * Get the Vue folder.
      *
      * @return string
      */
@@ -87,7 +87,7 @@ trait ConfigTrait
     }
 
     /**
-     * Get the vue import file location.
+     * Get the Vue import file location.
      *
      * @return string
      */

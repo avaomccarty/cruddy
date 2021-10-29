@@ -2,19 +2,14 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\Traits\Stubs\FormTrait;
-use Cruddy\Traits\Stubs\ModelTrait;
-use Cruddy\Traits\Stubs\VariableTrait;
-use Cruddy\Traits\Stubs\VueTrait;
 use Cruddy\Traits\ViewMakeCommandTrait;
-use Cruddy\Traits\VueCommandTrait;
 use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Support\Str;
 
 class ViewMakeCommand extends GeneratorCommand
 {
-    use ViewMakeCommandTrait, ModelTrait, VariableTrait, FormTrait, VueTrait, VueCommandTrait;
+    use ViewMakeCommandTrait;
 
     /**
      * The console command signature.

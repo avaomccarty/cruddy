@@ -600,38 +600,6 @@ class InputTraitTest extends TestCase
     }
 
     /**
-     * A test for should add value to input when a show/edit type used.
-     *
-     * @return void
-     */
-    public function test_should_add_value_to_input_when_not_edit_or_show()
-    {
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) {
-            $mock->shouldAllowMockingProtectedMethods();
-        });
-        
-        $result = $mock->shouldAddValueToInput();
-
-        $this->assertFalse($result);
-    }
-
-    /**
-     * A test for should add value to input when Vue frontend needed.
-     *
-     * @return void
-     */
-    public function test_should_add_value_to_input_when_needs_vue_frontend()
-    {
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) {
-            $mock->shouldAllowMockingProtectedMethods();
-        });
-        
-        $result = $mock->shouldAddValueToInput();
-
-        $this->assertFalse($result);
-    }
-
-    /**
      * A test for determining if the type is 'show' for the 'show' type.
      *
      * @return void

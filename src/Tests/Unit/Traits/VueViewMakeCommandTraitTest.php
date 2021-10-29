@@ -3,15 +3,13 @@
 namespace Cruddy\Tests\Unit\Traits;
 
 use Cruddy\Tests\TestTrait;
-use Cruddy\Traits\Stubs\VariableTrait;
-use Cruddy\Traits\Stubs\VueTrait;
 use Cruddy\Traits\VueViewMakeCommandTrait;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
 class VueViewMakeCommandTraitTest extends TestCase
 {
-    use VueViewMakeCommandTrait, VueTrait, VariableTrait, TestTrait;
+    use VueViewMakeCommandTrait, TestTrait;
 
     /**
      * A test to get the default namespace.

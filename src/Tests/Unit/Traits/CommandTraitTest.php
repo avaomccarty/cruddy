@@ -6,14 +6,13 @@ use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\ConfigTrait;
 use Cruddy\Traits\Stubs\InputTrait;
-use Cruddy\Traits\Stubs\ModelTrait;
 use Illuminate\Support\Facades\File;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
 class CommandTraitTest extends TestCase
 {
-    use CommandTrait, InputTrait, ModelTrait, ConfigTrait, TestTrait;
+    use CommandTrait, InputTrait, ConfigTrait, TestTrait;
 
     /**
      * The acceptable types.
@@ -293,49 +292,6 @@ class CommandTraitTest extends TestCase
     }
 
     /**
-     * A test to resolve the path to the stub when file exists.
-     *
-     * @return void
-     */
-    public function test_resolve_stub_path()
-    {
-        $stub = 'stub';
-        $expectedResult = $path = base_path(trim($stub, '/'));
-
-        File::shouldReceive('exists')
-            ->with($path)
-            ->once()
-            ->andReturn(true);
-
-        $result = $this->resolveStubPath($stub);
-
-        $this->assertIsString($result, 'The type should be a string.');
-        $this->assertNotEmpty($result, 'The type should not be empty.');
-        $this->assertSame($expectedResult, $result, 'The stub is incorrect.');
-    }
-
-    /**
-     * A test to resolve the path to the stub when file does not exists.
-     *
-     * @return void
-     */
-    public function test_resolve_stub_path_when_file_not_found()
-    {
-        $stub = 'stub';
-        $expectedResult = dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stub;
-
-        File::shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
-
-        $result = $this->resolveStubPath($stub);
-
-        $this->assertIsString($result, 'The type should be a string.');
-        $this->assertNotEmpty($result, 'The type should not be empty.');
-        $this->assertSame($expectedResult, $result, 'The stub is incorrect.');
-    }
-
-    /**
      * A test for getting the name string.
      *
      * @return void
@@ -429,24 +385,105 @@ class CommandTraitTest extends TestCase
     }
 
     /**
-     * A test for should add value to input when not Vue frontend needed and is edit/show.
+     * A test for should add value to input when needs Vue frontend needed and is edit/show.
      *
      * @return void
      */
-    public function test_should_add_value_to_input_when_no_vue_frontend_and_is_edit_or_show()
+    public function test_should_add_value_to_input_when_does_not_need_vue_frontend_and_is_edit_or_show()
     {
-        $mock = $this->partialMock(self::class, function (MockInterface $mock) {
+        $isEditOrShow = true;
+        $needsVueFrontend = false;
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($isEditOrShow, $needsVueFrontend) {
             $mock->shouldAllowMockingProtectedMethods();
             $mock->shouldReceive('isEditOrShow')
                 ->once()
-                ->andReturn(true);
+                ->andReturn($isEditOrShow);
             $mock->shouldReceive('needsVueFrontend')
                 ->once()
-                ->andReturn(false);
+                ->andReturn($needsVueFrontend);
         });
         
         $result = $mock->shouldAddValueToInput();
 
         $this->assertTrue($result);
+    }
+
+    /**
+     * A test for should add value to input when needs Vue frontend needed and is not edit/show.
+     *
+     * @return void
+     */
+    public function test_should_add_value_to_input_when_needs_vue_frontend_and_is_edit_or_show()
+    {
+        $isEditOrShow = true;
+        $needsVueFrontend = true;
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($isEditOrShow, $needsVueFrontend) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('isEditOrShow')
+                ->once()
+                ->andReturn($isEditOrShow);
+            $mock->shouldReceive('needsVueFrontend')
+                ->once()
+                ->andReturn($needsVueFrontend);
+        });
+        
+        $result = $mock->shouldAddValueToInput();
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * A test for should add value to input when does not need Vue frontend needed and is edit/show.
+     *
+     * @return void
+     */
+    public function test_should_add_value_to_input_when_is_not_edit_or_show()
+    {
+        $isEditOrShow = false;
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($isEditOrShow) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('isEditOrShow')
+                ->once()
+                ->andReturn($isEditOrShow);
+            $mock->shouldReceive('needsVueFrontend')
+                ->never();
+        });
+        
+        $result = $mock->shouldAddValueToInput();
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * A test for getting the camel case singular version of the value.
+     *
+     * @return void
+     */
+    public function test_get_camel_case_singular()
+    {
+        $value = 'TestVariableNames';
+        $expectedResult = 'testVariableName';
+
+        $result = $this->getCamelCaseSingular($value);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * A test for getting the camel case plural version of the value.
+     *
+     * @return void
+     */
+    public function test_get_camel_case_plural()
+    {
+        $value = 'TestVariableName';
+        $expectedResult = 'testVariableNames';
+
+        $result = $this->getCamelCasePlural($value);
+
+        $this->assertSame($expectedResult, $result);
     }
 }

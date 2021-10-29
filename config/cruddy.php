@@ -30,13 +30,13 @@ return [
     'frontend_scaffolding' => env('CRUDDY_FRONTEND_SCAFFOLDING', 'default'),
 
     /**
-     * This is the destination folder within the resources folder where Cruddy should place vue files.
+     * This is the destination folder within the resources folder where Cruddy should place Vue files.
      *
      */
     'vue_folder' => 'resources/js/components',
 
     /**
-     * This is the file where Cruddy should place the vue imports.
+     * This is the file where Cruddy should place the Vue imports.
      *
      */
     'vue_import_file' => 'resources/js/bootstrap.js',

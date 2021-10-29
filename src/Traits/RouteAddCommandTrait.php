@@ -52,8 +52,8 @@ trait RouteAddCommandTrait
         $lowerPluralName = $this->getLowerPlural($name);
         $ucFirstName = ucfirst($name);
 
-        return "\n\n// $ucFirstName Resource\n"
-            . "Route::" . $this->getResourceType() . "('$lowerPluralName', 'App\Http\Controllers\\" . $ucFirstName . "Controller');";
+        return "\n\n// $ucFirstName Resource\n" . 
+            "Route::" . $this->getResourceType() . "('$lowerPluralName', 'App\Http\Controllers\\" . $ucFirstName . "Controller');";
     }
 
     /**

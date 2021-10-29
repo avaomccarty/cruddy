@@ -3,14 +3,13 @@
 namespace Cruddy\Tests\Unit\Traits;
 
 use Cruddy\Tests\TestTrait;
-use Cruddy\Traits\Stubs\VueTrait;
 use Cruddy\Traits\ViewMakeCommandTrait;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
 class ViewMakeCommandTraitTest extends TestCase
 {
-    use ViewMakeCommandTrait, VueTrait, TestTrait;
+    use ViewMakeCommandTrait, TestTrait;
 
     /**
      * A test to get the default namespace.
@@ -48,7 +47,7 @@ class ViewMakeCommandTraitTest extends TestCase
     }
 
     /**
-     * A test for getting the vue post data string for non-edit types.
+     * A test for getting the Vue post data string for non-edit types.
      *
      * @return void
      */
@@ -63,7 +62,7 @@ class ViewMakeCommandTraitTest extends TestCase
     }
 
     /**
-     * A test for getting the vue post data string for edit types.
+     * A test for getting the Vue post data string for edit types.
      *
      * @return void
      */
@@ -401,6 +400,37 @@ class ViewMakeCommandTraitTest extends TestCase
         });
 
         $result = $mock->getEditUrl($name);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * A test to get the Vue component.
+     *
+     * @return void
+     */
+    public function test_get_studly_vue_component_name()
+    {
+        $tableName = 'tableName';
+        $studlySingular = 'studlySingular';
+        $type = 'type';
+        $expectedResult = $studlySingular . ucfirst($type);
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($tableName, $studlySingular, $type) {
+            $mock->shouldAllowMockingProtectedMethods();
+                $mock->shouldReceive('getTableName')
+                    ->once()
+                    ->andReturn($tableName);
+                $mock->shouldReceive('getStudlySingular')
+                    ->with($tableName)
+                    ->once()
+                    ->andReturn($studlySingular);
+                $mock->shouldReceive('getType')
+                    ->once()
+                    ->andReturn($type);
+        });
+
+        $result = $mock->getStudlyComponentName();
 
         $this->assertSame($expectedResult, $result);
     }

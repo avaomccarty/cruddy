@@ -3,7 +3,6 @@
 namespace Cruddy\Commands;
 
 use Cruddy\Traits\CommandTrait;
-use Cruddy\Traits\Stubs\VueTrait;
 use Cruddy\Traits\VueViewMakeCommandTrait;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
@@ -11,7 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class VueViewMakeCommand extends GeneratorCommand
 {
-    use VueViewMakeCommandTrait, VueTrait, CommandTrait;
+    use VueViewMakeCommandTrait, CommandTrait;
 
     /**
      * The console command signature.
@@ -19,7 +18,7 @@ class VueViewMakeCommand extends GeneratorCommand
      * @var string
      */
     protected $signature = 'cruddy:vue-view
-                            { name : The name of the resource that needs new vue view files. }
+                            { name : The name of the resource that needs new Vue view files. }
                             { table : The name of the original migration table. }
                             { type=index : The type of file being created. }';
 
@@ -28,14 +27,14 @@ class VueViewMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Create a new Cruddy vue view';
+    protected $description = 'Create a new Cruddy Vue view';
 
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'Cruddy vue view';
+    protected $type = 'Cruddy Vue view';
 
     /**
      * Get the stub file for the generator.

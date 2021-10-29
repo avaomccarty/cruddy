@@ -2,16 +2,12 @@
 
 namespace Cruddy\Traits;
 
-use Cruddy\Traits\Stubs\InputTrait;
-use Cruddy\Traits\Stubs\ModelTrait;
 use Cruddy\Traits\Stubs\RuleTrait;
-use Cruddy\Traits\Stubs\VariableTrait;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 trait CommandTrait
 {
-    use InputTrait, ModelTrait, ConfigTrait, VariableTrait, RuleTrait;
+    use ConfigTrait, RuleTrait;
 
     /**
      * Get the table.
@@ -196,19 +192,6 @@ trait CommandTrait
     }
 
     /**
-     * Resolve the fully-qualified path to the stub.
-     *
-     * @param  string  $stub
-     * @return string
-     */
-    protected function resolveStubPath($stub) : string
-    {
-        return File::exists($customPath = base_path(trim($stub, '/')))
-            ? $customPath
-            : dirname(__DIR__) . '/Commands/' . $stub;
-    }
-
-    /**
      * Get the name string.
      *
      * @return string
@@ -225,7 +208,7 @@ trait CommandTrait
      */
     protected function getInputs() : array
     {
-        return $this->argument('inputs') ?? [];
+        return (array)$this->argument('inputs') ?? [];
     }
 
     /**

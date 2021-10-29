@@ -9,16 +9,6 @@ trait ModelMakeCommandTrait
     use CommandTrait, InputTrait;
 
     /**
-     * Get the stub file.
-     *
-     * @return string
-     */
-    protected function getStub() : string
-    {
-        return $this->resolveStubPath($this->getStubsLocation() . '/model.stub');
-    }
-
-    /**
      * Build the class with the given name.
      *
      * @param  string  $name
@@ -34,6 +24,16 @@ trait ModelMakeCommandTrait
         return $this->replaceNamespace($stub, $name)
             ->replaceInStub($this->modelPlaceholders, $modelInputs, $stub)
             ->replaceClass($stub, $name);
+    }
+        
+    /**
+     * Get the stub file.
+     *
+     * @return string
+     */
+    protected function getStub() : string
+    {
+        return $this->resolveStubPath($this->getStubsLocation() . '/model.stub');
     }
 
     /**

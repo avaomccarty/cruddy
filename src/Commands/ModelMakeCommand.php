@@ -9,7 +9,7 @@ use Illuminate\Foundation\Console\ModelMakeCommand as BaseModelMakeCommand;
 
 class ModelMakeCommand extends BaseModelMakeCommand
 {
-    use ModelMakeCommandTrait, InputTrait;
+    use ModelMakeCommandTrait;
 
     /**
      * The console command name.

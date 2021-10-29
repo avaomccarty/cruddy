@@ -5,8 +5,6 @@ namespace Cruddy\Tests\Feature;
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\Stubs\InputTrait;
-use Cruddy\Traits\Stubs\FormTrait;
-use Cruddy\Traits\Stubs\ModelTrait;
 use Cruddy\Traits\ViewMakeCommandTrait;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
@@ -14,7 +12,7 @@ use Orchestra\Testbench\TestCase;
 
 class ViewMakeCommandTest extends TestCase
 {
-    use ViewMakeCommandTrait, TestTrait, FormTrait, InputTrait, ModelTrait, CommandTrait;
+    use ViewMakeCommandTrait, TestTrait, InputTrait, CommandTrait;
 
     /**
      * The name of the resource.

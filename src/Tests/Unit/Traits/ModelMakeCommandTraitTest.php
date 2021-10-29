@@ -4,13 +4,12 @@ namespace Cruddy\Tests\Unit\Traits;
 
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\ModelMakeCommandTrait;
-use Cruddy\Traits\Stubs\InputTrait;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
 class ModelMakeCommandTraitTest extends TestCase
 {
-    use ModelMakeCommandTrait, InputTrait, TestTrait;
+    use ModelMakeCommandTrait, TestTrait;
 
     /**
      * The inputs for the test.
@@ -24,7 +23,6 @@ class ModelMakeCommandTraitTest extends TestCase
         parent::setUp();
         $this->inputs = $this->getMockColumns();
     }
-    
 
     /**
      * A test to get the stub.

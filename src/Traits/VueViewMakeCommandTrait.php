@@ -2,13 +2,11 @@
 
 namespace Cruddy\Traits;
 
-use Cruddy\Traits\Stubs\VariableTrait;
-use Cruddy\Traits\Stubs\VueTrait;
 use Illuminate\Support\Str;
 
 trait VueViewMakeCommandTrait {
 
-    use CommandTrait, VueTrait, VariableTrait;
+    use CommandTrait;
 
     /**
      * Get the default namespace for the class.

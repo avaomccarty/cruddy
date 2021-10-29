@@ -16,7 +16,7 @@ class VueImportAddCommand extends Command
      * @var string
      */
     protected $signature = 'cruddy:vue-import
-                            { name : The name of the resource that needs new vue imports. }
+                            { name : The name of the resource that needs new Vue imports. }
                             { type=index : The type of file being created. }';
 
     /**
