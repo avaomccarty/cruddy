@@ -182,4 +182,19 @@ class ControllerMakeCommandTraitTest extends TestCase
 
         $this->assertSame($expectedResult, $result, 'The model is incorrect.');
     }
+
+    /**
+     * A test to get the default namespace.
+     *
+     * @return void
+     */
+    public function test_get_default_namespace()
+    {
+        $rootNamespace = 'rootNamespace';
+        $expectedResult = $rootNamespace . '\Http\Controllers';
+
+        $result = $this->getDefaultNamespace($rootNamespace);
+
+        $this->assertSame($expectedResult, $result, 'The default namespace does not match.');
+    }
 }

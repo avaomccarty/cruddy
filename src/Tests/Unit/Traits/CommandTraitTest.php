@@ -6,7 +6,6 @@ use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\ConfigTrait;
 use Cruddy\Traits\Stubs\InputTrait;
-use Illuminate\Support\Facades\File;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
