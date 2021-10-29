@@ -3,7 +3,6 @@
 namespace Cruddy\Commands;
 
 use Cruddy\Traits\ModelMakeCommandTrait;
-use Cruddy\Traits\Stubs\InputTrait;
 use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Foundation\Console\ModelMakeCommand as BaseModelMakeCommand;
 

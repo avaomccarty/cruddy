@@ -200,4 +200,88 @@ class StubTraitTest extends TestCase
         $this->assertNotEmpty($result, 'The type should not be empty.');
         $this->assertSame($expectedResult, $result, 'The stub is incorrect.');
     }
+
+    /**
+     * A test to add end of line formatting when end of line formatting is needed.
+     *
+     * @return void
+     */
+    public function test_add_end_of_line_formatting_when_needed()
+    {
+        $value = 'value-';
+        $hasEndOfLineFormatting = false;
+        $getEndOfLine = 'getEndOfLine';
+        $expectedResult = $value . $getEndOfLine;
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($value, $hasEndOfLineFormatting, $getEndOfLine) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('hasEndOfLineFormatting')
+                ->with($value)
+                ->once()
+                ->andReturn($hasEndOfLineFormatting);
+            $mock->shouldReceive('getEndOfLine')
+                ->once()
+                ->andReturn($getEndOfLine);
+        });
+
+        $mock->addEndOfLineFormatting($value);
+
+        $this->assertSame($expectedResult, $value);
+    }
+
+    /**
+     * A test to add end of line formatting when end of line formatting already exists within the string.
+     *
+     * @return void
+     */
+    public function test_add_end_of_line_formatting_when_not_needed()
+    {
+        $expectedResult = $value = 'value-';
+        $hasEndOfLineFormatting = true;
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($value, $hasEndOfLineFormatting) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('hasEndOfLineFormatting')
+                ->with($value)
+                ->once()
+                ->andReturn($hasEndOfLineFormatting);
+            $mock->shouldReceive('getEndOfLine')
+                ->never();
+        });
+
+        $mock->addEndOfLineFormatting($value);
+
+        $this->assertSame($expectedResult, $value);
+    }
+
+    /**
+     * A test to replace the stub variables with the correct values.
+     *
+     * @return void
+     */
+    public function test_replacing_stub()
+    {
+        $variable1 = 'variable-1';
+        $variable2 = 'variable-2';
+        $variables = [
+            $variable1,
+            $variable2
+        ];
+
+        $value = 'value-';
+        $baseStub = '-stub';
+        $stub = $variable1 . $variable2 . $baseStub;
+        $expectedResult = '';
+        
+        for ($x = 0; $x < count($variables); $x++) {
+            $expectedResult .= $value;
+        }
+        $expectedResult .= $baseStub;
+
+        $this->replaceInStub($variables, $value, $stub);
+
+        $this->assertIsString($stub);
+        $this->assertSame($expectedResult, $stub);
+        
+    }
 }

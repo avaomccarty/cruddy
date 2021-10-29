@@ -3,13 +3,12 @@
 namespace Cruddy\Commands;
 
 use Cruddy\Traits\ControllerMakeCommandTrait;
-use Cruddy\Traits\Stubs\InputTrait;
 use Illuminate\Routing\Console\ControllerMakeCommand as BaseControllerMakeCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 class ControllerMakeCommand extends BaseControllerMakeCommand
 {
-    use ControllerMakeCommandTrait, InputTrait;
+    use ControllerMakeCommandTrait;
 
     /**
      * The console command name.

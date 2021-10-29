@@ -57,9 +57,10 @@ trait ModelMakeCommandTrait
     protected function getModelInputsString(array $inputs) : string
     {
         $inputsString = '';
+        $isEditOrShow = $this->isVueEditOrShow();
 
         foreach ($inputs as $input) {
-            $inputsString .= $this->getInputString($input, $this->isVueEditOrShow());
+            $inputsString .= $this->getInputString($input, $isEditOrShow);
         }
 
         $this->removeEndOfLineFormatting($inputsString);

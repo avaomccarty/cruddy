@@ -99,4 +99,108 @@ class ModelMakeCommandTraitTest extends TestCase
         $this->assertNotEmpty($stub, 'The stub shouldn\'t be empty.');
         $this->assertSame($originalStub, $stub, 'The stub shouldn\'t be updated based on the mocks within this test.');
     }
+
+    /**
+     * A test to get the model inputs.
+     *
+     * @return void
+     */
+    public function test_get_model_inputs()
+    {
+        $inputs = ['inputs'];
+        $expectedResult = $inputsString = 'inputsString';
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputs, $inputsString) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('getInputs')
+                ->once()
+                ->andReturn($inputs);
+            $mock->shouldReceive('getModelInputsString')
+                ->with($inputs)
+                ->once()
+                ->andReturn($inputsString);
+        });
+
+        $result = $mock->getModelInputs();
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * A test to get the model inputs as a string.
+     *
+     * @return void
+     */
+    public function test_get_model_inputs_string_when_edit_or_show()
+    {
+        $inputs = $this->getMockColumns();
+        $expectedResult = '';
+        $isEditOrShow = true;
+
+        foreach ($inputs as $input) {
+            $expectedResult .= $input->name;
+        }
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputs, $isEditOrShow, $expectedResult) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('isVueEditOrShow')
+                ->once()
+                ->andReturn($isEditOrShow);
+
+            foreach ($inputs as $input) {
+                $mock->shouldReceive('getInputString')
+                    ->with($input, $isEditOrShow)
+                    ->once()
+                    ->andReturn($input->name);
+            }
+
+            $mock->shouldReceive('removeEndOfLineFormatting')
+                ->with($expectedResult)
+                ->once()
+                ->andReturn($expectedResult);
+        });
+
+        $result = $mock->getModelInputsString($inputs);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * A test to get the model inputs as a string.
+     *
+     * @return void
+     */
+    public function test_get_model_inputs_string_when_not_edit_or_show()
+    {
+        $inputs = $this->getMockColumns();
+        $expectedResult = '';
+        $isEditOrShow = false;
+
+        foreach ($inputs as $input) {
+            $expectedResult .= $input->name;
+        }
+
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($inputs, $isEditOrShow, $expectedResult) {
+            $mock->shouldAllowMockingProtectedMethods();
+            $mock->shouldReceive('isVueEditOrShow')
+                ->once()
+                ->andReturn($isEditOrShow);
+
+            foreach ($inputs as $input) {
+                $mock->shouldReceive('getInputString')
+                    ->with($input, $isEditOrShow)
+                    ->once()
+                    ->andReturn($input->name);
+            }
+
+            $mock->shouldReceive('removeEndOfLineFormatting')
+                ->with($expectedResult)
+                ->once()
+                ->andReturn($expectedResult);
+        });
+
+        $result = $mock->getModelInputsString($inputs);
+
+        $this->assertSame($expectedResult, $result);
+    }
 }

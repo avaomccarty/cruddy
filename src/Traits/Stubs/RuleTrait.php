@@ -72,7 +72,7 @@ trait RuleTrait
     }
 
     /**
-     * Check if the rules already contain a rule.
+     * Check if the rules already contains a rule.
      *
      * @param  string  $rule
      * @return boolean

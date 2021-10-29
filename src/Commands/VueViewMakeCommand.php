@@ -2,7 +2,6 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\VueViewMakeCommandTrait;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
@@ -10,7 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class VueViewMakeCommand extends GeneratorCommand
 {
-    use VueViewMakeCommandTrait, CommandTrait;
+    use VueViewMakeCommandTrait;
 
     /**
      * The console command signature.

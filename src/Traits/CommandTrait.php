@@ -2,12 +2,11 @@
 
 namespace Cruddy\Traits;
 
-use Cruddy\Traits\Stubs\RuleTrait;
 use Illuminate\Support\Str;
 
 trait CommandTrait
 {
-    use ConfigTrait, RuleTrait;
+    use ConfigTrait;
 
     /**
      * Get the table.
