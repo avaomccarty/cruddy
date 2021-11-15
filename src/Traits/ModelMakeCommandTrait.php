@@ -49,7 +49,7 @@ trait ModelMakeCommandTrait
     }
 
     /**
-     * Get the iput string from the inputs.
+     * Get the input string from the inputs.
      *
      * @param  array  $inputs
      * @return string
@@ -67,4 +67,6 @@ trait ModelMakeCommandTrait
 
         return $inputsString;
     }
+
+
 }
