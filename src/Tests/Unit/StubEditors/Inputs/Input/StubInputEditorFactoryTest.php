@@ -20,7 +20,7 @@ class StubInputEditorFactoryTest extends TestCase
     public function test_get_stub_input_editor_for_controller_class()
     {
         $stub = 'stub';
-        $result = StubInputEditorFactory::get(new ColumnDefinition([]), 'controller', true, $stub);
+        $result = StubInputEditorFactory::get(new ColumnDefinition([]), 'controller', $stub);
 
         $this->assertInstanceOf(ControllerStubInputEditor::class, $result);
     }
@@ -33,7 +33,7 @@ class StubInputEditorFactoryTest extends TestCase
     public function test_get_stub_input_editor_for_request_class()
     {
         $stub = 'stub';
-        $result = StubInputEditorFactory::get(new ColumnDefinition([]), 'request', true, $stub);
+        $result = StubInputEditorFactory::get(new ColumnDefinition([]), 'request', $stub);
 
         $this->assertInstanceOf(RequestStubInputEditor::class, $result);
     }
@@ -46,7 +46,7 @@ class StubInputEditorFactoryTest extends TestCase
     public function test_get_stub_input_editor_for_view_class()
     {
         $stub = 'stub';
-        $result = StubInputEditorFactory::get(new ColumnDefinition([]), 'view', true, $stub);
+        $result = StubInputEditorFactory::get(new ColumnDefinition([]), 'view', $stub);
 
         $this->assertInstanceOf(ViewStubInputEditor::class, $result);
     }

@@ -7,7 +7,6 @@ use Cruddy\Exceptions\Config\UnknownStubsLocation;
 use Cruddy\Exceptions\Config\UnknownVueFolderLocation;
 use Cruddy\Exceptions\Config\UnknownVueImportFileLocation;
 use Illuminate\Support\Facades\Config;
-use PDO;
 
 trait ConfigTrait
 {
@@ -160,6 +159,6 @@ trait ConfigTrait
      */
     public function getVueComponentSearchString() : string
     {
-        return Config::get('cruddy.vue_search_string') ?? '';
+        return (string)Config::get('cruddy.vue_search_string') ?? '';
     }
 }

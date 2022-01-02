@@ -18,6 +18,17 @@ class ViewStubEditor extends StubEditor
     ];
 
     /**
+     * The acceptable value placeholders within a stub.
+     *
+     * @var array
+     */
+    public $valuePlaceholders = [
+        'DummyValue',
+        '{{ value }}',
+        '{{value}}'
+    ];
+
+    /**
      * The acceptable component name placeholders within a stub.
      *
      * @var array
@@ -48,6 +59,17 @@ class ViewStubEditor extends StubEditor
         'DummyComponentName',
         '{{ componentName }}',
         '{{componentName}}'
+    ];
+
+    /**
+     * The acceptable model placeholders within a stub.
+     *
+     * @var array
+     */
+    public $modelPlaceholders = [
+        'DummyModelClass',
+        '{{ model }}',
+        '{{model}}'
     ];
 
     /**
@@ -117,6 +139,13 @@ class ViewStubEditor extends StubEditor
     ];
 
     /**
+     * The type of view.
+     *
+     * @var string
+     */
+    protected $viewType = 'index';
+
+    /**
      * The acceptable view types.
      *
      * @var array
@@ -143,9 +172,9 @@ class ViewStubEditor extends StubEditor
         'actionPlaceholders',
         'editUrlPlaceholders',
         'cancelUrlPlaceholders',
-        'valuePlaceholders',
         'variableCollectionPlaceholders',
         'variablePlaceholders',
+        'modelPlaceholders',
     ];
 
     /**
@@ -192,6 +221,17 @@ class ViewStubEditor extends StubEditor
     }
 
     /**
+     * Set the view type.
+     *
+     * @param  string  $viewType = 'index'
+     * @return 
+     */
+    public function setViewType(string $viewType = 'index')
+    {
+        $this->viewType = $this->isValidType($viewType) ? $viewType : $this->getDefaultViewType();
+    }
+
+    /**
      * Get the stub.
      *
      * @return string
@@ -201,7 +241,7 @@ class ViewStubEditor extends StubEditor
         $frontendScaffolding = $this->getFrontendScaffoldingName();
         $stubsLocation = $this->getStubsLocation();
 
-        $stubPath = $this->resolveStubPath($stubsLocation . '/views/' . $frontendScaffolding  . '/' . $this->getViewType() . '.stub');
+        $stubPath = $this->resolveStubPath($stubsLocation . '/views/' . $frontendScaffolding  . '/' . $this->viewType . '.stub');
 
         return File::get($stubPath);
     }

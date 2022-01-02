@@ -27,17 +27,13 @@ class ViewMakeCommand extends GeneratorCommand
      * @var string
      */
     protected $endOfPostDataLine = "\n\t\t\t\t";
-
+    
     /**
-     * The console command signature.
+     * The console command name.
      *
      * @var string
      */
-    protected $signature = 'cruddy:view
-                            { name : The name of the resource that needs new views. }
-                            { table : The name of the table within the migration. }
-                            { type=index : The type of file being created. }
-                            { inputs?* : The inputs needed within the file. }';
+    protected $name = 'cruddy:view';
 
     /**
      * The console command description.
@@ -68,9 +64,10 @@ class ViewMakeCommand extends GeneratorCommand
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function buildClass($name) : string
+    protected function buildClass($name)
     {
         $this->setStubEditor('view');
+        $this->setViewType();
         $stub = $this->getStub();
         $name = $this->getNameInput();
         $model = $this->stubEditor->getClassBasename($name);
@@ -80,7 +77,6 @@ class ViewMakeCommand extends GeneratorCommand
         $inputsString = $this->getInputString();
         $vueDataString = '';
         $vuePostDataString = '';
-        
         if ($this->needsVueFrontend()) {
             $this->replaceVueData($this->getInputs(), $vueDataString, $vuePostDataString);
         }
@@ -90,15 +86,31 @@ class ViewMakeCommand extends GeneratorCommand
         $this->stubEditor->replaceInStub($this->stubEditor->actionPlaceholders, $actionRoute, $stub);
         $this->stubEditor->replaceInStub($this->stubEditor->editUrlPlaceholders, $editUrl, $stub);
         $this->stubEditor->replaceInStub($this->stubEditor->variableCollectionPlaceholders, $this->getCamelCasePlural($name), $stub);
+        $this->stubEditor->replaceInStub($this->stubEditor->variableCollectionPlaceholders, '', $stub);
         $this->stubEditor->replaceInStub($this->stubEditor->variablePlaceholders, $name, $stub);
         $this->stubEditor->replaceInStub($this->stubEditor->cancelUrlPlaceholders, $cancelUrl, $stub);
         $this->stubEditor->replaceInStub($this->stubEditor->modelPlaceholders, $model, $stub);
         $this->stubEditor->replaceInStub($this->stubEditor->vueComponentPlaceholders, $this->getStudlyComponentName($name), $stub);
         $this->stubEditor->replaceInStub($this->stubEditor->vueDataPlaceholders, $vueDataString, $stub);
+        $this->stubEditor->replaceInStub($this->stubEditor->vueDataPlaceholders, '', $stub);
         $this->stubEditor->replaceInStub($this->stubEditor->vuePostDataPlaceholders, $vuePostDataString, $stub);
         $this->replaceClass($stub, $name);
 
         return $stub;
+    }
+
+    /**
+     * Set the type for the stub editor.
+     *
+     * @return void
+     */
+    protected function setViewType() : void
+    {
+        if ($this->needsVueFrontend()) {
+            $this->stubEditor->setViewType('page');
+        } else {
+            $this->stubEditor->setViewType($this->getType());
+        }
     }
 
     /**
@@ -145,13 +157,26 @@ class ViewMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments() : array
+    protected function getArguments()
+    {
+        $arguments = parent::getArguments();
+        $arguments[] = ['inputs', null, InputArgument::IS_ARRAY, 'The inputs for the resource'];
+        $arguments[] = ['keys', null, InputArgument::IS_ARRAY, 'The keys for the resource'];
+        $arguments[] = ['table', null, InputArgument::REQUIRED, 'The name of the table'];
+        $arguments[] = ['type', null, InputArgument::REQUIRED, 'The type of file.'];
+
+        return $arguments;
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
     {
         return [
-            ['type', InputArgument::OPTIONAL, 'The type of view'],
-            ['inputs', InputArgument::OPTIONAL, 'The inputs for the view'],
-            ['name', InputArgument::OPTIONAL, 'The name of the resource'],
-            ['table', InputArgument::OPTIONAL, 'The name of the table'],
+            ['force', null, InputArgument::OPTIONAL, 'Force the file to be created.']
         ];
     }
 
@@ -164,7 +189,6 @@ class ViewMakeCommand extends GeneratorCommand
     {
         return $this->stubEditor->getStubFile();
     }
-
 
     /**
      * Get the default namespace for the class.
@@ -180,9 +204,9 @@ class ViewMakeCommand extends GeneratorCommand
     /**
      * Replace the Vue strings with the needed values.
      *
-     * @param  array  $inputs
-     * @param  string  &$vueDataString
-     * @param  string  &$vuePostDataString
+     * @param  array  $inputs = []
+     * @param  string  &$vueDataString = ''
+     * @param  string  &$vuePostDataString = ''
      * @return void
      */
     protected function replaceVueData(array $inputs = [], string &$vueDataString = '', string &$vuePostDataString = '') : void

@@ -4,6 +4,7 @@ namespace Cruddy\Tests\Unit\StubEditors;
 
 use Cruddy\StubEditors\ViewStubEditor;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
@@ -17,14 +18,12 @@ class ViewStubEditorTest extends TestCase
     public function test_get_page_stub_file_for_vue_frontend()
     {
         $frontendScaffolding = 'vue';
-        $stubsLocation = 'stubs/cruddy';
+        $stubsLocation = 'stubs';
         $type = 'page';
-        $expectedResult = dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub';
+        $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub');
 
         $mock = $this->partialMock(ViewStubEditor::class, function (MockInterface $mock) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getType')
-                ->never();
         });
 
         Config::shouldReceive('get')
@@ -35,6 +34,7 @@ class ViewStubEditorTest extends TestCase
             ->with('cruddy.frontend_scaffolding')
             ->andReturn($frontendScaffolding);
 
+        $mock->setViewType($type);
         $result = $mock->getStubFile();
 
         $this->assertSame($expectedResult, $result);
@@ -48,15 +48,12 @@ class ViewStubEditorTest extends TestCase
     public function test_get_index_stub_file_for_default_frontend()
     {
         $frontendScaffolding = 'default';
-        $stubsLocation = 'stubs/cruddy';
+        $stubsLocation = 'stubs';
         $type = 'index';
-        $expectedResult = dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub';
+        $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub');
 
         $mock = $this->partialMock(ViewStubEditor::class, function (MockInterface $mock) use ($type) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getType')
-                ->once()
-                ->andReturn($type);
         });
 
         Config::shouldReceive('get')
@@ -67,6 +64,7 @@ class ViewStubEditorTest extends TestCase
             ->with('cruddy.frontend_scaffolding')
             ->andReturn($frontendScaffolding);
 
+        $mock->setViewType($type);
         $result = $mock->getStubFile();
 
         $this->assertSame($expectedResult, $result);
@@ -80,15 +78,12 @@ class ViewStubEditorTest extends TestCase
     public function test_get_create_stub_file_for_default_frontend()
     {
         $frontendScaffolding = 'default';
-        $stubsLocation = 'stubs/cruddy';
+        $stubsLocation = 'stubs';
         $type = 'create';
-        $expectedResult = dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub';
+        $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub');
 
         $mock = $this->partialMock(ViewStubEditor::class, function (MockInterface $mock) use ($type) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getType')
-                ->once()
-                ->andReturn($type);
         });
 
         Config::shouldReceive('get')
@@ -99,6 +94,7 @@ class ViewStubEditorTest extends TestCase
             ->with('cruddy.frontend_scaffolding')
             ->andReturn($frontendScaffolding);
 
+        $mock->setViewType($type);
         $result = $mock->getStubFile();
 
         $this->assertSame($expectedResult, $result);
@@ -112,15 +108,12 @@ class ViewStubEditorTest extends TestCase
     public function test_get_show_stub_file_for_default_frontend()
     {
         $frontendScaffolding = 'default';
-        $stubsLocation = 'stubs/cruddy';
+        $stubsLocation = 'stubs';
         $type = 'show';
-        $expectedResult = dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub';
+        $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub');
 
         $mock = $this->partialMock(ViewStubEditor::class, function (MockInterface $mock) use ($type) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getType')
-                ->once()
-                ->andReturn($type);
         });
 
         Config::shouldReceive('get')
@@ -131,6 +124,7 @@ class ViewStubEditorTest extends TestCase
             ->with('cruddy.frontend_scaffolding')
             ->andReturn($frontendScaffolding);
 
+        $mock->setViewType($type);
         $result = $mock->getStubFile();
 
         $this->assertSame($expectedResult, $result);
@@ -144,17 +138,14 @@ class ViewStubEditorTest extends TestCase
     public function test_get_edit_stub_file_for_default_frontend()
     {
         $frontendScaffolding = 'default';
-        $stubsLocation = 'stubs/cruddy';
+        $stubsLocation = 'stubs';
         $type = 'edit';
-        $expectedResult = dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub';
+        $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub');
 
         $mock = $this->partialMock(ViewStubEditor::class, function (MockInterface $mock) use ($type) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getType')
-                ->once()
-                ->andReturn($type);
-        });
 
+        });
         Config::shouldReceive('get')
             ->with('cruddy.stubs_folder')
             ->andReturn($stubsLocation);
@@ -163,6 +154,7 @@ class ViewStubEditorTest extends TestCase
             ->with('cruddy.frontend_scaffolding')
             ->andReturn($frontendScaffolding);
 
+        $mock->setViewType($type);
         $result = $mock->getStubFile();
 
         $this->assertSame($expectedResult, $result);
@@ -176,25 +168,23 @@ class ViewStubEditorTest extends TestCase
     public function test_get_page_stub_file_for_default_frontend()
     {
         $frontendScaffolding = 'default';
-        $stubsLocation = 'stubs/cruddy';
+        $stubsLocation = 'stubs';
         $type = 'page';
         $expectedResultComparison = dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub';
 
         $mock = $this->partialMock(ViewStubEditor::class, function (MockInterface $mock) use ($type) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getType')
-                ->once()
-                ->andReturn($type);
+
         });
 
-        Config::shouldReceive('get')
-            ->with('cruddy.stubs_folder')
+        Config::shouldReceive('get')            ->with('cruddy.stubs_folder')
             ->andReturn($stubsLocation);
 
         Config::shouldReceive('get')
             ->with('cruddy.frontend_scaffolding')
             ->andReturn($frontendScaffolding);
 
+        $mock->setViewType($type);
         $result = $mock->getStubFile();
 
         $this->assertNotSame($expectedResultComparison, $result);

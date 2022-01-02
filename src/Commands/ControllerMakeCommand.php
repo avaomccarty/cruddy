@@ -4,7 +4,6 @@ namespace Cruddy\Commands;
 
 use Cruddy\Traits\CommandTrait;
 use Illuminate\Routing\Console\ControllerMakeCommand as BaseControllerMakeCommand;
-use Illuminate\Support\Facades\File;
 use Symfony\Component\Console\Input\InputOption;
 
 class ControllerMakeCommand extends BaseControllerMakeCommand
@@ -115,75 +114,46 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      */
     protected $stubEditor;
 
+    // /**
+    //  * Get the console command options.
+    //  *
+    //  * @return array
+    //  */
+    // protected function getOptions() : array
+    // {
+    //     $options = parent::getOptions();
 
-    /**
-     * Execute the console command.
-     *
-     * @return bool|null
-     *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    public function handle()
-    {
-        // First we need to ensure that the given name is not a reserved word within the PHP
-        // language and that the class name will actually be valid. If it is not valid we
-        // can error now and prevent from polluting the filesystem using invalid files.
-        if ($this->isReservedName($this->getNameInput())) {
-            $this->error('The name "'.$this->getNameInput().'" is reserved by PHP.');
+    //     $options[] = ['--inputs', null, InputOption::VALUE_OPTIONAL, 'The inputs for the resource.'];
+    //     $options[] = ['--commands', null, InputOption::VALUE_OPTIONAL, 'The foreign keys for the columns.'];
 
-            return false;
-        }
+    //     return $options;
+    // }
 
-        $name = $this->qualifyClass($this->getNameInput());
+    // /**
+    //  * Get the console command arguments.
+    //  *
+    //  * @return array
+    //  */
+    // protected function getArguments()
+    // {
+    //     $arguments = parent::getArguments();
+    //     // $arguments[] = ['inputs', null, InputArgument::IS_ARRAY, 'The inputs for the resource'];
+    //     // $arguments[] = ['keys', null, InputArgument::IS_ARRAY, 'The keys for the resource'];
 
-        $path = $this->getPath($name);
+    //     return $arguments;
+    // }
 
-        // Next, we will generate the path to the location where this class' file should get
-        // written. Then, we will build the class and make the proper replacements on the
-        // stub files so that it gets the correctly formatted namespace and class name.
-        $this->makeDirectory($path);
-
-        // echo $this->sortImports($this->buildClass($name));
-        // dd();
-
-        $file = File::get(dirname(dirname(dirname(dirname(base_path())))) . '/src/Tests/stubs/controllers/expectedFile.stub');
-        // dd(
-        //     substr($this->sortImports($this->buildClass($name)), 0, 110000000),
-            // substr($file, 0, 1100),
-            // strcmp(
-            //     substr($this->sortImports($this->buildClass($name)), 0, 1100),
-            //     substr($file, 0, 1100)
-            // )
-        // );
-
-        // dd(
-        //     $this->sortImports($this->buildClass($name)),
-        //     $file,
-        //     strpos(
-        //         $this->sortImports($this->buildClass($name)),
-        //         $file
-        //     ),
-        //     strlen($this->sortImports($this->buildClass($name))),
-        //     strlen($file),
-        // );
-
-
-        $this->files->put($path, $this->sortImports($this->buildClass($name)));
-
-        $this->info($this->type.' created successfully.');
-    }
 
     /**
      * Get the console command options.
      *
      * @return array
      */
-    protected function getOptions() : array
+    protected function getOptions()
     {
         $options = parent::getOptions();
-
-        $options[] = ['--inputs', null, InputOption::VALUE_OPTIONAL, 'The inputs for the resource.'];
-        $options[] = ['--commands', null, InputOption::VALUE_OPTIONAL, 'The foreign keys for the columns.'];
+        $options[] = ['inputs', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'The inputs for the resource', []];
+        $options[] = ['commands', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'The keys for the resource', []];
 
         return $options;
     }
@@ -207,7 +177,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function buildClass($name) : string
+    protected function buildClass($name)
     {
         $this->setStubEditor('controller');
         $this->stubEditor->setIsApi($this->getApi());
@@ -272,6 +242,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
                 'name' => $modelClass,
                 'inputs' => $this->getInputsOption(),
                 'keys' => $this->getCommands(),
+                '--force' => true
             ]);
         }
 

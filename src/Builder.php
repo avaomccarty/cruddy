@@ -130,31 +130,39 @@ class Builder extends BaseBuilder
     protected function createFrontendViews() : void
     {
         foreach ($this->views as $view) {
-            if ($this->shouldHaveEditView($view)) {
+            if ($view !== 'edit' || $this->shouldHaveEditView($view)) {
                 // Make standard view
                 Artisan::call('cruddy:view', [
                     'name' => $this->className,
                     'table' => $this->table,
                     'type' => $view,
                     'inputs' => $this->columns,
+                    '--force' => true,
                 ]);
             }
 
             if ($this->needsVueFrontend()) {
-                if ($this->shouldHaveEditView($view)) {
-                    // Make Vue view
-                    Artisan::call('cruddy:vue-view', [
-                        'name' => $this->className,
-                        'table' => $this->table,
-                        'type' => $view,
-                    ]);
-                }
-
                 Artisan::call('cruddy:vue-import', [
                     'name' => $this->className,
                     'type' => $view,
                 ]);
             }
+
+            // if ($this->needsVueFrontend()) {
+            //     if ($this->shouldHaveEditView($view)) {
+            //         // Make Vue view
+            //         Artisan::call('cruddy:vue-view', [
+            //             'name' => $this->className,
+            //             'table' => $this->table,
+            //             'type' => $view,
+            //         ]);
+            //     }
+
+            //     Artisan::call('cruddy:vue-import', [
+            //         'name' => $this->className,
+            //         'type' => $view,
+            //     ]);
+            // }
         }
     }
 

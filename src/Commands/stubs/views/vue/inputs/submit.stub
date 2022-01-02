@@ -1,1 +1,1 @@
-<input type="submit" value="{{ value }}" class="button is-primary my-2">
+<input type="submit" class="button is-primary my-2">

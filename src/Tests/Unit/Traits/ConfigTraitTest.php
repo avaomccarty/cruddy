@@ -235,10 +235,12 @@ class ConfigTraitTest extends TestCase
         $type = 'string';
 
         Config::shouldReceive('get')
-            ->with('cruddy.validation_defaults.' . $type)
+            ->with('cruddy.validation_defaults')
             ->once()
-            ->andReturn($expectedResult);
-        
+            ->andReturn([
+                $type => $expectedResult
+            ]);
+
         $result = $this->getValidationDefault($type);
 
         $this->assertSame($expectedResult, $result);
@@ -255,10 +257,12 @@ class ConfigTraitTest extends TestCase
         $type = 'string';
 
         Config::shouldReceive('get')
-            ->with('cruddy.input_defaults.' . $type)
+            ->with('cruddy.input_defaults')
             ->once()
-            ->andReturn($expectedResult);
-        
+            ->andReturn([
+                $type => $expectedResult
+            ]);
+
         $result = $this->getDefaultForInputType($type);
 
         $this->assertSame($expectedResult, $result);
@@ -281,6 +285,26 @@ class ConfigTraitTest extends TestCase
         $result = $this->getInputDefaults();
 
         $this->assertIsArray($result);
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * A test for getting the vue component search string.
+     *
+     * @return void
+     */
+    public function test_get_vue_component_search_string()
+    {
+        $expectedResult = 'expectedResult';
+
+        Config::shouldReceive('get')
+            ->with('cruddy.vue_search_string')
+            ->once()
+            ->andReturn($expectedResult);
+        
+        $result = $this->getVueComponentSearchString();
+
+        $this->assertIsString($result);
         $this->assertSame($expectedResult, $result);
     }
 }

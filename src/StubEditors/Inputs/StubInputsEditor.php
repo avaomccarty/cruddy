@@ -108,11 +108,31 @@ class StubInputsEditor extends StubInputEditor
             $this->inputString .= $inputStubEditor->getInputString($type, $name);
         }
 
+        if ($this->shouldHaveSubmitButton($type)) {
+            $inputStubEditor = App::make(StubInputEditor::class, [null, $this->fileType, $this->stub, $this->fileTypeNeedsSubmitInput($type)]);
+            $inputStubEditor->setForeignKeys($this->getForeignKeys());
+            $this->inputString .= $inputStubEditor->getInputString($type, $name);
+        }
+
         if (count($this->columns) > 0) {
             $inputStubEditor->removeEndOfLineFormatting($this->inputString);
         }
 
         return $this->inputString;
+    }
+
+    /**
+     * Determine if the file should have a submit button.
+     *
+     * @param  string  $type = 'index'
+     * @return boolean
+     */
+    protected function shouldHaveSubmitButton(string $type = 'index') : bool
+    {
+        return in_array($type, [
+            'create',
+            'edit',
+        ]);
     }
 
     /**

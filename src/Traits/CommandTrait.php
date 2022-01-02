@@ -167,13 +167,13 @@ trait CommandTrait
     }
 
     /**
-     * Get the inputs.
+     * Get the inputs from the options.
      *
      * @return array
      */
     protected function getInputsOption() : array
     {
-        return (array)$this->option('inputs') ?? [];
+        return (array)$this->getOption('inputs') ?? [];
     }
 
     /**
@@ -245,7 +245,11 @@ trait CommandTrait
      */
     protected function getStubInputsEditor(string $type = 'controller') : StubInputsEditor
     {
-        return App::make(StubInputsEditor::class, [$this->getInputsOption(), $type]);
+        if ($type === 'controller') {
+            return App::make(StubInputsEditor::class, [$this->getInputsOption(), $type]);
+        }
+
+        return App::make(StubInputsEditor::class, [$this->getInputs(), $type]);
     }
 
     /**

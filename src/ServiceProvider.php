@@ -8,7 +8,6 @@ use Cruddy\Commands\RequestMakeCommand;
 use Cruddy\Commands\RouteAddCommand;
 use Cruddy\Commands\ViewMakeCommand;
 use Cruddy\Commands\VueImportAddCommand;
-use Cruddy\Commands\VueViewMakeCommand;
 use Cruddy\StubEditors\Inputs\Input\StubInputEditorFactory;
 use Cruddy\StubEditors\StubEditor;
 use Cruddy\StubEditors\StubEditorFactory;
@@ -113,7 +112,6 @@ class ServiceProvider extends BaseServiceProvider
                 RouteAddCommand::class,
                 ViewMakeCommand::class,
                 VueImportAddCommand::class,
-                VueViewMakeCommand::class,
                 ModelMakeCommand::class,
             ]);
         }

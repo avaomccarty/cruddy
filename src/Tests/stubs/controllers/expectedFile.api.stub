@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFoo;
 use App\Http\Requests\UpdateFoo;
-use App\Models\Foo;
 use Exception;
 use Illuminate\Http\Response;
+use {{ namespacedModel }};
 
 class FooController extends Controller
 {
@@ -64,13 +64,13 @@ class FooController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \App\Http\Requests\UpdateFoo  $request
-     * @param  \App\Models\Foo  $foo
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateFoo $request, foo $foo)
+    public function update(UpdateFoo $request, {{ model }} ${{ modelVariable }})
     {
         try {
-            $foo->update([
+            ${{ modelVariable }}->update([
                 'name-string' => $request->name-string,
 				'name-integer' => $request->name-integer,
 				'name-bigInteger' => $request->name-bigInteger,
@@ -84,13 +84,13 @@ class FooController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Foo  $foo
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
      * @return \Illuminate\Http\Response
      */
-    public function destroy(foo $foo)
+    public function destroy({{ model }} ${{ modelVariable }})
     {
         try {
-            $foo->delete();
+            ${{ modelVariable }}->delete();
             return response('success', 200);
         } catch (Exception $exception) {
             return response('error', 400);

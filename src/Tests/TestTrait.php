@@ -175,38 +175,43 @@ trait TestTrait
         ];
     }
 
-    /**
-     * Get the expected location for the stub.
-     *
-     * @param  string  $type
-     * @return string
-     */
-    protected function getExpectedTypeStubLocation(string $type = 'index') : string
-    {
-        return base_path() . '/stubs/views/default/' . $type . '.stub';
-    }
+    // /**
+    //  * Get the expected location for the stub.
+    //  *
+    //  * @param  string  $type
+    //  * @param  string  $frontendScaffolding = 'default'
+    //  * @return string
+    //  */
+    // protected function getExpectedTypeStubLocation(string $type = 'index', string $frontendScaffolding = 'default') : string
+    // {
+    //     if ($frontendScaffolding === 'vue') {
+    //         return base_path() . "/stubs/views/vue/page.stub";
+    //     }
 
-    /**
-     * Get the location for the test stub.
-     *
-     * @param  string  $type
-     * @return string
-     */
-    protected function getTypeStubLocation(string $type = 'index') : string
-    {
-        return dirname(__DIR__) . '/Commands/stubs/views/default/' . $type . '.stub';
-    }
+    //     return base_path() . "/stubs/views/$frontendScaffolding/$type.stub";
+    // }
 
-    /**
-     * Get the expected location for the stub.
-     *
-     * @param  string  $type
-     * @return string
-     */
-    protected function getExpectedStubLocation(string $type = 'controller') : string
-    {
-        return base_path() . '/stubs/' . $type . '.stub';
-    }
+    // /**
+    //  * Get the location for the test stub.
+    //  *
+    //  * @param  string  $type
+    //  * @return string
+    //  */
+    // protected function getTypeStubLocation(string $type = 'index', string $frontendScaffolding = 'default') : string
+    // {
+    //     return dirname(__DIR__) . "/Commands/stubs/views/$frontendScaffolding/$type.stub";
+    // }
+
+    // /**
+    //  * Get the expected location for the stub.
+    //  *
+    //  * @param  string  $type
+    //  * @return string
+    //  */
+    // protected function getExpectedStubLocation(string $type = 'controller') : string
+    // {
+    //     return base_path() . '/stubs/' . $type . '.stub';
+    // }
 
     /**
      * Get the location for the test stub.
@@ -251,4 +256,89 @@ trait TestTrait
     {
         return File::get($this->getRequestLocation($type));
     }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // /**
+    //  * Get the expected location for the input stub.
+    //  *
+    //  * @param  string  $input = 'text'
+    //  * @param  string  $type = 'default'
+    //  * @return string
+    //  */
+    // protected function getExpectedInputStubLocation(string $input = 'text', $type = 'default') : string
+    // {
+    //     return base_path() . "/stubs/views/$type/inputs/$input.stub";
+    // }
+
+    // /**
+    //  * Get the location for the test input stub.
+    //  *
+    //  * @param  string  $input = 'text'
+    //  * @param  string  $type = 'default'
+    //  * @return string
+    //  */
+    // protected function getInputStubMock(string $input = 'text', $type = 'default') : string
+    // {
+    //     $location = dirname(__DIR__) . "/Commands/stubs/views/$type/inputs/$input.stub";
+    //     return File::get($location);
+    // }
+
+    // /**
+    //  * Get the blade stub location.
+    //  *
+    //  * @param  string  $input = 'text'
+    //  * @param  string  $type = 'default'
+    //  * @return string
+    //  */
+    // protected function getBladeLocation(string $input = 'index', $type = 'default') : string
+    // {
+    //     return __DIR__ . '/stubs/views/' . $type . '/expectedBladeFile' . ucfirst($input) . '.stub';
+    // }
+
+    // /**
+    //  * Get the expected blade file location.
+    //  *
+    //  * @param  string  $input = 'text'
+    //  * @param  string  $type = 'default'
+    //  * @return string
+    //  */
+    // protected function getExpectedBladeFileLocation(string $input = 'index', string $viewType = 'default') : string
+    // {
+    //     if ($viewType === 'vue') {
+    //         return "stubs/Table/$input.vue";
+    //     }
+
+    //     return 'resources/views/name/' . $input . '.blade.php';
+    // }
+
+    // /**
+    //  * Get the expected final blade file with correct values.
+    //  *
+    //  * @param  string  $input = 'text'
+    //  * @param  string  $type = 'default'
+    //  * @return string
+    //  */
+    // protected function getExpectedBladeFile(string $input = 'index', $type = 'default') : string
+    // {
+    //     return File::get($this->getBladeLocation($input, $type));
+    // }
 }

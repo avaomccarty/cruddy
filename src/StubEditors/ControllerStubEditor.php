@@ -25,13 +25,23 @@ class ControllerStubEditor extends StubEditor
     }
 
     /**
+     * Get the is API value.
+     *
+     * @return boolean
+     */
+    public function getIsApi() : bool
+    {
+        return $this->isApi;
+    }
+
+    /**
      * Get the stub.
      *
      * @return string
      */
     public function getStubFile() : string
     {
-        if ($this->isApi) {
+        if ($this->getIsApi()) {
             return File::get($this->resolveStubPath($this->getStubsLocation() . '/controller.api.stub'));
         }
 

@@ -3,6 +3,7 @@
 namespace Cruddy\Tests\Unit\StubEditors;
 
 use Cruddy\StubEditors\RequestStubEditor;
+use Illuminate\Support\Facades\File;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
@@ -18,8 +19,8 @@ class RequestStubEditorTest extends TestCase
      */
     public function test_get_default_stub_file()
     {
-        $stubsLocation = 'stubs/cruddy';
-        $expectedResult = dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/request.stub';
+        $stubsLocation = 'stubs';
+        $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/request.stub');
 
         $mock = $this->partialMock(RequestStubEditor::class, function (MockInterface $mock) use ($stubsLocation) {
             $mock->shouldAllowMockingProtectedMethods();

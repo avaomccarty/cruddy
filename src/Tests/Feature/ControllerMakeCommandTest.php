@@ -111,6 +111,7 @@ class ControllerMakeCommandTest extends TestCase
             '--api' => $isApi,
             '--inputs' => $inputs,
             '--commands' => $commands,
+            '--force' => true,
         ]);
     }
 
@@ -206,6 +207,88 @@ class ControllerMakeCommandTest extends TestCase
             '--api' => $isApi,
             '--inputs' => $inputs,
             '--commands' => $commands,
+            '--force' => true,
+        ]);
+    }
+
+    /**
+     * A test to make a resource controller file without a model.
+     *
+     * @return void
+     */
+    public function test_make_resource_controller_file_without_a_model()
+    {
+        $name = 'Foo';
+        $isResource = true;
+        $isApi = true;
+        $inputs = $this->getMockColumns();
+        $commands = $this->getMockCommands();
+
+        $expectedStubLocation = base_path() . '/stubs/controller.api.stub';
+        $stubLocation = dirname(dirname(__DIR__)) . '/Commands/stubs/controller.api.stub';
+        $stub = File::get($stubLocation);
+        $expectedBladeFileLocation = base_path() . '/app/Http/Controllers';
+        $expectedBladeFile = File::get(dirname(__DIR__) . '/stubs/controllers/expectedFile.api.stub');
+        $expectedBladeFileName = $expectedBladeFileLocation . '/name.php';
+
+        foreach ($inputs as $input) {
+            $stubInputEditor = new ControllerStubInputEditor($input);
+            App::shouldReceive('make')
+                ->with(StubInputEditor::class, [$input, 'controller', '', false])
+                ->once()
+                ->andReturn($stubInputEditor);
+        }
+
+        $stubEditor = new ControllerStubEditor();
+        App::shouldReceive('make')
+            ->with(StubEditor::class, ['controller'])
+            ->once()
+            ->andReturn($stubEditor);
+
+        $stubInputsEditor = new StubInputsEditor($inputs, 'controller');
+        App::shouldReceive('make')
+            ->with(StubInputsEditor::class, [$inputs, 'controller'])
+            ->once()
+            ->andReturn($stubInputsEditor);
+
+        App::partialMock();
+
+        Config::shouldReceive('get')
+            ->with('cruddy.stubs_folder')
+            ->times(1)
+            ->andReturn('stubs');
+
+        Config::partialMock();
+
+        File::shouldReceive('exists')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn(true);
+
+        File::shouldReceive('get')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn($stub);
+
+        File::shouldReceive('isDirectory')
+            ->with($expectedBladeFileLocation)
+            ->once()
+            ->andReturn(true);
+
+        File::shouldReceive('put')
+            ->with($expectedBladeFileName, $expectedBladeFile)
+            ->once()
+            ->andReturn(true);
+
+        File::partialMock();
+
+        $this->artisan('cruddy:controller', [
+            'name' => $name . 'Controller',
+            '--resource' => $isResource,
+            '--api' => $isApi,
+            '--inputs' => $inputs,
+            '--commands' => $commands,
+            '--force' => true,
         ]);
     }
 }

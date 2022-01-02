@@ -1,0 +1,42 @@
+<template>
+    <x-layout>
+        <h1 class="is-size-1">Show</h1>
+        <input type="text" name="name-string" disabled="disabled" class="input my-2" placeholder="name-string" v-model="name-string">
+
+				<input type="number" name="name-integer" disabled="disabled" class="input my-2" v-model="name-integer">
+
+				<input type="number" name="name-bigInteger" disabled="disabled" class="input my-2" v-model="name-bigInteger">
+
+        <a :href="'/name/' + item.id + '/edit'" class="button is-primary my-2">Edit</a>
+        <a href="/name" class="button is-danger my-2">Cancel</a>
+    </x-layout>
+</template>
+
+<script>
+export default {
+    name: 'TableShow',
+    status: 'prototype',
+    release: '1.0.0',
+    data () {
+        return {
+            item: {},
+            error: null,
+            name-string: null,
+			name-integer: null,
+			name-bigInteger: null,
+			
+        };
+    },
+    props: {
+        propItem: {
+            type: Object,
+            default: () => {}
+        }
+    },
+    mounted () {
+        this.item = this.propItem;
+    }
+};
+</script>
+
+

@@ -3,13 +3,12 @@
 namespace Cruddy\Tests\Feature;
 
 use Cruddy\Tests\TestTrait;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\File;
 use Orchestra\Testbench\TestCase;
 
 class RouteAddCommandTest extends TestCase
 {
-    use DatabaseTransactions, TestTrait;
+    use TestTrait;
 
     /**
      * The success message.

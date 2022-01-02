@@ -33,118 +33,6 @@ class ViewMakeCommandTest extends TestCase
     protected $table = 'table';
 
     /**
-     * Get the expected location for the input stub.
-     *
-     * @param  string  $input
-     * @return string
-     */
-    protected function getExpectedInputStubLocation(string $input = 'text') : string
-    {
-        return base_path() . '/stubs/views/default/inputs/' . $input . '.stub';
-    }
-
-    /**
-     * Get the location for the test input stub.
-     *
-     * @param  string  $input
-     * @return string
-     */
-    protected function getInputStubMock(string $input = 'text') : string
-    {
-        $location = dirname(dirname(__DIR__)) . '/Commands/stubs/views/default/inputs/' . $input . '.stub';
-        return File::get($location);
-    }
-
-    /**
-     * Get the blade stub location.
-     *
-     * @param  string  $type
-     * @return string
-     */
-    protected function getBladeLocation(string $type = 'index') : string
-    {
-        return dirname(__DIR__) . '/stubs/views/expectedBladeFile' . ucfirst($type) . '.stub';
-    }
-
-    /**
-     * Get the expected blade file location.
-     *
-     * @param  string  $type
-     * @return string
-     */
-    protected function getExpectedBladeFileLocation(string $type = 'index') : string
-    {
-        return 'resources/views/name/' . $type . '.blade.php';
-    }
-
-    /**
-     * Get the expected final blade file with correct values.
-     *
-     * @param  string  $type
-     * @return string
-     */
-    protected function getExpectedBladeFile(string $type = 'index') : string
-    {
-        return File::get($this->getBladeLocation($type));
-    }
-
-    /**
-     * Get the expected number of calls to the config for the frontend scaffolding.
-     *
-     * @param  string  $type
-     * @param  integer  $inputsCount
-     * @return integer
-     */
-    protected function getExpectedFrontendScaffoldingConfigCalls(string $type = 'index', int $inputsCount = 0) : int
-    {
-        switch ($type) {
-            case 'edit':
-                return 13 + $inputsCount;
-                break;
-            case 'show':
-                return 11 + $inputsCount;
-                break;
-            default:
-                return 13 + $inputsCount;
-                break;
-        }
-    }
-
-    /**
-     * Get the number of calls to the config stubs folder.
-     *
-     * @param  string  $type = 'index'
-     * @param  integer  $inputsCount = 0
-     * @return integer
-     */
-    protected function getStubsFolderConfigCalls(string $type = 'index', int $inputsCount = 0) : int
-    {
-        $count = $inputsCount + 1;
-        if ($type !== 'index' && $type !== 'show') {
-            $count += 1;
-        }
-
-        return $count;
-    }
-
-    /**
-     * Get the number of calls to the config stubs folder.
-     *
-     * @param  string  $type = 'index'
-     * @param  integer  $inputsCount = 0
-     * @return integer
-     */
-    protected function getInputDefaultsConfigCalls(string $type = 'index', int $inputsCount = 0) : int
-    {
-        $count = $inputsCount;
-        if ($type !== 'index' && $type !== 'show') {
-            $count += 1;
-        }
-
-        return $count * 2;
-    }
-
-    /**
      * Get an acceptable array of input default types.
      *
      * @return array
@@ -171,25 +59,26 @@ class ViewMakeCommandTest extends TestCase
     }
 
     /**
-     * Get the assertions based on the type of request file being created.
+     * A test for correct Vue index view file.
      *
-     * @param  string  $type
      * @return
      */
-    public function getAssertionsByType(string $type)
+    public function test_correct_vue_index_view_file_created()
     {
+        $type = 'index';
+        $viewType = 'vue';
         $inputs = $this->getMockColumns();
-        $inputsCount = count($inputs);
-        $expectedStubLocation = $this->getExpectedTypeStubLocation($type);
-        $stubLocation = $this->getTypeStubLocation($type);
+        $expectedStubLocation = base_path() . "/stubs/views/$viewType/page.stub";
+        $stubLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/$type.stub";
         $stub = File::get($stubLocation);
-        $expectedBladeFileLocation = $this->getExpectedBladeFileLocation($type);
-        $expectedBladeFile = $this->getExpectedBladeFile($type);
+        $expectedBladeFileLocation = "stubs/Table/$type.vue";
+        $expectedBladeFile = File::get(dirname(__DIR__) . "/stubs/views/$viewType/expectedBladeFile" . ucfirst($type) . ".stub");
+
+        $inputsLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/inputs/";
 
         foreach ($inputs as $input) {
-            $input->mockInputStub = $this->getInputStubMock($input->inputType);
+            $input->mockInputStub = File::get($inputsLocation . $this->getInputDefault($input->type) . ".stub");
         }
-        $mockSubmitInputStub = $this->getInputStubMock('submit');
 
         // Assert the StubEditor is created correctly.
         $stubEditor = new ViewStubEditor();
@@ -207,19 +96,25 @@ class ViewMakeCommandTest extends TestCase
         // Assert config frontend scaffolding is used.
         Config::shouldReceive('get')
             ->with('cruddy.frontend_scaffolding')
-            ->times($this->getExpectedFrontendScaffoldingConfigCalls($type, $inputsCount))
-            ->andReturn('default');
+            ->times(16)
+            ->andReturn($viewType);
         
         // Assert config stubs folder is used.
         Config::shouldReceive('get')
             ->with('cruddy.stubs_folder')
-            ->times($this->getStubsFolderConfigCalls($type, $inputsCount))
+            ->times(4)
+            ->andReturn('stubs');
+
+        // Assert config stubs folder is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.vue_folder')
+            ->times(1)
             ->andReturn('stubs');
         
         // Assert config input defaults is used.
         Config::shouldReceive('get')
             ->with('cruddy.input_defaults')
-            ->times($this->getInputDefaultsConfigCalls($type, $inputsCount))
+            ->times(6)
             ->andReturn($this->getInputDefaults());
 
         // Assert config input default is used for each input.
@@ -245,37 +140,19 @@ class ViewMakeCommandTest extends TestCase
             ->andReturn($stub);
         
         foreach ($inputs as $input) {
+            $location = base_path() . "/stubs/views/$viewType/inputs/" . $this->getInputDefault($input->type) . ".stub";
             // Assert stub at the location exists.
             File::shouldReceive('exists')
-                ->with($this->getExpectedInputStubLocation($input->inputType))
+                ->with($location)
                 ->once()
                 ->andReturn(true);
 
             // Assert getting the correct stub file for file type.
             File::shouldReceive('get')
-                ->with($this->getExpectedInputStubLocation($input->inputType))
+                ->with($location)
                 ->once()
                 ->andReturn($input->mockInputStub);
         }
-
-        // Assert 'edit' and 'create' files use submit input stub
-        if ($type !== 'index' && $type !== 'show') {
-            File::shouldReceive('exists')
-                ->with($this->getExpectedInputStubLocation('submit'))
-                ->once()
-                ->andReturn(true);
-        
-            File::shouldReceive('get')
-                ->with($this->getExpectedInputStubLocation('submit'))
-                ->once()
-                ->andReturn($mockSubmitInputStub);
-        }
-
-        // Assert stub at the location exists.
-        File::shouldReceive('exists')
-            ->with($expectedBladeFileLocation)
-            ->once()
-            ->andReturn(false);
 
         // Assert correct blade file is created in the correct location.
         File::shouldReceive('put')
@@ -284,13 +161,14 @@ class ViewMakeCommandTest extends TestCase
             ->andReturn(true);
 
         File::partialMock();
-        
+
         $this->artisan('cruddy:view', [
             'name' => $this->name,
             'table' => $this->table,
             'type' => $type,
-            'inputs' => $inputs
-        ])->expectsOutput('Cruddy view created successfully.');
+            'inputs' => $inputs,
+            '--force' => true,
+        ]);
 
         $placeholdersArray = [
             $stubEditor->inputPlaceholders,
@@ -314,42 +192,985 @@ class ViewMakeCommandTest extends TestCase
     }
 
     /**
-     * A test for correct index view file.
+     * A test for correct Vue create view file.
      *
      * @return
      */
-    public function test_correct_index_view_file_created()
+    public function test_correct_vue_create_view_file_created()
     {
-        $this->getAssertionsByType('index');
+        $type = 'create';
+        $viewType = 'vue';
+        $inputs = $this->getMockColumns();
+        $expectedStubLocation = base_path() . "/stubs/views/$viewType/page.stub";
+        $stubLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/$type.stub";
+        $stub = File::get($stubLocation);
+        $expectedBladeFileLocation = "stubs/Table/$type.vue";
+        $expectedBladeFile = File::get(dirname(__DIR__) . "/stubs/views/$viewType/expectedBladeFile" . ucfirst($type) . ".stub");
+
+        $inputsLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/inputs/";
+
+        foreach ($inputs as $input) {
+            $input->mockInputStub = File::get($inputsLocation . $this->getInputDefault($input->type) . ".stub");
+        }
+        $mockSubmitInputStub = File::get($inputsLocation  . "submit.stub");
+
+        // Assert the StubEditor is created correctly.
+        $stubEditor = new ViewStubEditor();
+        App::shouldReceive('make')
+            ->with(StubEditor::class, ['view'])
+            ->once()
+            ->andReturn($stubEditor);
+
+        // Assert the StubInputsEditor is created correctly.
+        App::shouldReceive('make')
+            ->with(StubInputsEditor::class, [$inputs, 'view'])
+            ->once()
+            ->andReturn(new StubInputsEditor($inputs, 'view'));
+
+        // Assert config frontend scaffolding is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.frontend_scaffolding')
+            ->times(18)
+            ->andReturn($viewType);
+        
+        // Assert config stubs folder is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.stubs_folder')
+            ->times(5)
+            ->andReturn('stubs');
+        
+        // Assert config stubs folder is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.vue_folder')
+            ->times(1)
+            ->andReturn('stubs');
+        
+        // Assert config input defaults is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.input_defaults')
+            ->times(8)
+            ->andReturn($this->getInputDefaults());
+
+        // Assert config input default is used for each input.
+        foreach ($inputs as $input) {
+            App::shouldReceive('make')
+                ->with(StubInputEditor::class, [$input, 'view', '', true])
+                ->once()
+                ->andReturn(new ViewStubInputEditor($input));
+        }
+
+        // Assertion for submit input
+        App::shouldReceive('make')
+            ->with(StubInputEditor::class, [null, 'view', '', true])
+            ->once()
+            ->andReturn(new ViewStubInputEditor());
+
+        Config::partialMock();
+
+        // Assert stub at the location exists for file type.
+        File::shouldReceive('exists')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn(true);
+
+        // Assert getting the correct stub file for file type.
+        File::shouldReceive('get')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn($stub);
+        
+        foreach ($inputs as $input) {
+            $location = base_path() . "/stubs/views/$viewType/inputs/" . $this->getInputDefault($input->type) . ".stub";
+            // Assert stub at the location exists.
+            File::shouldReceive('exists')
+                ->with($location)
+                ->once()
+                ->andReturn(true);
+
+            // Assert getting the correct stub file for file type.
+            File::shouldReceive('get')
+                ->with($location)
+                ->once()
+                ->andReturn($input->mockInputStub);
+        }
+
+        // Assert file uses submit input stub
+        $location = base_path() . "/stubs/views/$viewType/inputs/submit.stub";
+        File::shouldReceive('exists')
+            ->with($location)
+            ->once()
+            ->andReturn(true);
+    
+        File::shouldReceive('get')
+            ->with($location)
+            ->once()
+            ->andReturn($mockSubmitInputStub);
+
+        // Assert correct blade file is created in the correct location.
+        File::shouldReceive('put')
+            ->with($expectedBladeFileLocation, $expectedBladeFile)
+            ->once()
+            ->andReturn(true);
+
+        File::partialMock();
+
+        $this->artisan('cruddy:view', [
+            'name' => $this->name,
+            'table' => $this->table,
+            'type' => $type,
+            'inputs' => $inputs,
+            '--force' => true,
+        ]);
+
+        $placeholdersArray = [
+            $stubEditor->inputPlaceholders,
+            $stubEditor->actionPlaceholders,
+            $stubEditor->editUrlPlaceholders,
+            $stubEditor->variableCollectionPlaceholders,
+            $stubEditor->variablePlaceholders,
+            $stubEditor->cancelUrlPlaceholders,
+            $stubEditor->modelPlaceholders,
+            $stubEditor->vueComponentPlaceholders,
+            $stubEditor->vueDataPlaceholders,
+            $stubEditor->vuePostDataPlaceholders,
+        ];
+
+        // Assert that the expected blade file does not have any stub model placeholders remaining
+        foreach ($placeholdersArray as $placeholders) {
+            foreach ($placeholders as $placeholder) {
+                $this->assertFalse(strpos($expectedBladeFile, $placeholder));
+            }
+        }
     }
 
     /**
-     * A test for correct create view file.
+     * A test for correct Vue show view file.
      *
      * @return
      */
-    public function test_correct_create_view_file_created()
+    public function test_correct_vue_show_view_file_created()
     {
-        $this->getAssertionsByType('create');
+        $type = 'show';
+        $viewType = 'vue';
+        $inputs = $this->getMockColumns();
+        $expectedStubLocation = base_path() . "/stubs/views/$viewType/page.stub";
+        $stubLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/$type.stub";
+        $stub = File::get($stubLocation);
+        $expectedBladeFileLocation = "stubs/Table/$type.vue";
+        $expectedBladeFile = File::get(dirname(__DIR__) . "/stubs/views/$viewType/expectedBladeFile" . ucfirst($type) . ".stub");
+
+        $inputsLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/inputs/";
+
+        foreach ($inputs as $input) {
+            $input->mockInputStub = File::get($inputsLocation . $this->getInputDefault($input->type) . ".stub");
+        }
+
+        // Assert the StubEditor is created correctly.
+        $stubEditor = new ViewStubEditor();
+        App::shouldReceive('make')
+            ->with(StubEditor::class, ['view'])
+            ->once()
+            ->andReturn($stubEditor);
+
+        // Assert the StubInputsEditor is created correctly.
+        App::shouldReceive('make')
+            ->with(StubInputsEditor::class, [$inputs, 'view'])
+            ->once()
+            ->andReturn(new StubInputsEditor($inputs, 'view'));
+
+        // Assert config frontend scaffolding is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.frontend_scaffolding')
+            ->times(15)
+            ->andReturn($viewType);
+        
+        // Assert config stubs folder is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.stubs_folder')
+            ->times(4)
+            ->andReturn('stubs');
+        
+        // Assert config stubs folder is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.vue_folder')
+            ->times(1)
+            ->andReturn('stubs');
+        
+        // Assert config input defaults is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.input_defaults')
+            ->times(6)
+            ->andReturn($this->getInputDefaults());
+
+        // Assert config input default is used for each input.
+        foreach ($inputs as $input) {
+            App::shouldReceive('make')
+                ->with(StubInputEditor::class, [$input, 'view', '', false])
+                ->once()
+                ->andReturn(new ViewStubInputEditor($input));
+        }
+
+        Config::partialMock();
+
+        // Assert stub at the location exists for file type.
+        File::shouldReceive('exists')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn(true);
+
+        // Assert getting the correct stub file for file type.
+        File::shouldReceive('get')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn($stub);
+        
+        foreach ($inputs as $input) {
+            $location = base_path() . "/stubs/views/$viewType/inputs/" . $this->getInputDefault($input->type) . ".stub";
+            // Assert stub at the location exists.
+            File::shouldReceive('exists')
+                ->with($location)
+                ->once()
+                ->andReturn(true);
+
+            // Assert getting the correct stub file for file type.
+            File::shouldReceive('get')
+                ->with($location)
+                ->once()
+                ->andReturn($input->mockInputStub);
+        }
+
+        // Assert correct blade file is created in the correct location.
+        File::shouldReceive('put')
+            ->with($expectedBladeFileLocation, $expectedBladeFile)
+            ->once()
+            ->andReturn(true);
+
+        File::partialMock();
+
+        $this->artisan('cruddy:view', [
+            'name' => $this->name,
+            'table' => $this->table,
+            'type' => $type,
+            'inputs' => $inputs,
+            '--force' => true,
+        ]);
+
+        $placeholdersArray = [
+            $stubEditor->inputPlaceholders,
+            $stubEditor->actionPlaceholders,
+            $stubEditor->editUrlPlaceholders,
+            $stubEditor->variableCollectionPlaceholders,
+            $stubEditor->variablePlaceholders,
+            $stubEditor->cancelUrlPlaceholders,
+            $stubEditor->modelPlaceholders,
+            $stubEditor->vueComponentPlaceholders,
+            $stubEditor->vueDataPlaceholders,
+            $stubEditor->vuePostDataPlaceholders,
+        ];
+
+        // Assert that the expected blade file does not have any stub model placeholders remaining
+        foreach ($placeholdersArray as $placeholders) {
+            foreach ($placeholders as $placeholder) {
+                $this->assertFalse(strpos($expectedBladeFile, $placeholder));
+            }
+        }
     }
 
     /**
-     * A test for correct show view file.
+     * A test for correct Vue edit view file.
      *
      * @return
      */
-    public function test_correct_show_view_file_created()
+    public function test_correct_vue_edit_view_file_created()
     {
-        $this->getAssertionsByType('show');
+        $type = 'edit';
+        $viewType = 'vue';
+        $inputs = $this->getMockColumns();
+        $expectedStubLocation = base_path() . "/stubs/views/$viewType/page.stub";
+        $stubLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/$type.stub";
+        $stub = File::get($stubLocation);
+        $expectedBladeFileLocation = "stubs/Table/$type.vue";
+        $expectedBladeFile = File::get(dirname(__DIR__) . "/stubs/views/$viewType/expectedBladeFile" . ucfirst($type) . ".stub");
+
+        $inputsLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/inputs/";
+
+        foreach ($inputs as $input) {
+            $input->mockInputStub = File::get($inputsLocation . $this->getInputDefault($input->type) . ".stub");
+        }
+        $mockSubmitInputStub = File::get($inputsLocation  . "submit.stub");
+
+        // Assert the StubEditor is created correctly.
+        $stubEditor = new ViewStubEditor();
+        App::shouldReceive('make')
+            ->with(StubEditor::class, ['view'])
+            ->once()
+            ->andReturn($stubEditor);
+
+        // Assert the StubInputsEditor is created correctly.
+        App::shouldReceive('make')
+            ->with(StubInputsEditor::class, [$inputs, 'view'])
+            ->once()
+            ->andReturn(new StubInputsEditor($inputs, 'view'));
+
+        // Assert config frontend scaffolding is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.frontend_scaffolding')
+            ->times(19)
+            ->andReturn($viewType);
+        
+        // Assert config stubs folder is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.stubs_folder')
+            ->times(5)
+            ->andReturn('stubs');
+    
+        // Assert config stubs folder is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.vue_folder')
+            ->times(1)
+            ->andReturn('stubs');
+        
+        // Assert config input defaults is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.input_defaults')
+            ->times(8)
+            ->andReturn($this->getInputDefaults());
+
+        // Assert config input default is used for each input.
+        foreach ($inputs as $input) {
+            App::shouldReceive('make')
+                ->with(StubInputEditor::class, [$input, 'view', '', true])
+                ->once()
+                ->andReturn(new ViewStubInputEditor($input));
+        }
+
+        // Assertion for submit input
+        App::shouldReceive('make')
+            ->with(StubInputEditor::class, [null, 'view', '', true])
+            ->once()
+            ->andReturn(new ViewStubInputEditor());
+
+        Config::partialMock();
+
+        // Assert stub at the location exists for file type.
+        File::shouldReceive('exists')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn(true);
+
+        // Assert getting the correct stub file for file type.
+        File::shouldReceive('get')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn($stub);
+        
+        foreach ($inputs as $input) {
+            $location = base_path() . "/stubs/views/$viewType/inputs/" . $this->getInputDefault($input->type) . ".stub";
+            // Assert stub at the location exists.
+            File::shouldReceive('exists')
+                ->with($location)
+                ->once()
+                ->andReturn(true);
+
+            // Assert getting the correct stub file for file type.
+            File::shouldReceive('get')
+                ->with($location)
+                ->once()
+                ->andReturn($input->mockInputStub);
+        }
+
+        // Assert file uses submit input stub
+        $location = base_path() . "/stubs/views/$viewType/inputs/submit.stub";
+        File::shouldReceive('exists')
+            ->with($location)
+            ->once()
+            ->andReturn(true);
+    
+        File::shouldReceive('get')
+            ->with($location)
+            ->once()
+            ->andReturn($mockSubmitInputStub);
+
+        // Assert correct blade file is created in the correct location.
+        File::shouldReceive('put')
+            ->with($expectedBladeFileLocation, $expectedBladeFile)
+            ->once()
+            ->andReturn(true);
+
+        File::partialMock();
+
+        $this->artisan('cruddy:view', [
+            'name' => $this->name,
+            'table' => $this->table,
+            'type' => $type,
+            'inputs' => $inputs,
+            '--force' => true,
+        ]);
+
+        $placeholdersArray = [
+            $stubEditor->inputPlaceholders,
+            $stubEditor->actionPlaceholders,
+            $stubEditor->editUrlPlaceholders,
+            $stubEditor->variableCollectionPlaceholders,
+            $stubEditor->variablePlaceholders,
+            $stubEditor->cancelUrlPlaceholders,
+            $stubEditor->modelPlaceholders,
+            $stubEditor->vueComponentPlaceholders,
+            $stubEditor->vueDataPlaceholders,
+            $stubEditor->vuePostDataPlaceholders,
+        ];
+
+        // Assert that the expected blade file does not have any stub model placeholders remaining
+        foreach ($placeholdersArray as $placeholders) {
+            foreach ($placeholders as $placeholder) {
+                $this->assertFalse(strpos($expectedBladeFile, $placeholder));
+            }
+        }
     }
 
     /**
-     * A test for correct edit view file.
+     * A test for correct default index view file.
      *
      * @return
      */
-    public function test_correct_edit_view_file_created()
+    public function test_correct_default_index_view_file_created()
     {
-        $this->getAssertionsByType('edit');
+        $type = 'index';
+        $viewType = 'default';
+        $inputs = $this->getMockColumns();
+        $expectedStubLocation = base_path() . "/stubs/views/$viewType/$type.stub";
+        $stubLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/$type.stub";
+        $stub = File::get($stubLocation);
+        $expectedBladeFileLocation = "resources/views/name/$type.blade.php";
+        $expectedBladeFile = File::get(dirname(__DIR__) . "/stubs/views/$viewType/expectedBladeFile" . ucfirst($type) . ".stub");
+
+        $inputsLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/inputs/";
+
+        foreach ($inputs as $input) {
+            $input->mockInputStub = File::get($inputsLocation . $this->getInputDefault($input->type) . ".stub");
+        }
+
+        // Assert the StubEditor is created correctly.
+        $stubEditor = new ViewStubEditor();
+        App::shouldReceive('make')
+            ->with(StubEditor::class, ['view'])
+            ->once()
+            ->andReturn($stubEditor);
+
+        // Assert the StubInputsEditor is created correctly.
+        App::shouldReceive('make')
+            ->with(StubInputsEditor::class, [$inputs, 'view'])
+            ->once()
+            ->andReturn(new StubInputsEditor($inputs, 'view'));
+
+        // Assert config frontend scaffolding is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.frontend_scaffolding')
+            ->times(16)
+            ->andReturn($viewType);
+        
+        // Assert config stubs folder is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.stubs_folder')
+            ->times(4)
+            ->andReturn('stubs');
+        
+        // Assert config input defaults is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.input_defaults')
+            ->times(6)
+            ->andReturn($this->getInputDefaults());
+
+        // Assert config input default is used for each input.
+        foreach ($inputs as $input) {
+            App::shouldReceive('make')
+                ->with(StubInputEditor::class, [$input, 'view', '', false])
+                ->once()
+                ->andReturn(new ViewStubInputEditor($input));
+        }
+
+        Config::partialMock();
+
+        // Assert stub at the location exists for file type.
+        File::shouldReceive('exists')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn(true);
+
+        // Assert getting the correct stub file for file type.
+        File::shouldReceive('get')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn($stub);
+        
+        foreach ($inputs as $input) {
+            $location = base_path() . "/stubs/views/$viewType/inputs/" . $this->getInputDefault($input->type) . ".stub";
+            // Assert stub at the location exists.
+            File::shouldReceive('exists')
+                ->with($location)
+                ->once()
+                ->andReturn(true);
+
+            // Assert getting the correct stub file for file type.
+            File::shouldReceive('get')
+                ->with($location)
+                ->once()
+                ->andReturn($input->mockInputStub);
+        }
+
+        // Assert correct blade file is created in the correct location.
+        File::shouldReceive('put')
+            ->with($expectedBladeFileLocation, $expectedBladeFile)
+            ->once()
+            ->andReturn(true);
+
+        File::partialMock();
+
+        $this->artisan('cruddy:view', [
+            'name' => $this->name,
+            'table' => $this->table,
+            'type' => $type,
+            'inputs' => $inputs,
+            '--force' => true,
+        ]);
+
+        $placeholdersArray = [
+            $stubEditor->inputPlaceholders,
+            $stubEditor->actionPlaceholders,
+            $stubEditor->editUrlPlaceholders,
+            $stubEditor->variableCollectionPlaceholders,
+            $stubEditor->variablePlaceholders,
+            $stubEditor->cancelUrlPlaceholders,
+            $stubEditor->modelPlaceholders,
+            $stubEditor->vueComponentPlaceholders,
+            $stubEditor->vueDataPlaceholders,
+            $stubEditor->vuePostDataPlaceholders,
+        ];
+
+        // Assert that the expected blade file does not have any stub model placeholders remaining
+        foreach ($placeholdersArray as $placeholders) {
+            foreach ($placeholders as $placeholder) {
+                $this->assertFalse(strpos($expectedBladeFile, $placeholder));
+            }
+        }
+    }
+
+    /**
+     * A test for correct default create view file.
+     *
+     * @return
+     */
+    public function test_correct_default_create_view_file_created()
+    {
+        $type = 'create';
+        $viewType = 'default';
+        $inputs = $this->getMockColumns();
+        $expectedStubLocation = base_path() . "/stubs/views/$viewType/$type.stub";
+        $stubLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/$type.stub";
+        $stub = File::get($stubLocation);
+        $expectedBladeFileLocation = "resources/views/name/$type.blade.php";
+        $expectedBladeFile = File::get(dirname(__DIR__) . "/stubs/views/$viewType/expectedBladeFile" . ucfirst($type) . ".stub");
+
+        $inputsLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/inputs/";
+
+        foreach ($inputs as $input) {
+            $input->mockInputStub = File::get($inputsLocation . $this->getInputDefault($input->type) . ".stub");
+        }
+        $mockSubmitInputStub = File::get($inputsLocation  . "submit.stub");
+
+        // Assert the StubEditor is created correctly.
+        $stubEditor = new ViewStubEditor();
+        App::shouldReceive('make')
+            ->with(StubEditor::class, ['view'])
+            ->once()
+            ->andReturn($stubEditor);
+
+        // Assert the StubInputsEditor is created correctly.
+        App::shouldReceive('make')
+            ->with(StubInputsEditor::class, [$inputs, 'view'])
+            ->once()
+            ->andReturn(new StubInputsEditor($inputs, 'view'));
+
+        // Assert config frontend scaffolding is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.frontend_scaffolding')
+            ->times(18)
+            ->andReturn($viewType);
+        
+        // Assert config stubs folder is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.stubs_folder')
+            ->times(5)
+            ->andReturn('stubs');
+        
+        // Assert config input defaults is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.input_defaults')
+            ->times(8)
+            ->andReturn($this->getInputDefaults());
+
+        // Assert config input default is used for each input.
+        foreach ($inputs as $input) {
+            App::shouldReceive('make')
+                ->with(StubInputEditor::class, [$input, 'view', '', true])
+                ->once()
+                ->andReturn(new ViewStubInputEditor($input));
+        }
+
+        // Assertion for submit input
+        App::shouldReceive('make')
+            ->with(StubInputEditor::class, [null, 'view', '', true])
+            ->once()
+            ->andReturn(new ViewStubInputEditor());
+
+        Config::partialMock();
+
+        // Assert stub at the location exists for file type.
+        File::shouldReceive('exists')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn(true);
+
+        // Assert getting the correct stub file for file type.
+        File::shouldReceive('get')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn($stub);
+        
+        foreach ($inputs as $input) {
+            $location = base_path() . "/stubs/views/$viewType/inputs/" . $this->getInputDefault($input->type) . ".stub";
+            // Assert stub at the location exists.
+            File::shouldReceive('exists')
+                ->with($location)
+                ->once()
+                ->andReturn(true);
+
+            // Assert getting the correct stub file for file type.
+            File::shouldReceive('get')
+                ->with($location)
+                ->once()
+                ->andReturn($input->mockInputStub);
+        }
+
+        // Assert file uses submit input stub
+        $location = base_path() . "/stubs/views/$viewType/inputs/submit.stub";
+        File::shouldReceive('exists')
+            ->with($location)
+            ->once()
+            ->andReturn(true);
+    
+        File::shouldReceive('get')
+            ->with($location)
+            ->once()
+            ->andReturn($mockSubmitInputStub);
+
+        // Assert correct blade file is created in the correct location.
+        File::shouldReceive('put')
+            ->with($expectedBladeFileLocation, $expectedBladeFile)
+            ->once()
+            ->andReturn(true);
+
+        File::partialMock();
+
+        $this->artisan('cruddy:view', [
+            'name' => $this->name,
+            'table' => $this->table,
+            'type' => $type,
+            'inputs' => $inputs,
+            '--force' => true,
+        ]);
+
+        $placeholdersArray = [
+            $stubEditor->inputPlaceholders,
+            $stubEditor->actionPlaceholders,
+            $stubEditor->editUrlPlaceholders,
+            $stubEditor->variableCollectionPlaceholders,
+            $stubEditor->variablePlaceholders,
+            $stubEditor->cancelUrlPlaceholders,
+            $stubEditor->modelPlaceholders,
+            $stubEditor->vueComponentPlaceholders,
+            $stubEditor->vueDataPlaceholders,
+            $stubEditor->vuePostDataPlaceholders,
+        ];
+
+        // Assert that the expected blade file does not have any stub model placeholders remaining
+        foreach ($placeholdersArray as $placeholders) {
+            foreach ($placeholders as $placeholder) {
+                $this->assertFalse(strpos($expectedBladeFile, $placeholder));
+            }
+        }
+    }
+
+    /**
+     * A test for correct default show view file.
+     *
+     * @return
+     */
+    public function test_correct_default_show_view_file_created()
+    {
+        $type = 'show';
+        $viewType = 'default';
+        $inputs = $this->getMockColumns();
+        $expectedStubLocation = base_path() . "/stubs/views/$viewType/$type.stub";
+        $stubLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/$type.stub";
+        $stub = File::get($stubLocation);
+        $expectedBladeFileLocation = "resources/views/name/$type.blade.php";
+        $expectedBladeFile = File::get(dirname(__DIR__) . "/stubs/views/$viewType/expectedBladeFile" . ucfirst($type) . ".stub");
+
+        $inputsLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/inputs/";
+
+        foreach ($inputs as $input) {
+            $input->mockInputStub = File::get($inputsLocation . $this->getInputDefault($input->type) . ".stub");
+        }
+
+        // Assert the StubEditor is created correctly.
+        $stubEditor = new ViewStubEditor();
+        App::shouldReceive('make')
+            ->with(StubEditor::class, ['view'])
+            ->once()
+            ->andReturn($stubEditor);
+
+        // Assert the StubInputsEditor is created correctly.
+        App::shouldReceive('make')
+            ->with(StubInputsEditor::class, [$inputs, 'view'])
+            ->once()
+            ->andReturn(new StubInputsEditor($inputs, 'view'));
+
+        // Assert config frontend scaffolding is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.frontend_scaffolding')
+            ->times(15)
+            ->andReturn($viewType);
+        
+        // Assert config stubs folder is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.stubs_folder')
+            ->times(4)
+            ->andReturn('stubs');
+        
+        // Assert config input defaults is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.input_defaults')
+            ->times(6)
+            ->andReturn($this->getInputDefaults());
+
+        // Assert config input default is used for each input.
+        foreach ($inputs as $input) {
+            App::shouldReceive('make')
+                ->with(StubInputEditor::class, [$input, 'view', '', false])
+                ->once()
+                ->andReturn(new ViewStubInputEditor($input));
+        }
+
+        Config::partialMock();
+
+        // Assert stub at the location exists for file type.
+        File::shouldReceive('exists')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn(true);
+
+        // Assert getting the correct stub file for file type.
+        File::shouldReceive('get')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn($stub);
+        
+        foreach ($inputs as $input) {
+            $location = base_path() . "/stubs/views/$viewType/inputs/" . $this->getInputDefault($input->type) . ".stub";
+            // Assert stub at the location exists.
+            File::shouldReceive('exists')
+                ->with($location)
+                ->once()
+                ->andReturn(true);
+
+            // Assert getting the correct stub file for file type.
+            File::shouldReceive('get')
+                ->with($location)
+                ->once()
+                ->andReturn($input->mockInputStub);
+        }
+
+        // Assert correct blade file is created in the correct location.
+        File::shouldReceive('put')
+            ->with($expectedBladeFileLocation, $expectedBladeFile)
+            ->once()
+            ->andReturn(true);
+
+        File::partialMock();
+
+        $this->artisan('cruddy:view', [
+            'name' => $this->name,
+            'table' => $this->table,
+            'type' => $type,
+            'inputs' => $inputs,
+            '--force' => true,
+        ]);
+
+        $placeholdersArray = [
+            $stubEditor->inputPlaceholders,
+            $stubEditor->actionPlaceholders,
+            $stubEditor->editUrlPlaceholders,
+            $stubEditor->variableCollectionPlaceholders,
+            $stubEditor->variablePlaceholders,
+            $stubEditor->cancelUrlPlaceholders,
+            $stubEditor->modelPlaceholders,
+            $stubEditor->vueComponentPlaceholders,
+            $stubEditor->vueDataPlaceholders,
+            $stubEditor->vuePostDataPlaceholders,
+        ];
+
+        // Assert that the expected blade file does not have any stub model placeholders remaining
+        foreach ($placeholdersArray as $placeholders) {
+            foreach ($placeholders as $placeholder) {
+                $this->assertFalse(strpos($expectedBladeFile, $placeholder));
+            }
+        }
+    }
+
+    /**
+     * A test for correct default edit view file.
+     *
+     * @return
+     */
+    public function test_correct_default_edit_view_file_created()
+    {
+        $type = 'edit';
+        $viewType = 'default';
+        $inputs = $this->getMockColumns();
+        $expectedStubLocation = base_path() . "/stubs/views/$viewType/$type.stub";
+        $stubLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/$type.stub";
+        $stub = File::get($stubLocation);
+        $expectedBladeFileLocation = "resources/views/name/$type.blade.php";
+        $expectedBladeFile = File::get(dirname(__DIR__) . "/stubs/views/$viewType/expectedBladeFile" . ucfirst($type) . ".stub");
+
+        $inputsLocation = dirname(dirname(__DIR__)) . "/Commands/stubs/views/$viewType/inputs/";
+
+        foreach ($inputs as $input) {
+            $input->mockInputStub = File::get($inputsLocation . $this->getInputDefault($input->type) . ".stub");
+        }
+        $mockSubmitInputStub = File::get($inputsLocation  . "submit.stub");
+
+        // Assert the StubEditor is created correctly.
+        $stubEditor = new ViewStubEditor();
+        App::shouldReceive('make')
+            ->with(StubEditor::class, ['view'])
+            ->once()
+            ->andReturn($stubEditor);
+
+        // Assert the StubInputsEditor is created correctly.
+        App::shouldReceive('make')
+            ->with(StubInputsEditor::class, [$inputs, 'view'])
+            ->once()
+            ->andReturn(new StubInputsEditor($inputs, 'view'));
+
+        // Assert config frontend scaffolding is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.frontend_scaffolding')
+            ->times(19)
+            ->andReturn($viewType);
+        
+        // Assert config stubs folder is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.stubs_folder')
+            ->times(5)
+            ->andReturn('stubs');
+        
+        // Assert config input defaults is used.
+        Config::shouldReceive('get')
+            ->with('cruddy.input_defaults')
+            ->times(8)
+            ->andReturn($this->getInputDefaults());
+
+        // Assert config input default is used for each input.
+        foreach ($inputs as $input) {
+            App::shouldReceive('make')
+                ->with(StubInputEditor::class, [$input, 'view', '', true])
+                ->once()
+                ->andReturn(new ViewStubInputEditor($input));
+        }
+
+        // Assertion for submit input
+        App::shouldReceive('make')
+            ->with(StubInputEditor::class, [null, 'view', '', true])
+            ->once()
+            ->andReturn(new ViewStubInputEditor());
+
+        Config::partialMock();
+
+        // Assert stub at the location exists for file type.
+        File::shouldReceive('exists')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn(true);
+
+        // Assert getting the correct stub file for file type.
+        File::shouldReceive('get')
+            ->with($expectedStubLocation)
+            ->once()
+            ->andReturn($stub);
+        
+        foreach ($inputs as $input) {
+            $location = base_path() . "/stubs/views/$viewType/inputs/" . $this->getInputDefault($input->type) . ".stub";
+            // Assert stub at the location exists.
+            File::shouldReceive('exists')
+                ->with($location)
+                ->once()
+                ->andReturn(true);
+
+            // Assert getting the correct stub file for file type.
+            File::shouldReceive('get')
+                ->with($location)
+                ->once()
+                ->andReturn($input->mockInputStub);
+        }
+
+        // Assert file uses submit input stub
+        $location = base_path() . "/stubs/views/$viewType/inputs/submit.stub";
+        File::shouldReceive('exists')
+            ->with($location)
+            ->once()
+            ->andReturn(true);
+    
+        File::shouldReceive('get')
+            ->with($location)
+            ->once()
+            ->andReturn($mockSubmitInputStub);
+
+        // Assert correct blade file is created in the correct location.
+        File::shouldReceive('put')
+            ->with($expectedBladeFileLocation, $expectedBladeFile)
+            ->once()
+            ->andReturn(true);
+
+        File::partialMock();
+
+        $this->artisan('cruddy:view', [
+            'name' => $this->name,
+            'table' => $this->table,
+            'type' => $type,
+            'inputs' => $inputs,
+            '--force' => true,
+        ]);
+
+        $placeholdersArray = [
+            $stubEditor->inputPlaceholders,
+            $stubEditor->actionPlaceholders,
+            $stubEditor->editUrlPlaceholders,
+            $stubEditor->variableCollectionPlaceholders,
+            $stubEditor->variablePlaceholders,
+            $stubEditor->cancelUrlPlaceholders,
+            $stubEditor->modelPlaceholders,
+            $stubEditor->vueComponentPlaceholders,
+            $stubEditor->vueDataPlaceholders,
+            $stubEditor->vuePostDataPlaceholders,
+        ];
+
+        // Assert that the expected blade file does not have any stub model placeholders remaining
+        foreach ($placeholdersArray as $placeholders) {
+            foreach ($placeholders as $placeholder) {
+                $this->assertFalse(strpos($expectedBladeFile, $placeholder));
+            }
+        }
     }
 }

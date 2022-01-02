@@ -3,6 +3,8 @@
 namespace Cruddy\Tests\Unit\StubEditors;
 
 use Cruddy\StubEditors\ControllerStubEditor;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
@@ -16,19 +18,21 @@ class ControllerStubEditorTest extends TestCase
     public function test_get_api_stub_file()
     {
         $isApi = true;
-        $stubsLocation = 'stubs/cruddy';
-        $expectedResult = dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/controller.api.stub';
+        $stubsLocation = 'stubs';
+        $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/controller.api.stub');
 
         $mock = $this->partialMock(ControllerStubEditor::class, function (MockInterface $mock) use ($isApi, $stubsLocation) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getApi')
-                ->once()
-                ->andReturn($isApi);
-            $mock->shouldReceive('getStubsLocation')
-                ->once()
-                ->andReturn($stubsLocation);
         });
 
+        Config::shouldReceive('get')
+            ->with('cruddy.stubs_folder')
+            ->once()
+            ->andReturn('stubs');
+
+        Config::partialMock();
+
+        $mock->setIsApi($isApi);
         $result = $mock->getStubFile();
 
         $this->assertSame($expectedResult, $result);
@@ -42,19 +46,21 @@ class ControllerStubEditorTest extends TestCase
     public function test_get_default_stub_file()
     {
         $isApi = false;
-        $stubsLocation = 'stubs/cruddy';
-        $expectedResult = dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/controller.stub';
+        $stubsLocation = 'stubs';
+        $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/controller.stub');
 
         $mock = $this->partialMock(ControllerStubEditor::class, function (MockInterface $mock) use ($isApi, $stubsLocation) {
             $mock->shouldAllowMockingProtectedMethods();
-            $mock->shouldReceive('getApi')
-                ->once()
-                ->andReturn($isApi);
-            $mock->shouldReceive('getStubsLocation')
-                ->once()
-                ->andReturn($stubsLocation);
         });
 
+        Config::shouldReceive('get')
+            ->with('cruddy.stubs_folder')
+            ->once()
+            ->andReturn('stubs');
+
+        Config::partialMock();
+
+        $mock->setIsApi($isApi);
         $result = $mock->getStubFile();
 
         $this->assertSame($expectedResult, $result);

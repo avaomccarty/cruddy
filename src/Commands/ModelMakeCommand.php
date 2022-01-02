@@ -77,60 +77,13 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
     }
 
     /**
-     * Execute the console command.
+     * Get the console command options.
      *
-     * @return bool|null
-     *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @return array
      */
-    public function handle()
+    protected function getOptions()
     {
-        // First we need to ensure that the given name is not a reserved word within the PHP
-        // language and that the class name will actually be valid. If it is not valid we
-        // can error now and prevent from polluting the filesystem using invalid files.
-        if ($this->isReservedName($this->getNameInput())) {
-            $this->error('The name "'.$this->getNameInput().'" is reserved by PHP.');
-
-            return false;
-        }
-
-        $name = $this->qualifyClass($this->getNameInput());
-
-        $path = $this->getPath($name);
-
-        // Next, we will generate the path to the location where this class' file should get
-        // written. Then, we will build the class and make the proper replacements on the
-        // stub files so that it gets the correctly formatted namespace and class name.
-        $this->makeDirectory($path);
-
-        // echo $this->sortImports($this->buildClass($name));
-        // dd();
-
-        // $file = File::get(dirname(dirname(dirname(dirname(base_path())))) . '/src/Tests/stubs/models/expectedFile.stub');
-        // dd(
-        //     substr($this->sortImports($this->buildClass($name)), 0, 1200),
-        //     substr($file, 0, 1200),
-        //     strcmp(
-        //         substr($this->sortImports($this->buildClass($name)), 0, 1200),
-        //         substr($file, 0, 1200)
-        //     )
-        // );
-
-        // dd(
-        //     $this->sortImports($this->buildClass($name)),
-        //     $file,
-        //     strpos(
-        //         $this->sortImports($this->buildClass($name)),
-        //         $file
-        //     ),
-        //     strlen($this->sortImports($this->buildClass($name))),
-        //     strlen($file),
-        // );
-
-
-        $this->files->put($path, $this->sortImports($this->buildClass($name)));
-
-        $this->info($this->type.' created successfully.');
+        return parent::getOptions();
     }
 
     /**
@@ -141,7 +94,7 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function buildClass($name) : string
+    protected function buildClass($name)
     {
         $this->setStubEditor('model');
         $name = $this->getStudlySingular($this->getArgument('name'));

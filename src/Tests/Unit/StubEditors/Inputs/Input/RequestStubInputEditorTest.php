@@ -19,7 +19,7 @@ class RequestStubInputEditorTest extends TestCase
      */
     public function test_get_input_string()
     {
-        $expectedResult = 'exists:on,references';
+        $expectedResult = "'name' => 'exists:on,references',\n\t\t\t";
         $name = 'name';
         $expectedForeignKey = new ForeignKeyDefinition([
             'inputType' => 'oneToOne',
@@ -66,7 +66,7 @@ class RequestStubInputEditorTest extends TestCase
      */
     public function test_get_input_string_without_setting_foreign_keys()
     {
-        $expectedResult = '';
+        $expectedResult = "'name' => '',\n\t\t\t";
         $name = 'name';
         $column = new ColumnDefinition([
             'type' => 'string',

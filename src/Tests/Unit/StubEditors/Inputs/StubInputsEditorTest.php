@@ -63,7 +63,7 @@ class StubInputsEditorTest extends TestCase
      */
     public function test_get_request_input_string()
     {
-        $expectedResult = "stringinteger";
+        $expectedResult = '';
         $fileType = 'request';
         $stubInputsEditor = new StubInputsEditor($this->columns, $fileType, $this->stub);
 
@@ -73,12 +73,18 @@ class StubInputsEditorTest extends TestCase
                 ->with(StubInputEditor::class, [$column, $fileType, $this->stub, false])
                 ->once()
                 ->andReturn($stubInputEditor);
-            Config::shouldReceive('get')
-                ->with('cruddy.validation_defaults.' . $column['type'])
-                ->once()
-                ->andReturn($column['type']);
-            
         }
+
+        $expectedResult .= "'name-1' => 'text',\n\t\t\t'name-2' => 'number',";
+
+        Config::shouldReceive('get')
+            ->with('cruddy.validation_defaults')
+            ->times(2)
+            ->andReturn([
+                'string' => 'text',
+                'integer' => 'number',
+            ]);
+
         $result = $stubInputsEditor->getInputString($this->type, $this->name);
 
         $this->assertSame($expectedResult, $result);

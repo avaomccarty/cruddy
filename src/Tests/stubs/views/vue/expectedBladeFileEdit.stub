@@ -1,0 +1,60 @@
+<template>
+    <x-layout>
+        <form @submit="submit()">
+            <h1 class="is-size-1">Edit</h1>
+            <p v-if="error">{{ error }}</p>
+            <input type="text" name="name-string"  class="input my-2" placeholder="name-string" v-model="name-string">
+
+				<input type="number" name="name-integer"  class="input my-2" v-model="name-integer">
+
+				<input type="number" name="name-bigInteger"  class="input my-2" v-model="name-bigInteger">
+
+				<input type="submit" class="button is-primary my-2">
+
+            <a href="/name" class="button is-danger my-2">Cancel</a>
+        </form>
+    </x-layout>
+</template>
+
+<script>
+export default {
+    name: 'TableEdit',
+    status: 'prototype',
+    release: '1.0.0',
+    data () {
+        return {
+            item: {},
+            error: null,
+        };
+    },
+    props: {
+        propItem: {
+            type: Object,
+            default: () => {}
+        }
+    },
+    mounted () {
+        this.item = this.propItem;
+    },
+    methods: {
+        submit () {
+            this.$axios.put('/name/' + this.item.id, {
+                name-string: this.item.name-string,
+				name-integer: this.item.name-integer,
+				name-bigInteger: this.item.name-bigInteger,
+				
+            })
+            .then(response => {
+                return window.location = '/name/' + this.item.id;
+            })
+            .catch(error => {
+                if (error.response) {
+                    this.error = error.response.data.message;
+                }
+            });
+        }
+    }
+};
+</script>
+
+

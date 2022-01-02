@@ -231,7 +231,7 @@ class StubInputEditorTest extends TestCase
                 'type'  => $columnType
             ]);
 
-            $expectedResult = '<input type="submit" value="{{ value }}" class="button is-primary my-2">' . "\n";
+            $expectedResult = '<input type="submit" class="button is-primary my-2">' . "\n";
 
             Config::shouldReceive('get')
                 ->with('cruddy.stubs_folder')

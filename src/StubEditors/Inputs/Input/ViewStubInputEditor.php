@@ -11,6 +11,17 @@ class ViewStubInputEditor extends StubInputEditor
      *
      * @var array
      */
+    protected $vModelNamePlaceholders = [
+        'DummyVModelName',
+        '{{ vModelName }}',
+        '{{vModelName}}'
+    ];
+
+    /**
+     * The acceptable value placeholders within a stub.
+     *
+     * @var array
+     */
     protected $valuePlaceholders = [
         'DummyValue',
         '{{ value }}',
@@ -123,7 +134,9 @@ class ViewStubInputEditor extends StubInputEditor
     protected function setDefaultInput() : void
     {
         $this->column = new ColumnDefinition([
-            'type' => 'submit'
+            'type' => 'submit',
+            'name' => 'submit',
+            'unsigned' => false,
         ]);
     }
 
@@ -143,6 +156,7 @@ class ViewStubInputEditor extends StubInputEditor
         $this->replaceInStub($this->modelNamePlaceholders, $this->getReplaceString(), $this->inputString)
             ->replaceInStub($this->namePlaceholders, $this->column['name'], $this->inputString)
             ->replaceInStub($this->valuePlaceholders, $this->getInputValue(), $this->inputString)
+            ->replaceInStub($this->vModelNamePlaceholders, $this->column['name'], $this->inputString)
             ->replaceInStub($this->dataPlaceholders, $this->getExtraInputInfo(), $this->inputString);
 
         return $this->inputString;

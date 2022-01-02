@@ -2,6 +2,8 @@
 
 namespace Cruddy\Tests\Feature;
 
+use Cruddy\Exceptions\UnknownRelationshipType;
+use Cruddy\ForeignKeyDefinition;
 use Cruddy\ModelRelationships\ModelRelationship;
 use Cruddy\StubEditors\ModelStubEditor;
 use Cruddy\StubEditors\StubEditor;
@@ -84,6 +86,36 @@ class ModelMakeCommandTest extends TestCase
             'name' => $name,
             'inputs' => $inputs,
             'keys' => $keys,
+            '--force' => true,
         ])->expectsOutput('Model created successfully.');
+    }
+
+    /**
+     * A test for an invalid relationship type.
+     *
+     * @return void
+     */
+    public function test_invalid_relationship_type()
+    {
+        $this->expectException(UnknownRelationshipType::class);
+
+        $foreignKey = new ForeignKeyDefinition([
+            'inputType' => 'invalid-type',
+            'on' => 'on'
+        ]);
+
+        Config::shouldReceive('get')
+            ->with('cruddy.stubs_folder')
+            ->once()
+            ->andReturn('stubs');
+
+        Config::partialMock();
+
+        $this->artisan('cruddy:model', [
+            'name' => 'name',
+            'inputs' => $this->getMockColumns(),
+            'keys' => [$foreignKey],
+            '--force' => true,
+        ]);
     }
 }
