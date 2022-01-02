@@ -4,6 +4,7 @@ namespace {{ namespace }};
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+{{ useStatement }}
 
 class {{ class }} extends Model
 {
@@ -19,4 +20,6 @@ class {{ class }} extends Model
     protected $fillable = [
         {{ inputs }}
     ];
+
+    {{ relationships }}
 }

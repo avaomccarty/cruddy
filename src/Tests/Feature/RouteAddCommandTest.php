@@ -3,50 +3,27 @@
 namespace Cruddy\Tests\Feature;
 
 use Cruddy\Tests\TestTrait;
-use Cruddy\Traits\RouteAddCommandTrait;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\File;
 use Orchestra\Testbench\TestCase;
 
 class RouteAddCommandTest extends TestCase
 {
-    use DatabaseTransactions, RouteAddCommandTrait, TestTrait;
+    use DatabaseTransactions, TestTrait;
 
     /**
-     * Determine if the resource is for an api.
-     *
-     * @var boolean
-     */
-    public $isApi;
-
-    /**
-     * The name of the resource.
+     * The success message.
      *
      * @var string
      */
-    protected $name;
+    protected $successMessage = "Cruddy resource routes were added successfully!\n";
 
     /**
-     * The file location.
+     * The no routes were added message.
      *
      * @var string
      */
-    protected $file;
-
-    /**
-     * The resource route.
-     *
-     * @var string
-     */
-    protected $resourceRoute;
-
-    public function setUp() : void
-    {
-        parent::setUp();
-        $this->name = 'name';
-        $this->file = $this->getRouteFile();
-        $this->resourceRoute = $this->getResourceRoute();
-    }
+    protected $noRoutesAddedMessage = "No Cruddy resource routes were added.\n";
 
     /**
      * A test for adding the new import statement to the default route file.
@@ -57,41 +34,10 @@ class RouteAddCommandTest extends TestCase
      */
     public function test_import_statement_added_to_default_route_file()
     {
-        File::shouldReceive('exists')
-            ->with($this->file)
-            ->once()
-            ->andReturn(true);
-
-        File::shouldReceive('get')
-            ->with($this->file)
-            ->once()
-            ->andReturn('');
-
-        File::shouldReceive('append')
-            ->with($this->file, $this->resourceRoute)
-            ->once();
-
-        File::partialMock();
-
-        $this->artisan('cruddy:route', [
-            'name' => $this->name
-        ])->expectsOutput($this->successMessage);
-    }
-    
-    /**
-     * A test for adding the new import statement to the api route file.
-     *
-     * @test
-     * @group cruddy
-     * @return void
-     */
-    public function test_import_statement_added_to_api_route_files()
-    {
-        $this->isApi = true;
-        $this->defaultRouteFileName = 'api';
-        $this->defaultResourceType = 'apiResource';
-        $file = $this->getRouteFile(); // Get the route file with the new defaults
-        $resourceRoute = $this->getResourceRoute();
+        $name = 'name';
+        $file = 'routes/web.php';
+        $resourceRoute = "\n\n// Name Resource\n" . 
+        "Route::resource('names', 'App\Http\Controllers\NameController');";
 
         File::shouldReceive('exists')
             ->with($file)
@@ -107,9 +53,47 @@ class RouteAddCommandTest extends TestCase
             ->with($file, $resourceRoute)
             ->once();
 
+        File::partialMock();
+
         $this->artisan('cruddy:route', [
-            'name' => $this->name,
-            '--api' => $this->isApi
+            'name' => $name
+        ])->expectsOutput($this->successMessage);
+    }
+    
+    /**
+     * A test for adding the new import statement to the api route file.
+     *
+     * @test
+     * @group cruddy
+     * @return void
+     */
+    public function test_import_statement_added_to_api_route_files()
+    {
+        $name = 'name';
+        $file = 'routes/api.php';
+        $isApi = true;
+        $resourceRoute = "\n\n// Name Resource\n" . 
+        "Route::apiResource('names', 'App\Http\Controllers\NameController');";
+
+        File::shouldReceive('exists')
+            ->with($file)
+            ->once()
+            ->andReturn(true);
+
+        File::shouldReceive('get')
+            ->with($file)
+            ->once()
+            ->andReturn('');
+
+        File::shouldReceive('append')
+            ->with($file, $resourceRoute)
+            ->once();
+
+        File::partialMock();
+
+        $this->artisan('cruddy:route', [
+            'name' => $name,
+            '--api' => $isApi
         ])->expectsOutput($this->successMessage);
     }
     
@@ -122,22 +106,27 @@ class RouteAddCommandTest extends TestCase
      */
     public function test_import_statement_not_duplicated_in_route_file()
     {
+        $name = 'name';
+        $file = 'routes/web.php';
+        $resourceRoute = "\n\n// Name Resource\n" . 
+        "Route::resource('names', 'App\Http\Controllers\NameController');";
+
         File::shouldReceive('exists')
-            ->with($this->file)
+            ->with($file)
             ->once()
             ->andReturn(true);
 
         File::shouldReceive('get')
-            ->with($this->file)
+            ->with($file)
             ->once()
-            ->andReturn($this->resourceRoute);
+            ->andReturn($resourceRoute);
 
         File::shouldReceive('append')
-            ->with($this->file, $this->resourceRoute)
+            ->with($file, $resourceRoute)
             ->never();
 
         $this->artisan('cruddy:route', [
-            'name' => $this->name,
+            'name' => $name,
         ])->expectsOutput($this->noRoutesAddedMessage);
     }
     
@@ -150,22 +139,27 @@ class RouteAddCommandTest extends TestCase
      */
     public function test_route_file_does_not_exist()
     {
+        $name = 'name';
+        $file = 'routes/web.php';
+        $resourceRoute = "\n\n// Name Resource\n" . 
+        "Route::resource('names', 'App\Http\Controllers\NameController');";
+
         File::shouldReceive('exists')
-            ->with($this->file)
+            ->with($file)
             ->once()
             ->andReturn(false);
 
         File::shouldReceive('get')
-            ->with($this->file)
+            ->with($file)
             ->never()
-            ->andReturn($this->resourceRoute);
+            ->andReturn($resourceRoute);
 
         File::shouldReceive('append')
-            ->with($this->file, $this->resourceRoute)
+            ->with($file, $resourceRoute)
             ->never();
 
         $this->artisan('cruddy:route', [
-            'name' => $this->name,
+            'name' => $name,
         ])->expectsOutput($this->noRoutesAddedMessage);
     }
 }

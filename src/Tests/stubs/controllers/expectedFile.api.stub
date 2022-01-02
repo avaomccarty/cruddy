@@ -1,0 +1,99 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreFoo;
+use App\Http\Requests\UpdateFoo;
+use App\Models\Foo;
+use Exception;
+use Illuminate\Http\Response;
+
+class FooController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        try {
+            return response(Foo::get(), 200);
+        } catch (Exception $exception) {
+            return response('error', 400);
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\StoreFoo  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(StoreFoo $request)
+    {
+        try {
+            Foo::insert([
+                'name-string' => $request->name-string,
+				'name-integer' => $request->name-integer,
+				'name-bigInteger' => $request->name-bigInteger,
+            ]);
+            return response('success', 200);
+        } catch (Exception $exception) {
+            return response('error', 400);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        try {
+            return response(Foo::findOrFail($id), 200);
+        } catch (Exception $exception) {
+            return response('error', 400);
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\UpdateFoo  $request
+     * @param  \App\Models\Foo  $foo
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateFoo $request, foo $foo)
+    {
+        try {
+            $foo->update([
+                'name-string' => $request->name-string,
+				'name-integer' => $request->name-integer,
+				'name-bigInteger' => $request->name-bigInteger,
+            ]);
+            return response('success', 200);
+        } catch (Exception $exception) {
+            return response('error', 400);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Foo  $foo
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(foo $foo)
+    {
+        try {
+            $foo->delete();
+            return response('success', 200);
+        } catch (Exception $exception) {
+            return response('error', 400);
+        }
+    }
+}

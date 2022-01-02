@@ -2,13 +2,14 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\Traits\VueImportAddCommandTrait;
+use Cruddy\Traits\CommandTrait;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class VueImportAddCommand extends Command
 {
-    use VueImportAddCommandTrait;
+    use CommandTrait;
 
     /**
      * The name and signature of the console command.
@@ -34,16 +35,6 @@ class VueImportAddCommand extends Command
     protected $name;
 
     /**
-     * The string to search for within the vue_import_file to add other Vue components.
-     *
-     * @var array
-     */
-    protected $possibleSearchesArray = [
-        'Vue.component(',
-        'const app = new Vue('
-    ];
-
-    /**
      * Execute the console command.
      *
      * @return int
@@ -52,39 +43,67 @@ class VueImportAddCommand extends Command
     {
         $importStatement = $this->getImportStatement();
         $componentStatement = $this->getComponentStatement();
+        $vueComponentSearch = $this->getVueComponentSearchString();
 
         if (File::exists($this->getVueImportFileLocation())) {
             $importFile = File::get($this->getVueImportFileLocation());
 
             // Add import statement to the top of the file if it does not already exist
-            if (strpos($importFile, $importStatement) !== false) {
-                $this->output("No Cruddy Vue imports were added.\n");
-            } else {
+            if (strpos($importFile, $importStatement) === false) {
                 File::prepend($this->getVueImportFileLocation(), $importStatement);
-                $this->output("Cruddy Vue imports were added successfully!\n");
             }
 
             // Add Vue.component() statements to the file if they do not already exist
-            if (strpos($importFile, $componentStatement) !== false) {
-                $this->output("No Cruddy Vue components were added.\n");
-            } else {
-                foreach ($this->possibleSearchesArray as $search) {
-                    $positionInFile = strpos($importFile, $search);
-                    if ($positionInFile !== false && is_numeric($positionInFile)) {
-                        $updatedFile = substr_replace($importFile, $componentStatement, $positionInFile, 0);
-                        File::put($this->getVueImportFileLocation(), $updatedFile);
-                        $this->output("Cruddy Vue components were added successfully!\n");
-                        break;
-                    } else {
-                        $this->output("Could not find the following string in your file: " . $search . "\n");
-                        if ($search !== last($this->possibleSearchesArray)) {
-                            $this->output("Trying another option...\n");
-                        } else {
-                            $this->output("Could not find other options to try. Please check the 'vue_import_file' file for one of the following options: " . $this->possibleSearchesArray . "\n");
-                        }
-                    }
+            if (strpos($importFile, $componentStatement) === false) {
+                $positionInFile = strpos($importFile, $vueComponentSearch);
+
+                if ($positionInFile !== false && is_numeric($positionInFile)) {
+                    $updatedFile = substr_replace($importFile, $componentStatement, $positionInFile, 0);
+                    File::put($this->getVueImportFileLocation(), $updatedFile);
                 }
             }
         }
+    }
+
+    /**
+     * Get new Cruddy Vue component name.
+     *
+     * @param  string|null  $style
+     * @return string
+     */
+    protected function getComponent(string $style = null) : string
+    {
+        $name = $this->getResourceName();
+        $type = $this->getType();
+
+        if ($style === 'kebab') {
+            return Str::kebab($name) . '-' . strtolower($type);
+        }
+
+        return Str::studly($name) . Str::ucfirst($type);
+    }
+
+    /**
+     * Get new Cruddy Vue component statements.
+     *
+     * @return string
+     */
+    protected function getComponentStatement() : string
+    {
+        return "Vue.component('" . $this->getComponent('kebab') . "', " . $this->getComponent() . ");\n";
+    }
+
+    /**
+     * Get new Cruddy Vue import statement.
+     *
+     * @return string
+     */
+    protected function getImportStatement() : string
+    {
+        $name = $this->getResourceName();
+        $lowerName = $this->getLowerSingular($name);
+        $importString = "import " . $this->getComponent() . " from '@/components/" . $lowerName . "/" . $this->getType() . ".vue';\n";
+
+        return $importString;
     }
 }

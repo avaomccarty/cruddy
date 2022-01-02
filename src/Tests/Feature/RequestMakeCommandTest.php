@@ -2,16 +2,24 @@
 
 namespace Cruddy\Tests\Feature;
 
+use Cruddy\ForeignKeyDefinition;
+use Cruddy\ForeignKeyValidation\ForeignKeyValidation;
+use Cruddy\ForeignKeyValidation\ModelRelationships\OneToOneForeignKeyValidation;
+use Cruddy\StubEditors\Inputs\Input\RequestStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\StubInputEditor;
+use Cruddy\StubEditors\Inputs\StubInputsEditor;
+use Cruddy\StubEditors\RequestStubEditor;
+use Cruddy\StubEditors\StubEditor;
 use Cruddy\Tests\TestTrait;
-use Cruddy\Traits\RequestMakeCommandTrait;
-use Cruddy\Traits\Stubs\RuleTrait;
+use Illuminate\Database\Schema\ColumnDefinition;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Orchestra\Testbench\TestCase;
 
 class RequestMakeCommandTest extends TestCase
 {
-    use RequestMakeCommandTrait, RuleTrait, TestTrait;
+    use TestTrait;
 
     /**
      * The output from successfully running the command.
@@ -35,6 +43,18 @@ class RequestMakeCommandTest extends TestCase
     protected $stubPath = '/stubs';
 
     /**
+     * The validation defaults for the tests.
+     *
+     * @var array
+     */
+    protected $validationDefaults = [
+        'oneToOne' => '',
+        'bigInteger' => 'required|integer|min:1',
+        'integer' => 'integer',
+        'string' => 'nullable|string',
+    ];
+
+    /**
      * Get the assertions based on the type of request file being created.
      *
      * @param  string  $type
@@ -42,6 +62,12 @@ class RequestMakeCommandTest extends TestCase
      */
     public function getAssertionsByType(string $type)
     {
+        $rules = $this->getMockRules();
+        $rulesPlaceholders = [
+            'DummyRules',
+            '{{ rules }}',
+            '{{rules}}'
+        ];
         $fileType = 'request';
         $requestFileName = ucfirst($type) . ucfirst($this->name);
         $stubPath = 'stubs';
@@ -50,6 +76,19 @@ class RequestMakeCommandTest extends TestCase
 
         $expectedRequestFileLocation = $this->getExpectedRequestFileLocation($requestFileName);
         $expectedRequestFile = $this->getExpectedRequestFile($type);
+
+        // Assert the StubEditor is created correctly.
+        $stubEditor = new RequestStubEditor();
+        App::shouldReceive('make')
+            ->with(StubEditor::class, ['request'])
+            ->once()
+            ->andReturn($stubEditor);
+
+        // Assert the StubInputsEditor is created correctly.
+        App::shouldReceive('make')
+            ->with('Cruddy\Commands\StubInputsEditor', [$rules, 'request'])
+            ->once()
+            ->andReturn(new StubInputsEditor($rules, 'request'));
 
         File::shouldReceive('exists')
             ->with($expectedRequestFileLocation)
@@ -67,6 +106,28 @@ class RequestMakeCommandTest extends TestCase
 
         File::partialMock();
 
+        $columnCount = 0;
+        foreach ($rules as $rule) {
+            if (is_a($rule, ColumnDefinition::class)) {
+                App::shouldReceive('make')
+                    ->with(StubInputEditor::class, [$rule, 'request', '', false])
+                    ->once()
+                    ->andReturn(new RequestStubInputEditor($rule));
+                $columnCount++;
+            }
+            if (is_a($rule, ForeignKeyDefinition::class)) {
+                App::shouldReceive('make')
+                    ->with(ForeignKeyValidation::class, [$rule])
+                    ->once()
+                    ->andReturn(new OneToOneForeignKeyValidation($rule));
+            }
+        }
+
+        Config::shouldReceive('get')
+            ->with('cruddy.validation_defaults')
+            ->times($columnCount)
+            ->andReturn($this->validationDefaults);
+
         Config::shouldReceive('get')
             ->with('cruddy.stubs_folder')
             ->once()
@@ -77,14 +138,13 @@ class RequestMakeCommandTest extends TestCase
         $this->artisan('cruddy:request', [
             'name' => $this->name,
             'type' => $type,
-            'rules' => $this->getMockColumns()
+            'rules' => $rules,
         ])
             ->expectsOutput($this->successOutput)
             ->assertExitCode(0);
 
-        
         // Assert that the expected request file does not have any stub rule placeholders remaining
-        foreach ($this->rulesPlaceholders as $placeholder) {
+        foreach ($rulesPlaceholders as $placeholder) {
             $this->assertFalse(strpos($expectedRequestFile, $placeholder));
         }
     }

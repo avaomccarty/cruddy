@@ -1,0 +1,117 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreFoo;
+use App\Http\Requests\UpdateFoo;
+use App\Models\Foo;
+use Exception;
+
+class FooController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return view('foo.index', [
+            'foos' => Foo::paginate(25)
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('foo.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\StoreFoo  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(StoreFoo $request)
+    {
+        try {
+            Foo::insert([
+                'name-string' => $request->name-string,
+				'name-integer' => $request->name-integer,
+				'name-bigInteger' => $request->name-bigInteger,
+            ]);
+            return redirect()->action([{{ class }}::class, 'index']);
+        } catch (Exception $exception) {
+            return redirect()->action([{{ class }}::class, 'create']);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Foo  $foo
+     * @return \Illuminate\Http\Response
+     */
+    public function show(foo $foo)
+    {
+        return view('foo.show', ['foo' => $foo]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Foo  $foo
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(foo $foo)
+    {
+        return view('foo.edit', [
+            'foo' => $foo
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\UpdateFoo  $request
+     * @param  \App\Models\Foo  $foo
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateFoo $request, foo $foo)
+    {
+        try {
+            $foo->update([
+                'name-string' => $request->name-string,
+				'name-integer' => $request->name-integer,
+				'name-bigInteger' => $request->name-bigInteger,
+            ]);
+            return redirect()->action(
+                [{{ class }}::class, 'index']
+            );
+        } catch (Exception $exception) {
+            return redirect()->action([{{ class }}::class, 'edit'], $foo);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Foo  $foo
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(foo $foo)
+    {
+        try {
+            $foo->delete();
+            return redirect()->action([{{ class }}::class, 'index']);
+        } catch (Exception $exception) {
+            return redirect()->action([{{ class }}::class, 'edit'], $foo);
+        }
+    }
+}

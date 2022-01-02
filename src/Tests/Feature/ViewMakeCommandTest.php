@@ -2,17 +2,21 @@
 
 namespace Cruddy\Tests\Feature;
 
+use Cruddy\StubEditors\Inputs\Input\StubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\ViewStubInputEditor;
+use Cruddy\StubEditors\Inputs\StubInputsEditor;
+use Cruddy\StubEditors\StubEditor;
+use Cruddy\StubEditors\ViewStubEditor;
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\CommandTrait;
-use Cruddy\Traits\Stubs\InputTrait;
-use Cruddy\Traits\ViewMakeCommandTrait;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Orchestra\Testbench\TestCase;
 
 class ViewMakeCommandTest extends TestCase
 {
-    use ViewMakeCommandTrait, TestTrait, InputTrait, CommandTrait;
+    use TestTrait, CommandTrait;
 
     /**
      * The name of the resource.
@@ -95,13 +99,13 @@ class ViewMakeCommandTest extends TestCase
     {
         switch ($type) {
             case 'edit':
-                return 11 + $inputsCount;
+                return 13 + $inputsCount;
                 break;
             case 'show':
-                return 9 + $inputsCount;
+                return 11 + $inputsCount;
                 break;
             default:
-                return 6 + $inputsCount;
+                return 13 + $inputsCount;
                 break;
         }
     }
@@ -109,8 +113,8 @@ class ViewMakeCommandTest extends TestCase
     /**
      * Get the number of calls to the config stubs folder.
      *
-     * @param  string  $type
-     * @param  integer  $inputsCount
+     * @param  string  $type = 'index'
+     * @param  integer  $inputsCount = 0
      * @return integer
      */
     protected function getStubsFolderConfigCalls(string $type = 'index', int $inputsCount = 0) : int
@@ -126,8 +130,8 @@ class ViewMakeCommandTest extends TestCase
     /**
      * Get the number of calls to the config stubs folder.
      *
-     * @param  string  $type
-     * @param  integer  $inputsCount
+     * @param  string  $type = 'index'
+     * @param  integer  $inputsCount = 0
      * @return integer
      */
     protected function getInputDefaultsConfigCalls(string $type = 'index', int $inputsCount = 0) : int
@@ -137,7 +141,7 @@ class ViewMakeCommandTest extends TestCase
             $count += 1;
         }
 
-        return $count;
+        return $count * 2;
     }
 
     /**
@@ -158,6 +162,7 @@ class ViewMakeCommandTest extends TestCase
     /**
      * Get an acceptable input type.
      *
+     * @param  string  $input = 'string'
      * @return string
      */
     protected function getInputDefault(string $input = 'string') : string
@@ -186,7 +191,18 @@ class ViewMakeCommandTest extends TestCase
         }
         $mockSubmitInputStub = $this->getInputStubMock('submit');
 
-        $directory = 'resources/views/name';
+        // Assert the StubEditor is created correctly.
+        $stubEditor = new ViewStubEditor();
+        App::shouldReceive('make')
+            ->with(StubEditor::class, ['view'])
+            ->once()
+            ->andReturn($stubEditor);
+
+        // Assert the StubInputsEditor is created correctly.
+        App::shouldReceive('make')
+            ->with(StubInputsEditor::class, [$inputs, 'view'])
+            ->once()
+            ->andReturn(new StubInputsEditor($inputs, 'view'));
 
         // Assert config frontend scaffolding is used.
         Config::shouldReceive('get')
@@ -208,18 +224,10 @@ class ViewMakeCommandTest extends TestCase
 
         // Assert config input default is used for each input.
         foreach ($inputs as $input) {
-            Config::shouldReceive('get')
-                ->with('cruddy.input_defaults.' . $input->type)
+            App::shouldReceive('make')
+                ->with(StubInputEditor::class, [$input, 'view', '', false])
                 ->once()
-                ->andReturn($this->getInputDefault($input->type));
-        }
-
-        // Assert 'edit' and 'create' files use config input_defaults submit button
-        if ($type !== 'index' && $type !== 'show') {
-            Config::shouldReceive('get')
-                ->with('cruddy.input_defaults.submit')
-                ->once()
-                ->andReturn($this->getInputDefault('submit'));
+                ->andReturn(new ViewStubInputEditor($input));
         }
 
         Config::partialMock();
@@ -229,7 +237,7 @@ class ViewMakeCommandTest extends TestCase
             ->with($expectedStubLocation)
             ->once()
             ->andReturn(true);
-        
+
         // Assert getting the correct stub file for file type.
         File::shouldReceive('get')
             ->with($expectedStubLocation)
@@ -284,19 +292,24 @@ class ViewMakeCommandTest extends TestCase
             'inputs' => $inputs
         ])->expectsOutput('Cruddy view created successfully.');
 
+        $placeholdersArray = [
+            $stubEditor->inputPlaceholders,
+            $stubEditor->actionPlaceholders,
+            $stubEditor->editUrlPlaceholders,
+            $stubEditor->variableCollectionPlaceholders,
+            $stubEditor->variablePlaceholders,
+            $stubEditor->cancelUrlPlaceholders,
+            $stubEditor->modelPlaceholders,
+            $stubEditor->vueComponentPlaceholders,
+            $stubEditor->vueDataPlaceholders,
+            $stubEditor->vuePostDataPlaceholders,
+        ];
+
         // Assert that the expected blade file does not have any stub model placeholders remaining
-        foreach ($this->modelPlaceholders as $stubModelPlaceholder) {
-            $this->assertFalse(strpos($expectedBladeFile, $stubModelPlaceholder));
-        }
-
-        // Assert that the expected blade file does not have any stub input placeholders remaining
-        foreach ($this->inputPlaceholders as $stubInputPlaceholder) {
-            $this->assertFalse(strpos($expectedBladeFile, $stubInputPlaceholder));
-        }
-
-        // Assert that the expected blade file does not have any stub input placeholders remaining
-        foreach ($this->editUrlPlaceholders as $stubInputPlaceholder) {
-            $this->assertFalse(strpos($expectedBladeFile, $stubInputPlaceholder));
+        foreach ($placeholdersArray as $placeholders) {
+            foreach ($placeholders as $placeholder) {
+                $this->assertFalse(strpos($expectedBladeFile, $placeholder));
+            }
         }
     }
 

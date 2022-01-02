@@ -2,11 +2,64 @@
 
 namespace Cruddy\Traits;
 
+use Cruddy\StubEditors\Inputs\StubInputsEditor;
+use Cruddy\StubEditors\StubEditor;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
 trait CommandTrait
 {
     use ConfigTrait;
+
+    /**
+     * Get an argument from the command.
+     *
+     * @param  string  $argument
+     * @return mixed
+     */
+    protected function getArgument(string $argument) : mixed
+    {
+        if (method_exists(self::class, 'argument')) {
+            return $this->argument($argument);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get an option from the command.
+     *
+     * @param  string  $option
+     * @return mixed
+     */
+    protected function getOption(string $option) : mixed
+    {
+        if (method_exists(self::class, 'option')) {
+            return $this->option($option);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the type.
+     *
+     * @return string
+     */
+    protected function getType() : string
+    {
+        return (string)$this->getArgument('type') ?? '';
+    }
+
+    /**
+     * Get the type option.
+     *
+     * @return string
+     */
+    protected function getTypeOption() : string
+    {
+        return (string)$this->getOption('type') ?? '';
+    }
 
     /**
      * Get the table.
@@ -15,7 +68,7 @@ trait CommandTrait
      */
     protected function getTableName() : string
     {
-        return (string)$this->argument('table') ?? '';
+        return (string)$this->getArgument('table') ?? '';
     }
 
     /**
@@ -25,7 +78,7 @@ trait CommandTrait
      */
     protected function getResourceName() : string
     {
-        return (string)$this->argument('name') ?? '';
+        return (string)$this->getArgument('name') ?? '';
     }
 
     /**
@@ -84,103 +137,6 @@ trait CommandTrait
     }
 
     /**
-     * Get the type argument.
-     *
-     * @return string
-     */
-    protected function getType() : string
-    {
-        $type = $this->argument('type') ?? '';
-        if (isset($this->types) && is_array($this->types)) {
-            return $this->isValidType($type, $this->types) ? $type : $this->types[0];
-        }
-
-        if ($type) {
-            if ($this->isValidType($type, $this->getDefaultTypes())) {
-                return $type;
-            }
-        }
-
-        return $this->getDefaultTypes()[0];
-    }
-
-    /**
-     * Get the inputs as a string.
-     *
-     * @param  boolean  $needsSubmitInput
-     * @return string
-     */
-    protected function getInputsString(bool $needsSubmitInput = false) : string
-    {
-        $inputsString = '';
-        $inputs = $this->getInputs();
-
-        foreach ($inputs as $key => $input) {
-            $inputsString .= $this->getInputString($input, $this->isVueEditOrShow());
-
-            if ($key === array_key_last($inputs) && $needsSubmitInput) {
-                $submitInputFile = $this->getInputFile('submit');
-                $this->replaceInStub($this->valuePlaceholders, 'Submit', $submitInputFile);
-                $inputsString .= $submitInputFile;
-            }
-        }
-
-        return $inputsString;
-    }
-
-    /**
-     * Should the view include a submit input.
-     *
-     * @return boolean
-     */
-    protected function typeNeedsSubmitInput() : bool
-    {
-        $type = $this->getType();
-
-        return $type !== 'index' && $type !== 'show';
-    }
-
-    /**
-     * Determine if the type is valid.
-     *
-     * @param  string  $type
-     * @param  array  $types
-     * @return boolean
-     */
-    protected function isValidType(string $type, array $types = []) : bool
-    {
-        return in_array($type, $types);
-    }
-
-    /**
-     * Get the default types.
-     *
-     * @return array
-     */
-    protected function getDefaultTypes() : array
-    {
-        return [
-            'index',
-            'create',
-            'show',
-            'edit',
-         ];
-    }
-
-    /**
-     * Get the stub file.
-     *
-     * @return string
-     */
-    protected function getStub() : string
-    {
-        $frontendScaffolding = $this->getFrontendScaffoldingName();
-        $stubsLocation = $this->getStubsLocation();
-
-        return $this->resolveStubPath($stubsLocation . '/views/' . $frontendScaffolding  . '/' . $this->getType() . '.stub');
-    }
-
-    /**
      * Get the stub file.
      *
      * @return string
@@ -197,7 +153,7 @@ trait CommandTrait
      */
     protected function getNameString() : string
     {
-        return (string)$this->argument('name') ?? '';
+        return (string)$this->getArgument('name') ?? '';
     }
 
     /**
@@ -207,7 +163,37 @@ trait CommandTrait
      */
     protected function getInputs() : array
     {
-        return (array)$this->argument('inputs') ?? [];
+        return (array)$this->getArgument('inputs') ?? [];
+    }
+
+    /**
+     * Get the inputs.
+     *
+     * @return array
+     */
+    protected function getInputsOption() : array
+    {
+        return (array)$this->option('inputs') ?? [];
+    }
+
+    /**
+     * Get the commands.
+     *
+     * @return array
+     */
+    protected function getCommands() : array
+    {
+        return (array)$this->getOption('commands') ?? [];
+    }
+
+    /**
+     * Get the keys.
+     *
+     * @return array
+     */
+    protected function getKeys() : array
+    {
+        return (array)$this->getArgument('keys') ?? [];
     }
 
     /**
@@ -217,7 +203,7 @@ trait CommandTrait
      */
     public function getRules() : array
     {
-        return (array)$this->argument('rules') ?? [];
+        return (array)$this->getArgument('rules') ?? [];
     }
 
     /**
@@ -241,37 +227,42 @@ trait CommandTrait
     }
 
     /**
-     * Determine if the resource is of the edit or show type.
+     * Set the stub editor.
      *
-     * @return boolean
+     * @param  string  $type = 'controller'
+     * @return void
      */
-    protected function isEditOrShow() : bool
+    protected function setStubEditor(string $type = 'controller') : void
     {
-        $types = [
-            'edit',
-            'show',
-        ];
-
-        return in_array($this->getType(), $types);
+        $this->stubEditor = App::make(StubEditor::class, [$type]);
     }
 
     /**
-     * Determine if the value should be included within the input. 
+     * Set the stub editor.
      *
-     * @return boolean
+     * @param  string  $type = 'controller'
+     * @return \Cruddy\StubEditors\Inputs\StubInputsEditor
      */
-    protected function shouldAddValueToInput() : bool
+    protected function getStubInputsEditor(string $type = 'controller') : StubInputsEditor
     {
-        return $this->isEditOrShow() && !$this->needsVueFrontend();
+        return App::make(StubInputsEditor::class, [$this->getInputsOption(), $type]);
     }
 
     /**
-     * Determine if it is a Vue edit/show file type.
+     * Get all the placeholders for this stub.
      *
-     * @return bool
+     * @return array
      */
-    protected function isVueEditOrShow() : bool
+    protected function getAllPlaceholders() : array
     {
-        return $this->isEditOrShow() && $this->needsVueFrontend();
+        $allPlaceholders = [];
+
+        foreach ($this->placeholderArrays as $placeholderArray) {
+            foreach ($this->$placeholderArray as $placeholder) {
+                $allPlaceholders[] = $placeholder;
+            }
+        }
+
+        return $allPlaceholders;
     }
 }

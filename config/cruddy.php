@@ -41,12 +41,20 @@ return [
      */
     'vue_import_file' => 'resources/js/bootstrap.js',
 
+
+    /**
+     * This is the string to search for within the Vue import file.
+     *
+     */
+    'vue_search_string' => 'Vue.component(',
+
     /**
      * The default validation rules for all columns in the CuddyBlueprint. These validation rules
      * are written to the Cruddy request files.
      *
      */
     'validation_defaults' => [
+        'oneToOne' => '',
         'bigInteger' => 'required|integer|min:1', // Note: Also "unsignedBigInteger".
         // 'binary' => 'string',
         // 'boolean' => 'boolean',
@@ -95,6 +103,7 @@ return [
      *
      */
     'input_defaults' => [
+        'oneToOne' => 'select',
         'bigInteger' => 'number',
         // 'unsignedBigInteger' => 'number',
         // 'binary' => 'text',

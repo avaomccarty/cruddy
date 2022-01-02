@@ -5,13 +5,12 @@ namespace Cruddy\Tests\Unit\Traits;
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\ConfigTrait;
-use Cruddy\Traits\Stubs\InputTrait;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
 class CommandTraitTest extends TestCase
 {
-    use CommandTrait, InputTrait, ConfigTrait, TestTrait;
+    use CommandTrait, ConfigTrait, TestTrait;
 
     /**
      * The acceptable types.
@@ -65,6 +64,48 @@ class CommandTraitTest extends TestCase
         $this->assertIsString($result, 'The type should be a string.');
         $this->assertNotEmpty($result, 'The type should not be empty.');
         $this->assertSame($expectedReturnValue, $result, 'The table name value is incorrect.');
+    }
+
+    /**
+     * A test to get the resource name when the argument method exists and null returned.
+     *
+     * @return void
+     */
+    public function test_get_resource_name_without_return_value()
+    {
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) {
+            $mock->shouldReceive('argument')
+                ->once()
+                ->with('name')
+                ->andReturn(null);
+        });
+
+        $result = $mock->getResourceName();
+
+        $this->assertIsString($result, 'The type should be a string.');
+        $this->assertEmpty($result, 'The resource name value should be empty.');
+    }
+
+    /**
+     * A test to get the resource name when the argument method exists and string returned.
+     *
+     * @return void
+     */
+    public function test_get_resource_name_with_return_value()
+    {
+        $expectedReturnValue = 'test-return-value';
+        $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($expectedReturnValue) {
+            $mock->shouldReceive('argument')
+                ->once()
+                ->with('name')
+                ->andReturn($expectedReturnValue);
+        });
+
+        $result = $mock->getResourceName();
+
+        $this->assertIsString($result, 'The type should be a string.');
+        $this->assertNotEmpty($result, 'The type should not be empty.');
+        $this->assertSame($expectedReturnValue, $result, 'The resource name value is incorrect.');
     }
 
     /**
@@ -174,62 +215,62 @@ class CommandTraitTest extends TestCase
         }
     }
 
-    /**
-     * A test to get the type when a invalid type is used.
-     *
-     * @return void
-     */
-    public function test_get_type_with_invalid_type_for_types_as_property()
-    {
-        $invalidType = 'invalid-type';
+    // /**
+    //  * A test to get the type when a invalid type is used.
+    //  *
+    //  * @return void
+    //  */
+    // public function test_get_type_with_invalid_type_for_types_as_property()
+    // {
+    //     $invalidType = 'invalid-type';
 
-        foreach ($this->types as $type) {
-            $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($invalidType) {
-                $mock->shouldReceive('argument')
-                    ->with('type')
-                    ->andReturn($invalidType);
-            });
+    //     foreach ($this->types as $type) {
+    //         $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($invalidType) {
+    //             $mock->shouldReceive('argument')
+    //                 ->with('type')
+    //                 ->andReturn($invalidType);
+    //         });
 
-            $mock->types = $this->types;
-            $result = $mock->getType();
+    //         $mock->types = $this->types;
+    //         $result = $mock->getType();
 
-            $this->assertIsString($result, 'The type should be a string.');
-            $this->assertNotEmpty($result, 'The type should not be empty.');
-            $this->assertSame($this->types[0], $result, 'The type is incorrect.');
-        }
-    }
+    //         $this->assertIsString($result, 'The type should be a string.');
+    //         $this->assertNotEmpty($result, 'The type should not be empty.');
+    //         $this->assertSame($this->types[0], $result, 'The type is incorrect.');
+    //     }
+    // }
 
-    /**
-     * A test to get the type when a invalid type is used.
-     *
-     * @return void
-     */
-    public function test_get_type_with_invalid_type_for_default_types()
-    {
-        $invalidType = 'invalid-type';
-        $expectedResult = 'result';
+    // /**
+    //  * A test to get the type when a invalid type is used.
+    //  *
+    //  * @return void
+    //  */
+    // public function test_get_type_with_invalid_type_for_default_types()
+    // {
+    //     $invalidType = 'invalid-type';
+    //     $expectedResult = 'result';
 
-        foreach ($this->types as $type) {
-            $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($invalidType, $expectedResult) {
-                $mock->shouldAllowMockingProtectedMethods();
-                $mock->shouldReceive('argument')
-                    ->with('type')
-                    ->andReturn($invalidType);
+    //     foreach ($this->types as $type) {
+    //         $mock = $this->partialMock(self::class, function (MockInterface $mock) use ($invalidType, $expectedResult) {
+    //             $mock->shouldAllowMockingProtectedMethods();
+    //             $mock->shouldReceive('argument')
+    //                 ->with('type')
+    //                 ->andReturn($invalidType);
 
-                $mock->shouldReceive('getDefaultTypes')
-                    ->andReturn([$expectedResult]);
-            });
+    //             $mock->shouldReceive('getDefaultTypes')
+    //                 ->andReturn([$expectedResult]);
+    //         });
 
-            // Unset the types so the default types array is used
-            unset($mock->types);
+    //         // Unset the types so the default types array is used
+    //         unset($mock->types);
 
-            $result = $mock->getType();
+    //         $result = $mock->getType();
 
-            $this->assertIsString($result, 'The type should be a string.');
-            $this->assertNotEmpty($result, 'The type should not be empty.');
-            $this->assertSame($expectedResult, $result, 'The type is incorrect.');
-        }
-    }
+    //         $this->assertIsString($result, 'The type should be a string.');
+    //         $this->assertNotEmpty($result, 'The type should not be empty.');
+    //         $this->assertSame($expectedResult, $result, 'The type is incorrect.');
+    //     }
+    // }
 
     /**
      * A test to get the deault types.

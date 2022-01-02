@@ -24,8 +24,9 @@ class UpdateTest extends FormRequest
     public function rules()
     {
         return [
-            'name-string' => '',
-			'name-integer' => '',
+            'name-string' => 'nullable|string',
+			'name-integer' => 'integer',
+			'name-bigInteger' => 'required|integer|min:1|exists:users,id',
         ];
     }
 }

@@ -2,14 +2,15 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\Traits\VueViewMakeCommandTrait;
+use Cruddy\Traits\CommandTrait;
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputArgument;
 
 class VueViewMakeCommand extends GeneratorCommand
 {
-    use VueViewMakeCommandTrait;
+    use CommandTrait;
 
     /**
      * The console command signature.
@@ -36,13 +37,21 @@ class VueViewMakeCommand extends GeneratorCommand
     protected $type = 'Cruddy Vue view';
 
     /**
-     * Get the stub file for the generator.
+     * The stub editor.
+     *
+     * @var \Cruddy\StubEditors\StubEditor|null
+     */
+    protected $stubEditor;
+
+    /**
+     * Get the stub.
      *
      * @return string
      */
     protected function getStub() : string
     {
-        return $this->resolveStubPath($this->getStubsLocation() . '/views/vue/page.stub');
+        return App::make(StubEditor::class, ['view'])
+            ->getStubFile();
     }
 
     /**
@@ -55,7 +64,7 @@ class VueViewMakeCommand extends GeneratorCommand
      */
     protected function buildClass($name) : string
     {
-        $stub = $this->getStubFile();
+        $stub = $this->getStub();
         $type = $this->getType();
         $variableName = $this->getVueVariableName($type);
         $componentName = $this->getComponentName($name);
@@ -104,5 +113,66 @@ class VueViewMakeCommand extends GeneratorCommand
     protected function getClassName() : string
     {
         return $this->getLowerSingular($this->getTableName());
+    }
+
+        /**
+     * Get the default namespace for the class.
+     *
+     * @param  string  $rootNamespace
+     * @return string
+     */
+    protected function getDefaultNamespace($rootNamespace) : string
+    {
+        return $rootNamespace . '\resources\views';
+    }
+
+    /**
+     * Get the props string for the stub.
+     *
+     * @return string
+     */
+    protected function getPropsString() : string
+    {
+        $table = $this->getTableName();
+        $type = $this->getType();
+
+        if ($type === 'index') {
+            $prop = strtolower(trim($table));
+            return ' :prop-items="{{ json_encode($' . $prop . '->toArray()[\'data\']) }}"';
+        } else if ($type === 'show' || $type === 'edit') {
+            $prop = $this->getLowerSingular($table);
+            return ' :prop-item="{{ $' . $prop . ' }}"';
+        }
+
+        return '';
+    }
+
+    /**
+     * Get the Vue variable name.
+     *
+     * @param  string  $type
+     * @return string
+     */
+    public function getVueVariableName(string $type = 'index') : string
+    {
+        $className = $this->getClassName();
+        if ($type === 'index') {
+            return $this->getLowerPlural($className);
+        }
+        
+        return strtolower($className);
+    }
+
+    /**
+     * Get the component name.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    protected function getComponentName(string $name) : string
+    {
+        $kebabName = Str::kebab($name);
+
+        return $kebabName . '-' . $this->getType();
     }
 }

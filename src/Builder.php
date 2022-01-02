@@ -53,6 +53,13 @@ class Builder extends BaseBuilder
     protected $columns;
 
     /**
+     * The migration commands.
+     *
+     * @var array
+     */
+    protected $commands;
+
+    /**
      * Create a new table on the schema.
      *
      * @param  string  $table
@@ -78,13 +85,16 @@ class Builder extends BaseBuilder
         $this->className = $this->getStudlySingular($this->table);
         $this->blueprint = $this->createBlueprint($this->table, $callback);
         $this->columns = $this->blueprint->getColumns();
+        $this->commands = $this->blueprint->getCommands();
+        $rules = array_merge($this->columns, $this->commands);
 
         Artisan::call('cruddy:controller', [
             'name' => $this->className . 'Controller',
             '--resource' => true,
             '--model' => $this->className,
             '--api' => $this->isApi(),
-            'inputs' => $this->columns,
+            '--inputs' => $this->columns,
+            '--commands' => $this->commands,
         ]);
 
         // Create update request class
@@ -98,9 +108,10 @@ class Builder extends BaseBuilder
         Artisan::call('cruddy:request', [
             'name' => $this->className,
             'type' => 'store',
-            'rules' => $this->columns,
+            'rules' => $rules,
         ]);
 
+        // Create route class
         Artisan::call('cruddy:route', [
             'name' => $this->className,
             '--api' => $this->isApi(),

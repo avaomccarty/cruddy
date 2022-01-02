@@ -5,8 +5,17 @@ namespace Cruddy\Tests;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\File;
 use Cruddy\ServiceProvider;
+use Cruddy\ForeignKeyDefinition;
+use PDO;
 
-trait TestTrait {
+trait TestTrait
+{
+    /**
+     * The connection for the database.
+     *
+     * @var string
+     */
+    protected $dbConnection = [];
 
     /**
      * The name for the string column.
@@ -93,6 +102,16 @@ trait TestTrait {
     }
 
     /**
+     * Get an array of all the acceptable types of rules.
+     *
+     * @return array
+     */
+    public function getMockRules() : array
+    {
+        return array_merge($this->getMockColumns(), $this->getMockCommands());
+    }
+
+    /**
      * Get an array of all the acceptable rules in an acceptable format.
      *
      * @return array
@@ -113,12 +132,46 @@ trait TestTrait {
                 'max' => 1000,
                 'inputType' => 'number',
             ]),
-            // new ColumnDefinition([
-            //     'type' => 'bigInteger',
-            //     'name' => $this->nameBigInteger,
-            //     'min' => 1,
-            //     'max' => 9999,
-            // ]),
+            new ColumnDefinition([
+                'type' => 'bigInteger',
+                'name' => $this->nameBigInteger,
+                'min' => 1,
+                'max' => 9999,
+                'inputType' => 'number',
+            ]),
+        ];
+    }
+
+    /**
+     * Get an array of all the acceptable commands in an acceptable format.
+     *
+     * @return array
+     */
+    public function getMockCommands() : array
+    {
+        return [
+            new ForeignKeyDefinition([
+                'name' => 'foreign',
+                'index' => 'foos_user_id_foreign',
+                'columns' => [
+                    0 => $this->nameBigInteger,
+                ],
+                'algorithm' => null,
+                'references' => 'id',
+                'on' => 'users',
+                'inputType' => 'hasOne',
+            ]),
+            new ForeignKeyDefinition([
+                'name' => 'foreign',
+                'index' => 'foos_user_id_foreign',
+                'columns' => [
+                    0 => $this->nameBigInteger,
+                ],
+                'algorithm' => null,
+                'references' => 'id',
+                'on' => 'users',
+                'inputType' => 'default',
+            ]),
         ];
     }
 

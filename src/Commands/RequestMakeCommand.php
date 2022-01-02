@@ -2,13 +2,14 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\Traits\RequestMakeCommandTrait;
+use Cruddy\Traits\CommandTrait;
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Facades\App;
 use Symfony\Component\Console\Input\InputArgument;
 
 class RequestMakeCommand extends GeneratorCommand
 {
-    use RequestMakeCommandTrait;
+    use CommandTrait;
 
     /**
      * The console command signature.
@@ -35,6 +36,13 @@ class RequestMakeCommand extends GeneratorCommand
     protected $type = 'Cruddy request';
 
     /**
+     * The stub editor.
+     *
+     * @var \Cruddy\StubEditors\RequestStubEditor|null
+     */
+    protected $stubEditor;
+
+    /**
      * Build the class with the given name.
      *
      * @param  string  $name
@@ -44,11 +52,13 @@ class RequestMakeCommand extends GeneratorCommand
      */
     protected function buildClass($name) : string
     {
-        $stub = $this->getStubFile();
+        $this->setStubEditor('request');
+        $stub = $this->getStub();
 
-        return $this->replaceNamespace($stub, $name)
-            ->replaceRules($stub)
-            ->replaceClass($stub, $name);
+        $this->stubEditor->replaceInStub($this->stubEditor->rulesPlaceholders, $this->getReplaceRules(), $stub);
+        $this->replaceNamespace($stub, $name);
+        
+        return $this->replaceClass($stub, $name);
     }
 
     /**
@@ -60,18 +70,76 @@ class RequestMakeCommand extends GeneratorCommand
     {
         return [
             ['name', InputArgument::REQUIRED, 'The name of the class'],
-            ['type', InputArgument::OPTIONAL, 'The type of request class'],
+            ['type', InputArgument::REQUIRED, 'The type of request class'],
             ['rules', InputArgument::OPTIONAL, 'The validation rules of request class'],
         ];
     }
 
     /**
-     * Get the stub file for the generator.
+     * Get the stub.
      *
      * @return string
      */
     protected function getStub() : string
     {
-        return $this->resolveStubPath($this->getStubsLocation() . '/request.stub');
+        return $this->stubEditor->getStubFile();
+    }
+
+    /**
+     * The acceptable types of requests.
+     *
+     * @var array
+     */
+    protected $types = [
+        'update',
+        'store'
+    ];
+
+    /**
+     * Get the default namespace for the class.
+     *
+     * @param  string  $rootNamespace
+     * @return string
+     */
+    protected function getDefaultNamespace($rootNamespace) : string
+    {
+        return $rootNamespace . '\Http\Requests';
+    }
+
+    /**
+     * Get the desired class name from the input.
+     *
+     * @return string
+     */
+    protected function getNameInput() : string
+    {
+        $type = $this->getType();
+        $name = $this->getResourceName();
+
+        return $this->getStudlySingular($type) . $this->getStudlySingular($name);
+    }
+
+    /**
+     * Replace the rules for the given stub.
+     *
+     * @param  string  &$stub
+     * @return string
+     */
+    protected function getReplaceRules() : string
+    {
+        return (App::make(StubInputsEditor::class, [$this->getNonIdRules(), 'request']))
+            ->getInputString($this->getType());
+    }
+
+    /**
+     * Get the rules without ID columns.
+     *
+     * @return array
+     */
+    protected function getNonIdRules() : array
+    {
+        return array_filter($this->getRules(), function ($rule) {
+            return $rule->name !== 'id';
+        });
     }
 }
