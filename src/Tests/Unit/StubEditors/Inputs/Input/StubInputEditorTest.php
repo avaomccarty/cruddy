@@ -27,11 +27,11 @@ class StubInputEditorTest extends TestCase
      */
     public function test_get_text_stub_file_for_default_frontend()
     {
-        $inputs = array_filter($this->inputDefaults, function ($inputType) {
-            return $inputType === 'text';
+        $inputs = array_filter($this->inputDefaults, function ($relationship) {
+            return $relationship === 'text';
         });
 
-        foreach ($inputs as $columnType => $inputType) {
+        foreach ($inputs as $columnType => $relationship) {
             $column = new ColumnDefinition([
                 'type'  => $columnType
             ]);
@@ -66,11 +66,11 @@ class StubInputEditorTest extends TestCase
      */
     public function test_get_stub_integer_file_for_default_frontend()
     {
-        $inputs = array_filter($this->inputDefaults, function ($inputType) {
-            return $inputType === 'number';
+        $inputs = array_filter($this->inputDefaults, function ($relationship) {
+            return $relationship === 'number';
         });
 
-        foreach ($inputs as $columnType => $inputType) {
+        foreach ($inputs as $columnType => $relationship) {
             $column = new ColumnDefinition([
                 'type'  => $columnType
             ]);
@@ -105,11 +105,11 @@ class StubInputEditorTest extends TestCase
      */
     public function test_get_stub_submit_file_for_default_frontend()
     {
-        $inputs = array_filter($this->inputDefaults, function ($inputType) {
-            return $inputType === 'submit';
+        $inputs = array_filter($this->inputDefaults, function ($relationship) {
+            return $relationship === 'submit';
         });
 
-        foreach ($inputs as $columnType => $inputType) {
+        foreach ($inputs as $columnType => $relationship) {
             $column = new ColumnDefinition([
                 'type'  => $columnType
             ]);
@@ -144,11 +144,11 @@ class StubInputEditorTest extends TestCase
      */
     public function test_get_text_stub_file_for_vue_frontend()
     {
-        $inputs = array_filter($this->inputDefaults, function ($inputType) {
-            return $inputType === 'text';
+        $inputs = array_filter($this->inputDefaults, function ($relationship) {
+            return $relationship === 'text';
         });
 
-        foreach ($inputs as $columnType => $inputType) {
+        foreach ($inputs as $columnType => $relationship) {
             $column = new ColumnDefinition([
                 'type'  => $columnType
             ]);
@@ -183,11 +183,11 @@ class StubInputEditorTest extends TestCase
      */
     public function test_get_stub_integer_file_for_vue_frontend()
     {
-        $inputs = array_filter($this->inputDefaults, function ($inputType) {
-            return $inputType === 'number';
+        $inputs = array_filter($this->inputDefaults, function ($relationship) {
+            return $relationship === 'number';
         });
 
-        foreach ($inputs as $columnType => $inputType) {
+        foreach ($inputs as $columnType => $relationship) {
             $column = new ColumnDefinition([
                 'type'  => $columnType
             ]);
@@ -222,11 +222,11 @@ class StubInputEditorTest extends TestCase
      */
     public function test_get_stub_submit_file_for_vue_frontend()
     {
-        $inputs = array_filter($this->inputDefaults, function ($inputType) {
-            return $inputType === 'submit';
+        $inputs = array_filter($this->inputDefaults, function ($relationship) {
+            return $relationship === 'submit';
         });
 
-        foreach ($inputs as $columnType => $inputType) {
+        foreach ($inputs as $columnType => $relationship) {
             $column = new ColumnDefinition([
                 'type'  => $columnType
             ]);

@@ -100,7 +100,7 @@ class ModelMakeCommandTest extends TestCase
         $this->expectException(UnknownRelationshipType::class);
 
         $foreignKey = new ForeignKeyDefinition([
-            'inputType' => 'invalid-type',
+            'relationship' => 'invalid-type',
             'on' => 'on'
         ]);
 

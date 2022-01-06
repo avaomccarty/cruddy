@@ -123,21 +123,21 @@ trait TestTrait
                 'type' => 'string',
                 'name' => $this->nameString,
                 'length' => 200,
-                'inputType' => 'text',
+                'relationship' => 'text',
             ]),
             new ColumnDefinition([
                 'type' => 'integer',
                 'name' => $this->nameInteger,
                 'min' => 1,
                 'max' => 1000,
-                'inputType' => 'number',
+                'relationship' => 'number',
             ]),
             new ColumnDefinition([
                 'type' => 'bigInteger',
                 'name' => $this->nameBigInteger,
                 'min' => 1,
                 'max' => 9999,
-                'inputType' => 'number',
+                'relationship' => 'number',
             ]),
         ];
     }
@@ -159,7 +159,7 @@ trait TestTrait
                 'algorithm' => null,
                 'references' => 'id',
                 'on' => 'users',
-                'inputType' => 'hasOne',
+                'relationship' => 'hasOne',
             ]),
             new ForeignKeyDefinition([
                 'name' => 'foreign',
@@ -170,7 +170,7 @@ trait TestTrait
                 'algorithm' => null,
                 'references' => 'id',
                 'on' => 'users',
-                'inputType' => 'default',
+                'relationship' => 'default',
             ]),
         ];
     }

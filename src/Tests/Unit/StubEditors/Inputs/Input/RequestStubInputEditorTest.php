@@ -4,7 +4,6 @@ namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input;
 
 use Cruddy\ForeignKeyDefinition;
 use Cruddy\ForeignKeyValidation\ForeignKeyValidation;
-use Cruddy\ForeignKeyValidation\ModelRelationships\OneToOneForeignKeyValidation;
 use Cruddy\StubEditors\Inputs\Input\RequestStubInputEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\App;
@@ -22,13 +21,13 @@ class RequestStubInputEditorTest extends TestCase
         $expectedResult = "'name' => 'exists:on,references',\n\t\t\t";
         $name = 'name';
         $expectedForeignKey = new ForeignKeyDefinition([
-            'inputType' => 'oneToOne',
+            'relationship' => 'oneToOne',
             'columns' => [$name],
             'on' => 'on',
             'references' => 'references',
         ]);
         $otherForeignKey = new ForeignKeyDefinition([
-            'inputType' => 'oneToOne',
+            'relationship' => 'oneToOne',
             'columns' => ['other-name'],
             'on' => 'other-on',
             'references' => 'other-references',
@@ -43,7 +42,7 @@ class RequestStubInputEditorTest extends TestCase
             $otherForeignKey,
         ];
 
-        $foreignKeyValidation = new OneToOneForeignKeyValidation($expectedForeignKey);
+        $foreignKeyValidation = new ForeignKeyValidation($expectedForeignKey);
         App::shouldReceive('make')
             ->with(ForeignKeyValidation::class, [$expectedForeignKey])
             ->once()

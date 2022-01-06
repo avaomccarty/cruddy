@@ -4,7 +4,6 @@ namespace Cruddy\Tests\Feature;
 
 use Cruddy\ForeignKeyDefinition;
 use Cruddy\ForeignKeyValidation\ForeignKeyValidation;
-use Cruddy\ForeignKeyValidation\ModelRelationships\OneToOneForeignKeyValidation;
 use Cruddy\StubEditors\Inputs\Input\RequestStubInputEditor;
 use Cruddy\StubEditors\Inputs\Input\StubInputEditor;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
@@ -86,7 +85,7 @@ class RequestMakeCommandTest extends TestCase
 
         // Assert the StubInputsEditor is created correctly.
         App::shouldReceive('make')
-            ->with('Cruddy\Commands\StubInputsEditor', [$rules, 'request'])
+            ->with(StubInputsEditor::class, [$rules, 'request'])
             ->once()
             ->andReturn(new StubInputsEditor($rules, 'request'));
 
@@ -119,7 +118,7 @@ class RequestMakeCommandTest extends TestCase
                 App::shouldReceive('make')
                     ->with(ForeignKeyValidation::class, [$rule])
                     ->once()
-                    ->andReturn(new OneToOneForeignKeyValidation($rule));
+                    ->andReturn(new ForeignKeyValidation($rule));
             }
         }
 

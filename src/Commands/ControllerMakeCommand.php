@@ -114,36 +114,6 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      */
     protected $stubEditor;
 
-    // /**
-    //  * Get the console command options.
-    //  *
-    //  * @return array
-    //  */
-    // protected function getOptions() : array
-    // {
-    //     $options = parent::getOptions();
-
-    //     $options[] = ['--inputs', null, InputOption::VALUE_OPTIONAL, 'The inputs for the resource.'];
-    //     $options[] = ['--commands', null, InputOption::VALUE_OPTIONAL, 'The foreign keys for the columns.'];
-
-    //     return $options;
-    // }
-
-    // /**
-    //  * Get the console command arguments.
-    //  *
-    //  * @return array
-    //  */
-    // protected function getArguments()
-    // {
-    //     $arguments = parent::getArguments();
-    //     // $arguments[] = ['inputs', null, InputArgument::IS_ARRAY, 'The inputs for the resource'];
-    //     // $arguments[] = ['keys', null, InputArgument::IS_ARRAY, 'The keys for the resource'];
-
-    //     return $arguments;
-    // }
-
-
     /**
      * Get the console command options.
      *

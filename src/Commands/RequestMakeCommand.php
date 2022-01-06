@@ -2,6 +2,7 @@
 
 namespace Cruddy\Commands;
 
+use Cruddy\StubEditors\Inputs\StubInputsEditor;
 use Cruddy\Traits\CommandTrait;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\App;

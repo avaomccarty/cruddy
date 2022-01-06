@@ -8,7 +8,11 @@ Simple CRUD creation package for Laravel.
 4) add the cruddy connection to all migrations that create the table you want to turn into a basic CRUD resource: `Schema::connection('cruddy')`
 
 ## Vendor Package files:
-When you run `php artisan vedor:publish` it will create a config file for you in config/cruddy.php. This is where you can set all your CRUD settings and options. For example, the `needs_ui` variable within config/cruddy.php controls whether to create the frontend view files or not. If you are making an API that does not require a frontend, then you should set this value to false so that the view files will not be created.
+When you run `php artisan vendor:publish` it will create a config file for you in config/cruddy.php. This is where you can set all your CRUD settings and options. For example, the `needs_ui` variable within config/cruddy.php controls whether to create the frontend view files or not. If you are making an API that does not require a frontend, then you should set this value to false so that the view files will not be created.
+
+## Database Connection
+To set the database connection correctly before running the migrations, the `APP_ENV` variable within your .env file cannot be set to `testing` or `local`.
+
 ```
   // Within config/cruddy.php, we can control the creation of the frontend view files like so:
  'needs_ui' => false,

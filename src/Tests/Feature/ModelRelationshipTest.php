@@ -2,7 +2,6 @@
 
 namespace Cruddy\Tests\Feature;
 
-use Cruddy\Exceptions\UnknownRelationshipType;
 use Cruddy\ModelRelationships\ModelRelationship;
 use Cruddy\Tests\TestTrait;
 use Orchestra\Testbench\TestCase;
@@ -31,35 +30,12 @@ class ModelRelationshipTest extends TestCase
             'key-2',
         ];
         $this->foreignKey = new ForeignKeyDefinition([
-            'inputType' => 'hasOne',
+            'relationship' => 'hasOne',
             'classes' => $this->classes,
             'keys' => $this->keys,
             'on' => 'users',
         ]);
     }
-
-    // /**
-    //  * A test for an invalid relationship type.
-    //  *
-    //  * @return void
-    //  */
-    // public function test_invalid_relationship_type()
-    // {
-    //     // $this->expectException(UnknownRelationshipType::class);
-
-    //     $foreignKey = new ForeignKeyDefinition([
-    //         'inputType' => 'invalid-type',
-    //         'on' => 'on'
-    //     ]);
-
-    //     // new ModelRelationship($foreignKey);
-
-    //     $this->artisan('cruddy:model', [
-    //         'name' => 'name',
-    //         'inputs' => $this->getMockColumns(),
-    //         'keys' => [$foreignKey],
-    //     ]);
-    // }
 
     /**
      * A test to get the default relationship stub.
@@ -68,9 +44,9 @@ class ModelRelationshipTest extends TestCase
      */
     public function test_default_relationship_stub()
     {
-        $expectedResult = "\n\t\t/**\n\t\t * Get the associated roles.\n\t\t */\n\t\tpublic function roles()\n\t\t{\n\t\t    return \$this->hasOne();\n\t\t}\n\t\t";
+        $expectedResult = "\n\t/**\n\t * Get the associated roles.\n\t */\n\tpublic function roles()\n\t{\n\t    return \$this->hasOne();\n\t}\n\t";
         $foreignKey = new ForeignKeyDefinition([
-            'inputType' => 'hasOne',
+            'relationship' => 'hasOne',
             'on' => 'roles',
         ]);
 
@@ -87,9 +63,9 @@ class ModelRelationshipTest extends TestCase
      */
     public function test_relationship_stub_with_classes_and_without_keys()
     {
-        $expectedResult = "\n\t\t/**\n\t\t * Get the associated users.\n\t\t */\n\t\tpublic function users()\n\t\t{\n\t\t    return \$this->hasMany(Foo::class, Bar\Baz::class);\n\t\t}\n\t\t";
+        $expectedResult = "\n\t/**\n\t * Get the associated users.\n\t */\n\tpublic function users()\n\t{\n\t    return \$this->hasMany(Foo::class, Bar\Baz::class);\n\t}\n\t";
         $foreignKey = new ForeignKeyDefinition([
-            'inputType' => 'hasMany',
+            'relationship' => 'hasMany',
             'on' => 'users',
             'classes' => $this->classes
         ]);
@@ -107,7 +83,7 @@ class ModelRelationshipTest extends TestCase
      */
     public function test_relationship_stub_with_classes_and_with_keys()
     {
-        $expectedResult = "\n\t\t/**\n\t\t * Get the associated users.\n\t\t */\n\t\tpublic function users()\n\t\t{\n\t\t    return \$this->hasOne(Foo::class, Bar\Baz::class, 'key-1', 'key-2');\n\t\t}\n\t\t";
+        $expectedResult = "\n\t/**\n\t * Get the associated users.\n\t */\n\tpublic function users()\n\t{\n\t    return \$this->hasOne(Foo::class, Bar\Baz::class, 'key-1', 'key-2');\n\t}\n\t";
 
         $result = (new ModelRelationship($this->foreignKey))
             ->getModelRelationshipStub();

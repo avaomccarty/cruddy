@@ -198,7 +198,7 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
      */
     protected function getForeignKeyRelationshipType(ForeignKeyDefinition $foreignKey) : string
     {
-        return $foreignKey->inputType ?? '';
+        return $foreignKey->relationship ?? '';
     }
 
     /**

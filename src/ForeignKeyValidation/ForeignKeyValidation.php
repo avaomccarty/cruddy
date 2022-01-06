@@ -4,7 +4,7 @@ namespace Cruddy\ForeignKeyValidation;
 
 use Cruddy\ForeignKeyDefinition;
 
-abstract class ForeignKeyValidation
+class ForeignKeyValidation
 {
     /**
      * The foreign key.
@@ -25,9 +25,12 @@ abstract class ForeignKeyValidation
     }
 
     /**
-     * Get the validation rule.
+     * Get the validation for the default relationship.
      *
      * @return string
      */
-    abstract public function getForeignKeyValidation() : string;
+    public function getForeignKeyValidation() : string
+    {
+        return 'exists:' . $this->foreignKey->on . ',' . $this->foreignKey->references;
+    }
 }

@@ -83,7 +83,7 @@ class StubInputsEditor extends StubInputEditor
     /**
      * Get a validation rule string from a foreignKey.
      *
-     * @param \Cruddy\ForeignKeyDefinition  $foreignKey
+     * @param  \Cruddy\ForeignKeyDefinition  $foreignKey
      * @return string
      */
     protected function getForeignKeyValidation(ForeignKeyDefinition $foreignKey) : string
@@ -102,10 +102,15 @@ class StubInputsEditor extends StubInputEditor
     public function getInputString(string $type = 'index', string $name = '') : string
     {
         $columnDefinitions = $this->getColumnDefinitions();
+        $foreignKeys = $this->getForeignKeys();
         foreach ($columnDefinitions as $column) {
             $inputStubEditor = App::make(StubInputEditor::class, [$column, $this->fileType, $this->stub, $this->fileTypeNeedsSubmitInput($type)]);
             $inputStubEditor->setForeignKeys($this->getForeignKeys());
             $this->inputString .= $inputStubEditor->getInputString($type, $name);
+        }
+
+        foreach ($foreignKeys as $foreignKey) {
+
         }
 
         if ($this->shouldHaveSubmitButton($type)) {

@@ -161,7 +161,6 @@ class ViewMakeCommand extends GeneratorCommand
     {
         $arguments = parent::getArguments();
         $arguments[] = ['inputs', null, InputArgument::IS_ARRAY, 'The inputs for the resource'];
-        $arguments[] = ['keys', null, InputArgument::IS_ARRAY, 'The keys for the resource'];
         $arguments[] = ['table', null, InputArgument::REQUIRED, 'The name of the table'];
         $arguments[] = ['type', null, InputArgument::REQUIRED, 'The type of file.'];
 

@@ -13,7 +13,6 @@ use Cruddy\StubEditors\StubEditor;
 use Cruddy\StubEditors\StubEditorFactory;
 use Cruddy\Traits\ConfigTrait;
 use Cruddy\ForeignKeyValidation\ForeignKeyValidation;
-use Cruddy\ForeignKeyValidation\ForeignKeyValidationFactory;
 use Cruddy\ModelRelationships\ModelRelationship;
 use Cruddy\StubEditors\Inputs\Input\StubInputEditor;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
@@ -40,7 +39,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->bind(ForeignKeyValidation::class, function ($app, $params) {
             $foreignKey = $params[0];
 
-            return ForeignKeyValidationFactory::get($foreignKey);
+            return new ForeignKeyValidation($foreignKey);
         });
 
         // Bind the ModelRelationship

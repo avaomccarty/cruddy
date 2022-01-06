@@ -15,7 +15,7 @@ class ModelRelationship extends StubEditor
      *
      * @var string
      */
-    protected $endOfLine = "\n\t\t";
+    protected $endOfLine = "\n\t";
 
     /**
      * The relationship string.
@@ -127,7 +127,7 @@ class ModelRelationship extends StubEditor
     public function __construct(ForeignKeyDefinition $foreignKey)
     {
         $this->foreignKey = $foreignKey;
-        $this->setType($foreignKey->inputType);
+        $this->setType($foreignKey->relationship);
         $this->setDefaultReturnValue();
         $this->addValuesToReturnValue($this->foreignKey->classes ?? [], 'getClassString');
         $this->addValuesToReturnValue($this->foreignKey->keys ?? [], 'getKeyString');
