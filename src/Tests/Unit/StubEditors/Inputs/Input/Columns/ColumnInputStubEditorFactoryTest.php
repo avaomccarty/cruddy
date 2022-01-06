@@ -1,16 +1,16 @@
 <?php
 
-namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input;
+namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input\Columns;
 
-use Cruddy\Exceptions\StubEditors\Inputs\Input\UnknownStubInputEditorType;
-use Cruddy\StubEditors\Inputs\Input\ControllerStubInputEditor;
-use Cruddy\StubEditors\Inputs\Input\RequestStubInputEditor;
-use Cruddy\StubEditors\Inputs\Input\StubInputEditorFactory;
-use Cruddy\StubEditors\Inputs\Input\ViewStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\UnknownStubInputEditorType;
+use Cruddy\StubEditors\Inputs\Input\Columns\ControllerStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\RequestStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ColumnInputStubEditorFactory;
+use Cruddy\StubEditors\Inputs\Input\Columns\ViewStubInputEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Orchestra\Testbench\TestCase;
 
-class StubInputEditorFactoryTest extends TestCase
+class ColumnInputStubEditorFactoryTest extends TestCase
 {
     /**
      * A test to get the controller stub input editor.
@@ -20,7 +20,8 @@ class StubInputEditorFactoryTest extends TestCase
     public function test_get_stub_input_editor_for_controller_class()
     {
         $stub = 'stub';
-        $result = StubInputEditorFactory::get(new ColumnDefinition([]), 'controller', $stub);
+        $result = (new ColumnInputStubEditorFactory(new ColumnDefinition(), 'controller', $stub))
+            ->get();
 
         $this->assertInstanceOf(ControllerStubInputEditor::class, $result);
     }
@@ -33,7 +34,8 @@ class StubInputEditorFactoryTest extends TestCase
     public function test_get_stub_input_editor_for_request_class()
     {
         $stub = 'stub';
-        $result = StubInputEditorFactory::get(new ColumnDefinition([]), 'request', $stub);
+        $result = (new ColumnInputStubEditorFactory(new ColumnDefinition(), 'request', $stub))
+            ->get();
 
         $this->assertInstanceOf(RequestStubInputEditor::class, $result);
     }
@@ -46,7 +48,8 @@ class StubInputEditorFactoryTest extends TestCase
     public function test_get_stub_input_editor_for_view_class()
     {
         $stub = 'stub';
-        $result = StubInputEditorFactory::get(new ColumnDefinition([]), 'view', $stub);
+        $result = (new ColumnInputStubEditorFactory(new ColumnDefinition(), 'view', $stub))
+            ->get();
 
         $this->assertInstanceOf(ViewStubInputEditor::class, $result);
     }
@@ -60,6 +63,7 @@ class StubInputEditorFactoryTest extends TestCase
     {
         $this->expectException(UnknownStubInputEditorType::class);
         
-        StubInputEditorFactory::get(new ColumnDefinition([]), 'unknown-input-stub-editor');
+        (new ColumnInputStubEditorFactory(new ColumnDefinition(), 'unknown-input-stub-editor'))
+            ->get();
     }
 }

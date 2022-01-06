@@ -4,8 +4,8 @@ namespace Cruddy\Tests\Feature;
 
 use Cruddy\ModelRelationships\ModelRelationship;
 use Cruddy\StubEditors\ControllerStubEditor;
-use Cruddy\StubEditors\Inputs\Input\ControllerStubInputEditor;
-use Cruddy\StubEditors\Inputs\Input\StubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ControllerStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
 use Cruddy\StubEditors\ModelStubEditor;
 use Cruddy\StubEditors\StubEditor;

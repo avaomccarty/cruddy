@@ -4,8 +4,8 @@ namespace Cruddy\Tests\Feature;
 
 use Cruddy\ForeignKeyDefinition;
 use Cruddy\ForeignKeyValidation\ForeignKeyValidation;
-use Cruddy\StubEditors\Inputs\Input\RequestStubInputEditor;
-use Cruddy\StubEditors\Inputs\Input\StubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\RequestStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
 use Cruddy\StubEditors\RequestStubEditor;
 use Cruddy\StubEditors\StubEditor;

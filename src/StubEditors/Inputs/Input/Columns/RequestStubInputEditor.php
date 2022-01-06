@@ -1,13 +1,14 @@
 <?php
 
-namespace Cruddy\StubEditors\Inputs\Input;
+namespace Cruddy\StubEditors\Inputs\Input\Columns;
 
 use Cruddy\ForeignKeyDefinition;
 use Cruddy\ForeignKeyValidation\ForeignKeyValidation;
+use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\App;
 
-class RequestStubInputEditor extends StubInputEditor
+class RequestStubInputEditor extends InputStubEditor
 {
 
     /**
@@ -27,11 +28,9 @@ class RequestStubInputEditor extends StubInputEditor
     /**
      * Get the input as a string.
      *
-     * @param  string  $type = 'index'
-     * @param  string  $name = ''
      * @return string
      */
-    public function getInputString(string $type = 'index', string $name = '') : string
+    public function getInputString() : string
     {
         $this->setColumnNameInValidation();
         $this->addDefaultColumnValidations();

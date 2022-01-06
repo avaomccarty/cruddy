@@ -6,7 +6,6 @@ use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\File;
 use Cruddy\ServiceProvider;
 use Cruddy\ForeignKeyDefinition;
-use PDO;
 
 trait TestTrait
 {
@@ -174,44 +173,6 @@ trait TestTrait
             ]),
         ];
     }
-
-    // /**
-    //  * Get the expected location for the stub.
-    //  *
-    //  * @param  string  $type
-    //  * @param  string  $frontendScaffolding = 'default'
-    //  * @return string
-    //  */
-    // protected function getExpectedTypeStubLocation(string $type = 'index', string $frontendScaffolding = 'default') : string
-    // {
-    //     if ($frontendScaffolding === 'vue') {
-    //         return base_path() . "/stubs/views/vue/page.stub";
-    //     }
-
-    //     return base_path() . "/stubs/views/$frontendScaffolding/$type.stub";
-    // }
-
-    // /**
-    //  * Get the location for the test stub.
-    //  *
-    //  * @param  string  $type
-    //  * @return string
-    //  */
-    // protected function getTypeStubLocation(string $type = 'index', string $frontendScaffolding = 'default') : string
-    // {
-    //     return dirname(__DIR__) . "/Commands/stubs/views/$frontendScaffolding/$type.stub";
-    // }
-
-    // /**
-    //  * Get the expected location for the stub.
-    //  *
-    //  * @param  string  $type
-    //  * @return string
-    //  */
-    // protected function getExpectedStubLocation(string $type = 'controller') : string
-    // {
-    //     return base_path() . '/stubs/' . $type . '.stub';
-    // }
 
     /**
      * Get the location for the test stub.

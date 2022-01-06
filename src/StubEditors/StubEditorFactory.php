@@ -3,30 +3,53 @@
 namespace Cruddy\StubEditors;
 
 use Cruddy\Exceptions\UnknownStubEditorType;
+use Cruddy\Factory;
 use Cruddy\StubEditors\StubEditor;
 
-class StubEditorFactory
+class StubEditorFactory extends Factory
 {
     /**
-     * Get the correct StubEditor
+     * The constructor method.
      *
      * @param  string  $stubEditor = 'controller'
      * @param  string  &$stub = ''
+     * @return void
+     */
+    public function __construct(protected string $stubEditor = 'controller', protected string &$stub = '')
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Set the parameters.
+     *
+     * @return void
+     */
+    protected function setParameters() : void
+    {
+        $this->parameters = [
+            $this->stub
+        ];
+    }
+
+    /**
+     * Get the correct StubEditor
+     *
      * @return \Cruddy\StubEditors\StubEditor
      *
      * @throws \Cruddy\Exceptions\UnknownStubEditorType
      */
-    public static function get(string $stubEditor = 'controller', string &$stub = '') : StubEditor
+    public function get() : StubEditor
     {
-        switch ($stubEditor) {
+        switch ($this->stubEditor) {
             case 'controller':
-                return new ControllerStubEditor($stub);
+                return $this->makeClass(ControllerStubEditor::class);
             case 'model':
-                return new ModelStubEditor($stub);
+                return $this->makeClass(ModelStubEditor::class);
             case 'request':
-                return new RequestStubEditor($stub);
+                return $this->makeClass(RequestStubEditor::class);
             case 'view':
-                return new ViewStubEditor($stub);
+                return $this->makeClass(ViewStubEditor::class);
             default:
                 throw new UnknownStubEditorType();
         }

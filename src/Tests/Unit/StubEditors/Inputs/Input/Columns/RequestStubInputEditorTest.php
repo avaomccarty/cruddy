@@ -1,10 +1,10 @@
 <?php
 
-namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input;
+namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input\Columns;
 
 use Cruddy\ForeignKeyDefinition;
 use Cruddy\ForeignKeyValidation\ForeignKeyValidation;
-use Cruddy\StubEditors\Inputs\Input\RequestStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\RequestStubInputEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\App;
 use Orchestra\Testbench\TestCase;
@@ -88,7 +88,7 @@ class RequestStubInputEditorTest extends TestCase
      */
     public function test_set_foreign_keys()
     {
-        $column = new ColumnDefinition([]);
+        $column = new ColumnDefinition();
 
         $result = (new RequestStubInputEditor($column))
             ->setForeignKeys([]);

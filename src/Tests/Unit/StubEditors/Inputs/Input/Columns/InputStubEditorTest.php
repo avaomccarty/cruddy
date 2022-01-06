@@ -1,13 +1,13 @@
 <?php
 
-namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input;
+namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input\Columns;
 
-use Cruddy\StubEditors\Inputs\Input\ViewStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ViewStubInputEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\Config;
 use Orchestra\Testbench\TestCase;
 
-class StubInputEditorTest extends TestCase
+class InputStubEditorTest extends TestCase
 {
     public function setUp() : void
     {

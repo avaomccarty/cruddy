@@ -2,10 +2,10 @@
 
 namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input;
 
-use Cruddy\StubEditors\Inputs\Input\ControllerStubInputEditor;
-use Cruddy\StubEditors\Inputs\Input\RequestStubInputEditor;
-use Cruddy\StubEditors\Inputs\Input\StubInputEditor;
-use Cruddy\StubEditors\Inputs\Input\ViewStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ControllerStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\RequestStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ViewStubInputEditor;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\App;

@@ -3,10 +3,10 @@
 namespace Cruddy\StubEditors\Inputs\Input;
 
 use Cruddy\StubEditors\StubEditor;
-use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Fluent;
 
-abstract class StubInputEditor extends StubEditor
+abstract class InputStubEditor extends StubEditor
 {
     /**
      * The input as a string.
@@ -14,36 +14,22 @@ abstract class StubInputEditor extends StubEditor
      * @var string
      */
     protected $inputString = '';
-        
-    /**
-     * The foreign keys.
-     *
-     * @var array
-     */
-    protected $foreignKeys = [];
     
     /**
      * The column.
      *
-     * @var \Illuminate\Database\Schema\ColumnDefinition|null
+     * @var \Illuminate\Support\Fluent
      */
     protected $column;
 
     /**
-     * The stub.
-     *
-     * @var string
-     */
-    protected $stub = '';
-
-    /**
      * The constructor method.
      *
-     * @param  \Illuminate\Database\Schema\ColumnDefinition|null  $column = null
+     * @param  \Illuminate\Support\Fluent  $column
      * @param  string  &$stub = ''
      * @return void
      */
-    public function __construct(?ColumnDefinition $column = null, string &$stub = '')
+    public function __construct(Fluent $column, string &$stub = '')
     {
         $this->column = $column;
         $this->stub = $stub ?? $this->getStubFile();
@@ -52,34 +38,9 @@ abstract class StubInputEditor extends StubEditor
     /**
      * Get the input as a string.
      *
-     * @param  string  $type = 'index'
-     * @param  string  $name = ''
      * @return string
      */
-    abstract public function getInputString(string $type = 'index', string $name = '') : string;
-
-    /**
-     * Get the default input type.
-     *
-     * @return string
-     */
-    protected function getDefaultInput() : string
-    {
-        return 'submit';
-    }
-
-    /**
-     * Set the foreign keys.
-     *
-     * @param  array  $foreignKeys = []
-     * @return self
-     */
-    public function setForeignKeys(array $foreignKeys = []) : self
-    {
-        $this->foreignKeys = $foreignKeys;
-
-        return $this;
-    }
+    abstract public function getInputString() : string;
 
     /**
      * Get the stub.
@@ -100,7 +61,6 @@ abstract class StubInputEditor extends StubEditor
     {
         return $this->resolveStubPath($this->getInputStubLocation());
     }
-
 
     /**
      * Get the input stub file locaiton.
@@ -124,6 +84,16 @@ abstract class StubInputEditor extends StubEditor
         }
 
         return $this->getDefaultInput();
+    }
+
+    /**
+     * Get the default input type.
+     *
+     * @return string
+     */
+    protected function getDefaultInput() : string
+    {
+        return 'submit';
     }
 
     /**

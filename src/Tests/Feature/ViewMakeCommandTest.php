@@ -2,8 +2,8 @@
 
 namespace Cruddy\Tests\Feature;
 
-use Cruddy\StubEditors\Inputs\Input\StubInputEditor;
-use Cruddy\StubEditors\Inputs\Input\ViewStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ViewStubInputEditor;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
 use Cruddy\StubEditors\StubEditor;
 use Cruddy\StubEditors\ViewStubEditor;

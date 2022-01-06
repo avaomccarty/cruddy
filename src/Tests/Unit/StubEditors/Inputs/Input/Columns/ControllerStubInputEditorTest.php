@@ -1,8 +1,8 @@
 <?php
 
-namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input;
+namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input\Columns;
 
-use Cruddy\StubEditors\Inputs\Input\ControllerStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ControllerStubInputEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Orchestra\Testbench\TestCase;
 

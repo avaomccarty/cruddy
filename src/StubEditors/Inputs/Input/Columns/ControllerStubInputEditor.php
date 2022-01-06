@@ -1,17 +1,17 @@
 <?php
 
-namespace Cruddy\StubEditors\Inputs\Input;
+namespace Cruddy\StubEditors\Inputs\Input\Columns;
 
-class ControllerStubInputEditor extends StubInputEditor
+use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
+
+class ControllerStubInputEditor extends InputStubEditor
 {
     /**
      * Get the input as a string.
      *
-     * @param  string  $type = 'index'
-     * @param  string  $name = ''
      * @return string
      */
-    public function getInputString(string $type = 'index', string $name = '') : string
+    public function getInputString() : string
     {
         $this->inputString = $this->isIdColumn() ? '' : $this->getColumnString();
 

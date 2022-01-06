@@ -121,7 +121,9 @@ class ViewMakeCommand extends GeneratorCommand
     protected function getInputString() : string
     {
         return (App::make(StubInputsEditor::class, [$this->getInputs(), 'view']))
-            ->getInputString($this->getType(), $this->getResourceName());
+            ->setType($this->getType())
+            ->setNameOfResource($this->getResourceName())
+            ->getInputString();
     }
 
     /**

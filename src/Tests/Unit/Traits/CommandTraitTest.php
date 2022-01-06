@@ -2,7 +2,7 @@
 
 namespace Cruddy\Tests\Unit\Traits;
 
-use Cruddy\StubEditors\Inputs\Input\ControllerStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ControllerStubInputEditor;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
 use Cruddy\StubEditors\StubEditor;
 use Cruddy\Tests\TestTrait;

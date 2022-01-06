@@ -1,10 +1,11 @@
 <?php
 
-namespace Cruddy\StubEditors\Inputs\Input;
+namespace Cruddy\StubEditors\Inputs\Input\Columns;
 
+use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 
-class ViewStubInputEditor extends StubInputEditor
+class ViewStubInputEditor extends InputStubEditor
 {
     /**
      * The acceptable value placeholders within a stub.
@@ -113,11 +114,11 @@ class ViewStubInputEditor extends StubInputEditor
     /**
      * The constructor method.
      *
-     * @param  \Illuminate\Database\Schema\ColumnDefinition|null  $column = null
+     * @param  \Illuminate\Database\Schema\ColumnDefinition  $column
      * @param  string  &$stub = ''
      * @return void
      */
-    public function __construct(?ColumnDefinition $column = null, string &$stub = '')
+    public function __construct(ColumnDefinition $column, string &$stub = '')
     {
         parent::__construct($column, $stub);
 
@@ -149,8 +150,6 @@ class ViewStubInputEditor extends StubInputEditor
      */
     public function getInputString(string $type = 'index', string $name = '') : string
     {
-        $this->setType($type);
-        $this->setNameOfResource($name);
         $this->inputString = $this->getInputAsString();
 
         $this->replaceInStub($this->modelNamePlaceholders, $this->getReplaceString(), $this->inputString)
@@ -178,7 +177,7 @@ class ViewStubInputEditor extends StubInputEditor
      * @param  string  $name
      * @return void
      */
-    protected function setNameOfResource(string $name) : void
+    public function setNameOfResource(string $name) : void
     {
         $this->nameOfResource = $name;
     }
@@ -199,7 +198,7 @@ class ViewStubInputEditor extends StubInputEditor
      * @param  string  $type = 'index'
      * @return void
      */
-    protected function setType(string $type = 'index') : void
+    public function setType(string $type = 'index') : void
     {
         $this->type = $this->isValidType($type) ? $type : $this->type;
     }

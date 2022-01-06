@@ -21,7 +21,8 @@ class StubEditorFactoryTest extends TestCase
     {
         $stubEditor = 'controller';
         
-        $result = StubEditorFactory::get($stubEditor);
+        $result = (new StubEditorFactory($stubEditor))
+            ->get();
 
         $this->assertInstanceOf(ControllerStubEditor::class, $result);
     }
@@ -35,7 +36,8 @@ class StubEditorFactoryTest extends TestCase
     {
         $stubEditor = 'model';
         
-        $result = StubEditorFactory::get($stubEditor);
+        $result = (new StubEditorFactory($stubEditor))
+            ->get();
 
         $this->assertInstanceOf(ModelStubEditor::class, $result);
     }
@@ -49,7 +51,8 @@ class StubEditorFactoryTest extends TestCase
     {
         $stubEditor = 'request';
         
-        $result = StubEditorFactory::get($stubEditor);
+        $result = (new StubEditorFactory($stubEditor))
+            ->get();
 
         $this->assertInstanceOf(RequestStubEditor::class, $result);
     }
@@ -63,7 +66,8 @@ class StubEditorFactoryTest extends TestCase
     {
         $stubEditor = 'view';
         
-        $result = StubEditorFactory::get($stubEditor);
+        $result = (new StubEditorFactory($stubEditor))
+            ->get();
 
         $this->assertInstanceOf(ViewStubEditor::class, $result);
     }
@@ -75,7 +79,8 @@ class StubEditorFactoryTest extends TestCase
      */
     public function test_get_default_stub_editor()
     {
-        $result = StubEditorFactory::get();
+        $result = (new StubEditorFactory())
+            ->get();
 
         $this->assertInstanceOf(ControllerStubEditor::class, $result);
     }
@@ -89,6 +94,7 @@ class StubEditorFactoryTest extends TestCase
     {
         $this->expectException(UnknownStubEditorType::class);
 
-        StubEditorFactory::get('invalid-or-unknown-type');
+        (new StubEditorFactory('invalid-or-unknown-type'))
+            ->get();
     }
 }

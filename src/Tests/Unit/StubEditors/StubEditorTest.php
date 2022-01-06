@@ -16,7 +16,8 @@ class StubEditorTest extends TestCase
     public function test_get_stub()
     {
         $stub = $expectedResult = 'stub';
-        $stubEditor = StubEditorFactory::get('controller', $stub);
+        $stubEditor = (new StubEditorFactory('controller', $stub))
+            ->get();
 
         $result = $stubEditor->getStub();
 
@@ -31,7 +32,8 @@ class StubEditorTest extends TestCase
     public function test_replace_in_stub()
     {
         $stub = 'foo-bar-baz-';
-        $stubEditor = StubEditorFactory::get('controller', $stub);
+        $stubEditor = (new StubEditorFactory('controller', $stub))
+            ->get();
         $replaceValue = 'replaceValue-';
         $variables = [
             'foo-',

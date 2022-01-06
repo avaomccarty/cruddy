@@ -8,14 +8,23 @@ use Cruddy\Commands\RequestMakeCommand;
 use Cruddy\Commands\RouteAddCommand;
 use Cruddy\Commands\ViewMakeCommand;
 use Cruddy\Commands\VueImportAddCommand;
-use Cruddy\StubEditors\Inputs\Input\StubInputEditorFactory;
+use Cruddy\ForeignKeyInputs\ForeignKeyInput;
+use Cruddy\ForeignKeyInputs\ForeignKeyInputFactory;
 use Cruddy\StubEditors\StubEditor;
 use Cruddy\StubEditors\StubEditorFactory;
 use Cruddy\Traits\ConfigTrait;
 use Cruddy\ForeignKeyValidation\ForeignKeyValidation;
 use Cruddy\ModelRelationships\ModelRelationship;
-use Cruddy\StubEditors\Inputs\Input\StubInputEditor;
+use Cruddy\StubEditors\ControllerStubEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ColumnInputStubEditorFactory;
+use Cruddy\StubEditors\Inputs\Input\ForeignKeys\ForeignKeyInputStubEditorFactory;
+use Cruddy\StubEditors\Inputs\Input\ForeignKeys\HasOneInput;
+use Cruddy\StubEditors\Inputs\Input\ForeignKeys\InputFactory;
+use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
+use Cruddy\StubEditors\ModelStubEditor;
+use Cruddy\StubEditors\RequestStubEditor;
+use Cruddy\StubEditors\ViewStubEditor;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
@@ -42,6 +51,14 @@ class ServiceProvider extends BaseServiceProvider
             return new ForeignKeyValidation($foreignKey);
         });
 
+        // Bind the ForeignKeyInput
+        $this->app->bind(ForeignKeyInput::class, function ($app, $params) {
+            $foreignKey = $params[0];
+
+            return (new InputFactory($foreignKey))
+                ->get();
+        });
+
         // Bind the ModelRelationship
         $this->app->bind(ModelRelationship::class, function ($app, $params) {
             $foreignKey = $params[0];
@@ -54,7 +71,8 @@ class ServiceProvider extends BaseServiceProvider
             $stubEditorType = $params[0];
             $stub = $params[1] ?? '';
 
-            return StubEditorFactory::get($stubEditorType, $stub);
+            return (new StubEditorFactory($stubEditorType, $stub))
+                ->get();
         });
 
         // Bind the StubInputsEditor
@@ -66,13 +84,69 @@ class ServiceProvider extends BaseServiceProvider
             return new StubInputsEditor($inputs, $type, $stub);
         });
 
-        // Bind the StubInputEditor
-        $this->app->bind(StubInputEditor::class, function ($app, $params) {
+        // Bind the InputStubEditor
+        $this->app->bind(InputStubEditor::class, function ($app, $params) {
             $column = $params[0];
             $type = $params[1];
             $stub = count($params) > 2 ? $params[2] : '';
 
-            return StubInputEditorFactory::get($column, $type, $stub);
+            return (new InputStubEditorFactory())
+                ->get($column, $type, $stub);
+        });
+
+        // Bind the HasOneInput
+        $this->app->bind(HasOneInput::class, function ($app, $params) {
+            $foreignKey = $params[0];
+
+            return new HasOneInput($foreignKey);
+        });
+
+        // Bind the ControllerStubEditor
+        $this->app->bind(ControllerStubEditor::class, function ($app, $params) {
+            $stub = $params[0];
+
+            return new ControllerStubEditor($stub);
+        });
+
+        // Bind the ModelStubEditor
+        $this->app->bind(ModelStubEditor::class, function ($app, $params) {
+            $stub = $params[0];
+
+            return new ModelStubEditor($stub);
+        });
+
+        // Bind the RequestStubEditor
+        $this->app->bind(RequestStubEditor::class, function ($app, $params) {
+            $stub = $params[0];
+
+            return new RequestStubEditor($stub);
+        });
+
+        // Bind the ViewStubEditor
+        $this->app->bind(ViewStubEditor::class, function ($app, $params) {
+            $stub = $params[0];
+
+            return new ViewStubEditor($stub);
+        });
+
+
+
+
+
+        // Bind the ColumnInputStubEditorFactory
+        $this->app->bind(ColumnInputStubEditorFactory::class, function ($app, $params) {
+            $column = $params[0];
+            $inputStubEditor = $params[1];
+            $stub = $params[2];
+
+            return new ColumnInputStubEditorFactory($column, $inputStubEditor, $stub);
+        });
+
+        // Bind the ForeignKeyInputStubEditorFactory
+        $this->app->bind(ForeignKeyInputStubEditorFactory::class, function ($app, $params) {
+            $column = $params[0];
+
+            return new ForeignKeyInputStubEditorFactory($column);
         });
     }
 

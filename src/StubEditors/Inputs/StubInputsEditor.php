@@ -2,14 +2,15 @@
 
 namespace Cruddy\StubEditors\Inputs;
 
+use Cruddy\FluentInteractor;
 use Cruddy\ForeignKeyDefinition;
 use Cruddy\ForeignKeyValidation\ForeignKeyValidation;
-use Cruddy\StubEditors\Inputs\Input\StubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Fluent;
 
-class StubInputsEditor extends StubInputEditor
+class StubInputsEditor extends InputStubEditor
 {
     /**
      * The file type.
@@ -104,17 +105,18 @@ class StubInputsEditor extends StubInputEditor
         $columnDefinitions = $this->getColumnDefinitions();
         $foreignKeys = $this->getForeignKeys();
         foreach ($columnDefinitions as $column) {
-            $inputStubEditor = App::make(StubInputEditor::class, [$column, $this->fileType, $this->stub, $this->fileTypeNeedsSubmitInput($type)]);
+            $inputStubEditor = App::make(InputStubEditor::class, [$column, $this->fileType, $this->stub, $this->fileTypeNeedsSubmitInput($type)]);
             $inputStubEditor->setForeignKeys($this->getForeignKeys());
-            $this->inputString .= $inputStubEditor->getInputString($type, $name);
+            $this->inputString .= $inputStubEditor->getColumnInputString($type, $name);
         }
 
         foreach ($foreignKeys as $foreignKey) {
-
+            $inputStubEditor = App::make(ForeignKeyInput::class, [$foreignKey]);
+            $this->inputString .= $inputStubEditor->getInputString($type, $name); 
         }
 
         if ($this->shouldHaveSubmitButton($type)) {
-            $inputStubEditor = App::make(StubInputEditor::class, [null, $this->fileType, $this->stub, $this->fileTypeNeedsSubmitInput($type)]);
+            $inputStubEditor = App::make(InputStubEditor::class, [null, $this->fileType, $this->stub, $this->fileTypeNeedsSubmitInput($type)]);
             $inputStubEditor->setForeignKeys($this->getForeignKeys());
             $this->inputString .= $inputStubEditor->getInputString($type, $name);
         }
@@ -141,17 +143,6 @@ class StubInputsEditor extends StubInputEditor
     }
 
     /**
-     * Determine if the rule is for a foreign key.
-     *
-     * @param  \Illuminate\Support\Fluent  $rule
-     * @return boolean
-     */
-    protected function isAColumnDefinition(Fluent $rule) : bool
-    {
-        return is_a($rule, ColumnDefinition::class);
-    }
-
-    /**
      * Get the foreign keys from the columns.
      *
      * @return array
@@ -159,7 +150,7 @@ class StubInputsEditor extends StubInputEditor
     protected function getColumnDefinitions() : array
     {
         return array_filter($this->columns, function ($column) {
-            return $this->isAColumnDefinition($column);
+            return FluentInteractor::isAColumnDefinition($column);
         });
     }
 
@@ -182,7 +173,7 @@ class StubInputsEditor extends StubInputEditor
     protected function getForeignKeys() : array
     {
         return array_filter($this->columns, function ($column) {
-            return $this->isAForeignKey($column);
+            return FluentInteractor::isAForeignKey($column);
         });
     }
 
