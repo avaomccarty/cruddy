@@ -2,11 +2,12 @@
 
 namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input\Columns;
 
-use Cruddy\StubEditors\Inputs\Input\Columns\ViewStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ViewColumnInputStubEditor;
+use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\Config;
 use Orchestra\Testbench\TestCase;
 
-class ViewStubInputEditorTest extends TestCase
+class ViewColumnInputStubEditorTest extends TestCase
 {
     /**
      * A test to get the input string.
@@ -29,7 +30,7 @@ class ViewStubInputEditorTest extends TestCase
 
         Config::partialMock();
 
-        $result = (new ViewStubInputEditor($column))
+        $result = (new ViewColumnInputStubEditor($column))
             ->getInputString('index', $nameOfResource);
 
         $this->assertSame($expectedResult, $result);

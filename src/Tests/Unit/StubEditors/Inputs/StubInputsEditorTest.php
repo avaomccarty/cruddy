@@ -2,10 +2,10 @@
 
 namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input;
 
-use Cruddy\StubEditors\Inputs\Input\Columns\ControllerStubInputEditor;
-use Cruddy\StubEditors\Inputs\Input\Columns\RequestStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ControllerColumnInputStubEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\RequestColumnInputStubEditor;
 use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
-use Cruddy\StubEditors\Inputs\Input\Columns\ViewStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ViewColumnInputStubEditor;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\App;
@@ -45,7 +45,7 @@ class StubInputsEditorTest extends TestCase
         $stubInputsEditor = new StubInputsEditor($this->columns, $fileType, $this->stub);
 
         foreach ($this->columns as $column) {
-            $stubInputEditor = new ControllerStubInputEditor($column, $this->stub);
+            $stubInputEditor = new ControllerColumnInputStubEditor($column, $this->stub);
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$column, $fileType, $this->stub, false])
                 ->once()
@@ -68,7 +68,7 @@ class StubInputsEditorTest extends TestCase
         $stubInputsEditor = new StubInputsEditor($this->columns, $fileType, $this->stub);
 
         foreach ($this->columns as $column) {
-            $stubInputEditor = new RequestStubInputEditor($column, $this->stub);
+            $stubInputEditor = new RequestColumnInputStubEditor($column, $this->stub);
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$column, $fileType, $this->stub, false])
                 ->once()
@@ -116,7 +116,7 @@ class StubInputsEditorTest extends TestCase
             ->andReturn($this->stub);
 
         foreach ($this->columns as $column) {
-            $stubInputEditor = new ViewStubInputEditor($column, $this->stub);
+            $stubInputEditor = new ViewColumnInputStubEditor($column, $this->stub);
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$column, $fileType, $this->stub, false])
                 ->once()

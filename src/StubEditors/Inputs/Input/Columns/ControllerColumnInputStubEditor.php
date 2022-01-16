@@ -4,7 +4,7 @@ namespace Cruddy\StubEditors\Inputs\Input\Columns;
 
 use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
 
-class ControllerStubInputEditor extends InputStubEditor
+class ControllerColumnInputStubEditor extends InputStubEditor
 {
     /**
      * Get the input as a string.

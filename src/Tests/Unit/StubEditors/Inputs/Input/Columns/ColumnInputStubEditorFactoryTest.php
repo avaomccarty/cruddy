@@ -3,10 +3,10 @@
 namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input\Columns;
 
 use Cruddy\StubEditors\Inputs\Input\UnknownStubInputEditorType;
-use Cruddy\StubEditors\Inputs\Input\Columns\ControllerStubInputEditor;
-use Cruddy\StubEditors\Inputs\Input\Columns\RequestStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ControllerColumnInputStubEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\RequestColumnInputStubEditor;
 use Cruddy\StubEditors\Inputs\Input\Columns\ColumnInputStubEditorFactory;
-use Cruddy\StubEditors\Inputs\Input\Columns\ViewStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ViewColumnInputStubEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Orchestra\Testbench\TestCase;
 
@@ -23,7 +23,7 @@ class ColumnInputStubEditorFactoryTest extends TestCase
         $result = (new ColumnInputStubEditorFactory(new ColumnDefinition(), 'controller', $stub))
             ->get();
 
-        $this->assertInstanceOf(ControllerStubInputEditor::class, $result);
+        $this->assertInstanceOf(ControllerColumnInputStubEditor::class, $result);
     }
 
     /**
@@ -37,7 +37,7 @@ class ColumnInputStubEditorFactoryTest extends TestCase
         $result = (new ColumnInputStubEditorFactory(new ColumnDefinition(), 'request', $stub))
             ->get();
 
-        $this->assertInstanceOf(RequestStubInputEditor::class, $result);
+        $this->assertInstanceOf(RequestColumnInputStubEditor::class, $result);
     }
 
     /**
@@ -51,7 +51,7 @@ class ColumnInputStubEditorFactoryTest extends TestCase
         $result = (new ColumnInputStubEditorFactory(new ColumnDefinition(), 'view', $stub))
             ->get();
 
-        $this->assertInstanceOf(ViewStubInputEditor::class, $result);
+        $this->assertInstanceOf(ViewColumnInputStubEditor::class, $result);
     }
 
     /**

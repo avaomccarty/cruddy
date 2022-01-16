@@ -15,7 +15,7 @@ class StubEditorFactory extends Factory
      * @param  string  &$stub = ''
      * @return void
      */
-    public function __construct(protected string $stubEditor = 'controller', protected string &$stub = '')
+    public function __construct(protected string $stubEditor = 'controller', protected string &$stub)
     {
         parent::__construct();
     }
@@ -48,6 +48,10 @@ class StubEditorFactory extends Factory
                 return $this->makeClass(ModelStubEditor::class);
             case 'request':
                 return $this->makeClass(RequestStubEditor::class);
+            case 'route':
+                return $this->makeClass(RouteStubEditor::class);
+            case 'vue':
+                return $this->makeClass(VueStubEditor::class);
             case 'view':
                 return $this->makeClass(ViewStubEditor::class);
             default:

@@ -2,11 +2,11 @@
 
 namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input\Columns;
 
-use Cruddy\StubEditors\Inputs\Input\Columns\ControllerStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ControllerColumnInputStubEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Orchestra\Testbench\TestCase;
 
-class ControllerStubInputEditorTest extends TestCase
+class ControllerColumnInputStubEditorTest extends TestCase
 {
     /**
      * A test to get the input string.
@@ -22,7 +22,7 @@ class ControllerStubInputEditorTest extends TestCase
             'name' => $name,
         ]);
 
-        $result = (new ControllerStubInputEditor($column))
+        $result = (new ControllerColumnInputStubEditor($column))
             ->getInputString();
 
         $this->assertSame($expectedResult, $result);

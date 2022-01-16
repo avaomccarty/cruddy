@@ -5,7 +5,7 @@ namespace Cruddy\StubEditors\Inputs\Input\Columns;
 use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 
-class ViewStubInputEditor extends InputStubEditor
+class ViewColumnInputStubEditor extends InputStubEditor
 {
     /**
      * The acceptable value placeholders within a stub.
@@ -98,13 +98,6 @@ class ViewStubInputEditor extends InputStubEditor
     protected $unsignedExtraInputInfo = 'min="0"';
 
     /**
-     * The name for the resource.
-     *
-     * @var string
-     */
-    protected $nameOfResource = '';
-
-    /**
      * The type for the file.
      *
      * @var string
@@ -148,7 +141,7 @@ class ViewStubInputEditor extends InputStubEditor
      * @param  string  $name = ''
      * @return string
      */
-    public function getInputString(string $type = 'index', string $name = '') : string
+    public function getInputString(string $type = 'index', string $name = '', string $nameOfResource = '') : string
     {
         $this->inputString = $this->getInputAsString();
 
@@ -169,27 +162,6 @@ class ViewStubInputEditor extends InputStubEditor
     protected function getInputValue() : string
     {
         return '{{ $' . $this->getCamelCaseSingular($this->getNameOfResource()) . '->' . $this->column['name'] . ' }}';
-    }
-
-    /**
-     * Set the name of the resource.
-     *
-     * @param  string  $name
-     * @return void
-     */
-    public function setNameOfResource(string $name) : void
-    {
-        $this->nameOfResource = $name;
-    }
-
-    /**
-     * Get the name of the resource.
-     *
-     * @return string
-     */
-    protected function getNameOfResource() : string
-    {
-        return $this->nameOfResource;
     }
 
     /**

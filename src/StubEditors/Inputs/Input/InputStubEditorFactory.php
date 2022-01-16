@@ -15,9 +15,12 @@ class InputStubEditorFactory extends Factory
      * The constructor method.
      *
      * @param  \Illuminate\Support\Fluent  $column
+     * @param  string  $inputStubEditor = 'controller'
+     * @param  string  $stub = ''
+     * @param  array  $foreignKeys = []
      * @return void
      */
-    public function __construct(protected Fluent $column, protected string $inputStubEditor = 'controller', protected string &$stub = '')
+    public function __construct(protected Fluent $column, protected string $inputStubEditor = 'controller', protected string $stub = '', protected array $foreignKeys = [])
     {
         parent::__construct();
     }
@@ -29,15 +32,19 @@ class InputStubEditorFactory extends Factory
      */
     protected function setParameters() : void
     {
-        $this->parameters = [
-            $this->column,
-        ];
-
         if (FluentInteractor::isAColumnDefinition($this->column)) {
-            array_push($this->parameters,
+            $this->parameters = [
+                $this->column,
                 $this->inputStubEditor,
                 $this->stub,
-            );
+                $this->foreignKeys,
+            ];
+        } else {
+            $this->parameters = [
+                $this->column,
+                $this->stub,
+                $this->foreignKeys,
+            ];
         }
     }
     /**

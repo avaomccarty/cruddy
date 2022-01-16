@@ -3,13 +3,19 @@
 namespace Cruddy\Commands;
 
 use Cruddy\Traits\CommandTrait;
+use Cruddy\Traits\ConsoleCommandTrait;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 
 class VueImportAddCommand extends Command
 {
-    use CommandTrait;
+    use CommandTrait, ConsoleCommandTrait;
+
+    /**
+     * The type of stub editor.
+     *
+     * @var string
+     */
+    protected $stubEditorType = 'vue';
 
     /**
      * The name and signature of the console command.
@@ -35,75 +41,31 @@ class VueImportAddCommand extends Command
     protected $name;
 
     /**
+     * The stub editor.
+     *
+     * @var \Cruddy\StubEditors\VueStubEditor|null
+     */
+    protected $stubEditor;
+
+    /**
+     * The constructor method.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->setStubEditor();
+    }
+
+    /**
      * Execute the console command.
      *
      * @return int
      */
     public function handle()
     {
-        $importStatement = $this->getImportStatement();
-        $componentStatement = $this->getComponentStatement();
-        $vueComponentSearch = $this->getVueComponentSearchString();
-
-        if (File::exists($this->getVueImportFileLocation())) {
-            $importFile = File::get($this->getVueImportFileLocation());
-
-            // Add import statement to the top of the file if it does not already exist
-            if (strpos($importFile, $importStatement) === false) {
-                File::prepend($this->getVueImportFileLocation(), $importStatement);
-            }
-
-            // Add Vue.component() statements to the file if they do not already exist
-            if (strpos($importFile, $componentStatement) === false) {
-                $positionInFile = strpos($importFile, $vueComponentSearch);
-
-                if ($positionInFile !== false && is_numeric($positionInFile)) {
-                    $updatedFile = substr_replace($importFile, $componentStatement, $positionInFile, 0);
-                    File::put($this->getVueImportFileLocation(), $updatedFile);
-                }
-            }
-        }
-    }
-
-    /**
-     * Get new Cruddy Vue component name.
-     *
-     * @param  string|null  $style
-     * @return string
-     */
-    protected function getComponent(string $style = null) : string
-    {
-        $name = $this->getResourceName();
-        $type = $this->getType();
-
-        if ($style === 'kebab') {
-            return Str::kebab($name) . '-' . strtolower($type);
-        }
-
-        return Str::studly($name) . Str::ucfirst($type);
-    }
-
-    /**
-     * Get new Cruddy Vue component statements.
-     *
-     * @return string
-     */
-    protected function getComponentStatement() : string
-    {
-        return "Vue.component('" . $this->getComponent('kebab') . "', " . $this->getComponent() . ");\n";
-    }
-
-    /**
-     * Get new Cruddy Vue import statement.
-     *
-     * @return string
-     */
-    protected function getImportStatement() : string
-    {
-        $name = $this->getResourceName();
-        $lowerName = $this->getLowerSingular($name);
-        $importString = "import " . $this->getComponent() . " from '@/components/" . $lowerName . "/" . $this->getType() . ".vue';\n";
-
-        return $importString;
+        $this->stubEditor->updateFile();
     }
 }

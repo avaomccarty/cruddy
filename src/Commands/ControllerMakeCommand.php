@@ -3,12 +3,14 @@
 namespace Cruddy\Commands;
 
 use Cruddy\Traits\CommandTrait;
+use Cruddy\Traits\ConsoleCommandTrait;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Routing\Console\ControllerMakeCommand as BaseControllerMakeCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 class ControllerMakeCommand extends BaseControllerMakeCommand
 {
-    use CommandTrait;
+    use CommandTrait, ConsoleCommandTrait;
 
     /**
      * The formatting at the end of the line.
@@ -80,19 +82,6 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
         'resourcePlaceholders',
     ];
 
-    // /**
-    //  * The console command signature.
-    //  *
-    //  * @var string
-    //  */
-    // protected $signature = 'cruddy:controller
-    //                         { name : The class name for the controller. }
-    //                         { --resource : Determines if this is a resource controller. }
-    //                         { --model= : The name for the associated model. }
-    //                         { --api : Determines if the controller should be for an API. }
-    //                         { --inputs=* : The columns. }
-    //                         { --commands=* : The foreign keys for the columns. }';
-
     /**
      * The console command description.
      *
@@ -110,7 +99,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     /**
      * The stub editor.
      *
-     * @var \Cruddy\StubEditors\StubEditor|null
+     * @var \Cruddy\StubEditors\ControllerStubEditor|null
      */
     protected $stubEditor;
 
@@ -149,20 +138,29 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      */
     protected function buildClass($name)
     {
-        $this->setStubEditor('controller');
         $this->stubEditor->setIsApi($this->getApi());
-        $stub = $this->getStub();
 
         if (!empty($this->getModel())) {
-            $this->replaceModel($stub);
+            $this->replaceModel();
         }
 
-        $this->replaceNamespace($stub, $name);
-        $this->stubEditor->replaceInStub($this->resourcePlaceholders, $this->getResource(), $stub);
-        $this->stubEditor->replaceInStub($this->stubEditor->inputPlaceholders, $this->getInputString(), $stub);
-        $stub = $this->replaceClass($stub, $name);
+        $this->stubEditor->replaceInStub($this->resourcePlaceholders, $this->getResource(), $this->stub);
+        $this->stubEditor->replaceInStub($this->stubEditor->inputPlaceholders, $this->getInputString(), $this->stub);
 
-        return $stub;
+        return $this->stub;
+    }
+
+    /**
+     * The constructor.
+     *
+     * @param  \Illuminate\Filesystem\Filesystem  $files
+     * @return void
+     */
+    public function __construct(Filesystem $files)
+    {
+        parent::__construct($files);
+
+        $this->setInitialVariables();
     }
 
     /**
@@ -183,8 +181,8 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      */
     protected function getInputString() : string
     {
-        return $this->getStubInputsEditor('controller')
-            ->getInputString($this->getTypeOption());
+        return $this->getInputsStubEditor('controller')
+            ->getInputStrings();
     }
 
     /**
@@ -200,10 +198,9 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     /**
      * Replace the model for the given stub.
      *
-     * @param  string  &$stub
      * @return self
      */
-    protected function replaceModel(string &$stub) : self
+    protected function replaceModel() : self
     {
         $modelClass = $this->parseModel($this->getModel());
 
@@ -218,9 +215,9 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
 
         $modelClassName = $this->stubEditor->getClassBasename($modelClass);
         
-        $this->stubEditor->replaceInStub($this->modelPlaceholders, $modelClassName, $stub);
-        $this->stubEditor->replaceInStub($this->modelVariablePlaceholders, $modelClassName, $stub);
-        $this->stubEditor->replaceInStub($this->fullModelClassPlaceholders, $modelClass, $stub);
+        $this->stubEditor->replaceInStub($this->modelPlaceholders, $modelClassName, $this->stub);
+        $this->stubEditor->replaceInStub($this->modelVariablePlaceholders, $modelClassName, $this->stub);
+        $this->stubEditor->replaceInStub($this->fullModelClassPlaceholders, $modelClass, $this->stub);
 
         return $this;
     }

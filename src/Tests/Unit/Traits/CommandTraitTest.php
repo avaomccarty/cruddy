@@ -2,7 +2,7 @@
 
 namespace Cruddy\Tests\Unit\Traits;
 
-use Cruddy\StubEditors\Inputs\Input\Columns\ControllerStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ControllerColumnInputStubEditor;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
 use Cruddy\StubEditors\StubEditor;
 use Cruddy\Tests\TestTrait;
@@ -604,7 +604,7 @@ class CommandTraitTest extends TestCase
             ->once()
             ->andReturn($stubInputsEditor);
 
-        $mock->getStubInputsEditor($type);
+        $mock->getInputsStubEditor($type);
     }
 
     /**
@@ -632,7 +632,7 @@ class CommandTraitTest extends TestCase
             ->once()
             ->andReturn($stubInputsEditor);
 
-        $mock->getStubInputsEditor($type);
+        $mock->getInputsStubEditor($type);
     }
 
     /**

@@ -34,6 +34,7 @@ class StubEditorTest extends TestCase
         $stub = 'foo-bar-baz-';
         $stubEditor = (new StubEditorFactory('controller', $stub))
             ->get();
+
         $replaceValue = 'replaceValue-';
         $variables = [
             'foo-',

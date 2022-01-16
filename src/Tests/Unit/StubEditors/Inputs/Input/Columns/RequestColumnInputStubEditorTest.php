@@ -4,12 +4,12 @@ namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input\Columns;
 
 use Cruddy\ForeignKeyDefinition;
 use Cruddy\ForeignKeyValidation\ForeignKeyValidation;
-use Cruddy\StubEditors\Inputs\Input\Columns\RequestStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\RequestColumnInputStubEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\App;
 use Orchestra\Testbench\TestCase;
 
-class RequestStubInputEditorTest extends TestCase
+class RequestColumnInputStubEditorTest extends TestCase
 {
     /**
      * A test to get the input string.
@@ -51,7 +51,7 @@ class RequestStubInputEditorTest extends TestCase
             ->with(ForeignKeyValidation::class, [$otherForeignKey])
             ->never();
 
-        $result = (new RequestStubInputEditor($column))
+        $result = (new RequestColumnInputStubEditor($column))
             ->setForeignKeys($foreignKeys)
             ->getInputString();
 
@@ -75,7 +75,7 @@ class RequestStubInputEditorTest extends TestCase
         App::shouldReceive('make')
             ->never();
 
-        $result = (new RequestStubInputEditor($column))
+        $result = (new RequestColumnInputStubEditor($column))
             ->getInputString();
 
         $this->assertSame($expectedResult, $result);
@@ -90,9 +90,9 @@ class RequestStubInputEditorTest extends TestCase
     {
         $column = new ColumnDefinition();
 
-        $result = (new RequestStubInputEditor($column))
+        $result = (new RequestColumnInputStubEditor($column))
             ->setForeignKeys([]);
 
-        $this->assertInstanceOf(RequestStubInputEditor::class, $result);
+        $this->assertInstanceOf(RequestColumnInputStubEditor::class, $result);
     }
 }

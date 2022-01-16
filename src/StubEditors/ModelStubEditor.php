@@ -13,7 +13,8 @@ class ModelStubEditor extends StubEditor
      */
     public function getStubFile() : string
     {
-        $stubPath = $this->resolveStubPath($this->getStubsLocation() . '/model.stub');
+        $file = $this->option('pivot') ? '/model.pivot.stub' : '/model.stub';
+        $stubPath = $this->resolveStubPath($this->getStubsLocation() . $file);
 
         return File::get($stubPath);
     }

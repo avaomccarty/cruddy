@@ -4,7 +4,7 @@ namespace Cruddy\Tests\Feature;
 
 use Cruddy\ModelRelationships\ModelRelationship;
 use Cruddy\StubEditors\ControllerStubEditor;
-use Cruddy\StubEditors\Inputs\Input\Columns\ControllerStubInputEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ControllerColumnInputStubEditor;
 use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
 use Cruddy\StubEditors\ModelStubEditor;
@@ -40,7 +40,7 @@ class ControllerMakeCommandTest extends TestCase
         $expectedBladeFileName = $expectedBladeFileLocation . '/name.php';
 
         foreach ($inputs as $input) {
-            $stubInputEditor = new ControllerStubInputEditor($input);
+            $stubInputEditor = new ControllerColumnInputStubEditor($input);
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'controller', '', false])
                 ->once()
@@ -136,7 +136,7 @@ class ControllerMakeCommandTest extends TestCase
         $expectedBladeFileName = $expectedBladeFileLocation . '/name.php';
 
         foreach ($inputs as $input) {
-            $stubInputEditor = new ControllerStubInputEditor($input);
+            $stubInputEditor = new ControllerColumnInputStubEditor($input);
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'controller', '', false])
                 ->once()
@@ -232,7 +232,7 @@ class ControllerMakeCommandTest extends TestCase
         $expectedBladeFileName = $expectedBladeFileLocation . '/name.php';
 
         foreach ($inputs as $input) {
-            $stubInputEditor = new ControllerStubInputEditor($input);
+            $stubInputEditor = new ControllerColumnInputStubEditor($input);
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'controller', '', false])
                 ->once()

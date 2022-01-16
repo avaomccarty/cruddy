@@ -2,7 +2,7 @@
 
 namespace Cruddy\Traits;
 
-use Cruddy\StubEditors\Inputs\StubInputsEditor;
+use Cruddy\StubEditors\Inputs\InputsStubEditorInteractor;
 use Cruddy\StubEditors\StubEditor;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
@@ -230,26 +230,67 @@ trait CommandTrait
      * Set the stub editor.
      *
      * @param  string  $type = 'controller'
-     * @return void
+     * @return self
      */
-    protected function setStubEditor(string $type = 'controller') : void
+    protected function setStubEditor(string $type = 'controller') : self
     {
         $this->stubEditor = App::make(StubEditor::class, [$type]);
+
+        return $this;
     }
 
     /**
      * Set the stub editor.
      *
      * @param  string  $type = 'controller'
-     * @return \Cruddy\StubEditors\Inputs\StubInputsEditor
+     * @param  string  $nameOfResource = ''
+     * @return \Cruddy\StubEditors\Inputs\InputsStubEditorInteractor
      */
-    protected function getStubInputsEditor(string $type = 'controller') : StubInputsEditor
+    protected function getInputsStubEditor(string $type = 'controller', string $nameOfResource = '') : InputsStubEditorInteractor
     {
-        if ($type === 'controller') {
-            return App::make(StubInputsEditor::class, [$this->getInputsOption(), $type]);
+        $inputsStubInteractor = App::make(InputsStubEditorInteractor::class, [
+            $this->getInputsForType($type),
+            $type,
+            $this->getStubFile(),
+        ]);
+
+        if (!empty($nameOfResource)) {
+            $inputsStubInteractor->setNameOfResource($nameOfResource);
         }
 
-        return App::make(StubInputsEditor::class, [$this->getInputs(), $type]);
+        return $inputsStubInteractor;
+    }
+
+    /**
+     * Get the inputs for the file type.
+     *
+     * @param  string  $type
+     * @return array
+     */
+    protected function getInputsForType(string $type) : array
+    {
+        return $type === 'controller' ? $this->getInputsOption() : $this->getInputs();
+
+        switch ($type) {
+            case 'controller':
+                return $this->getInputsOption();
+            case 'request':
+                return $this->getNonIdRules();
+            default:
+                return $this->getInputs();
+        }
+    }
+
+    /**
+     * Get the rules without ID columns.
+     *
+     * @return array
+     */
+    protected function getNonIdRules() : array
+    {
+        return array_filter($this->getRules(), function ($rule) {
+            return $rule->name !== 'id';
+        });
     }
 
     /**

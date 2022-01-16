@@ -8,7 +8,7 @@ use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\App;
 
-class RequestStubInputEditor extends InputStubEditor
+class RequestColumnInputStubEditor extends InputStubEditor
 {
 
     /**
@@ -152,7 +152,7 @@ class RequestStubInputEditor extends InputStubEditor
     /**
      * Get a validation rule string from a foreignKey.
      *
-     * @param \Cruddy\ForeignKeyDefinition  $foreignKey
+     * @param  \Cruddy\ForeignKeyDefinition  $foreignKey
      * @return string
      */
     protected function getForeignKeyValidation(ForeignKeyDefinition $foreignKey) : string

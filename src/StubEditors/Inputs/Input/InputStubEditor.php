@@ -14,24 +14,17 @@ abstract class InputStubEditor extends StubEditor
      * @var string
      */
     protected $inputString = '';
-    
-    /**
-     * The column.
-     *
-     * @var \Illuminate\Support\Fluent
-     */
-    protected $column;
 
     /**
      * The constructor method.
      *
      * @param  \Illuminate\Support\Fluent  $column
-     * @param  string  &$stub = ''
+     * @param  string  $stub = ''
+     * @param  array  $foreignKeys = []
      * @return void
      */
-    public function __construct(Fluent $column, string &$stub = '')
+    public function __construct(protected Fluent $column, string $stub = '', protected array $foreignKeys = [])
     {
-        $this->column = $column;
         $this->stub = $stub ?? $this->getStubFile();
     }
 

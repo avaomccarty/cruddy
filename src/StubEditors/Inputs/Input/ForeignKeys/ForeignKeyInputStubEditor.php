@@ -11,11 +11,12 @@ abstract class ForeignKeyInputStubEditor extends InputStubEditor
      * The constructor method.
      *
      * @param  \Cruddy\ForeignKeyDefinition  $column
-     * @param  string  &$stub = ''
+     * @param  string  $stub = ''
+     * @param  array  $foreignKeys = []
      * @return void
      */
-    public function __construct(ForeignKeyDefinition $column, string &$stub = '')
+    public function __construct(protected ForeignKeyDefinition $column, protected string $stub = '', protected array $foreignKeys = [])
     {
-        parent::__construct($column, $stub);
+        parent::__construct($column, $stub, $foreignKeys);
     }
 }

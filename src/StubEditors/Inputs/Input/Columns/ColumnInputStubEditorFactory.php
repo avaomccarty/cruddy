@@ -14,10 +14,11 @@ class ColumnInputStubEditorFactory extends Factory
      *
      * @param  \Illuminate\Database\Schema\ColumnDefinition  $column
      * @param  string  $inputStubEditor = 'controller'
-     * @param  string  &$stub = ''
+     * @param  string  $stub = ''
+     * @param  array  $foreignKeys = []
      * @return void
      */
-    public function __construct(protected ColumnDefinition $column, protected string $inputStubEditor = 'controller', protected string &$stub = '')
+    public function __construct(protected ColumnDefinition $column, protected string $inputStubEditor = 'controller', protected string $stub = '', protected array $foreignKeys = [])
     {
         parent::__construct();
     }
@@ -31,7 +32,8 @@ class ColumnInputStubEditorFactory extends Factory
     {
         $this->parameters = [
             $this->column,
-            $this->stub
+            $this->stub,
+            $this->foreignKeys,
         ];
     }
 
@@ -46,11 +48,11 @@ class ColumnInputStubEditorFactory extends Factory
     {
         switch ($this->inputStubEditor) {
             case 'controller':
-                return $this->makeClass(ControllerStubInputEditor::class);
+                return $this->makeClass(ControllerColumnInputStubEditor::class);
             case 'request':
-                return $this->makeClass(RequestStubInputEditor::class);
+                return $this->makeClass(RequestColumnInputStubEditor::class);
             case 'view':
-                return $this->makeClass(ViewStubInputEditor::class);
+                return $this->makeClass(ViewColumnInputStubEditor::class);
             default:
                 throw new UnknownStubInputEditorType();
         }

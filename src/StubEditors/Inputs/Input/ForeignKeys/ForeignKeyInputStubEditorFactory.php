@@ -71,7 +71,7 @@ class ForeignKeyInputStubEditorFactory extends Factory
      *
      * @return boolean
      */
-    private function isValidRelationship() : bool
+    protected function isValidRelationship() : bool
     {
         return ModelRelationship::isValidRelationshipType($this->relationship) && class_exists($this->className);
     }
@@ -81,7 +81,7 @@ class ForeignKeyInputStubEditorFactory extends Factory
      *
      * @return string
      */
-    private function getClassName() : string
+    protected function getClassName() : string
     {
         return 'Cruddy\\StubEditors\\Inputs\\Input\\ForeignKeys\\' . ucfirst($this->relationship) . 'Input';
     }
@@ -91,7 +91,7 @@ class ForeignKeyInputStubEditorFactory extends Factory
      *
      * @return string
      */
-    private function getRelationship() : string
+    protected function getRelationship() : string
     {
         return $this->foreignKey->relationship;
     }

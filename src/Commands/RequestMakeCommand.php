@@ -2,15 +2,22 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\StubEditors\Inputs\StubInputsEditor;
 use Cruddy\Traits\CommandTrait;
+use Cruddy\Traits\ConsoleCommandTrait;
 use Illuminate\Console\GeneratorCommand;
-use Illuminate\Support\Facades\App;
+use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 
 class RequestMakeCommand extends GeneratorCommand
 {
-    use CommandTrait;
+    use CommandTrait, ConsoleCommandTrait;
+
+    /**
+     * The type of stub editor.
+     *
+     * @var string
+     */
+    protected $stubEditorType = 'request';
 
     /**
      * The console command signature.
@@ -44,6 +51,19 @@ class RequestMakeCommand extends GeneratorCommand
     protected $stubEditor;
 
     /**
+     * The constructor.
+     *
+     * @param  \Illuminate\Filesystem\Filesystem  $files
+     * @return void
+     */
+    public function __construct(Filesystem $files)
+    {
+        parent::__construct($files);
+
+        $this->setInitialVariables();
+    }
+
+    /**
      * Build the class with the given name.
      *
      * @param  string  $name
@@ -53,13 +73,9 @@ class RequestMakeCommand extends GeneratorCommand
      */
     protected function buildClass($name)
     {
-        $this->setStubEditor('request');
-        $stub = $this->getStub();
+        $this->stubEditor->replaceInStub($this->stubEditor->rulesPlaceholders, $this->getReplaceRules(), $this->stub);
 
-        $this->stubEditor->replaceInStub($this->stubEditor->rulesPlaceholders, $this->getReplaceRules(), $stub);
-        $this->replaceNamespace($stub, $name);
-        
-        return $this->replaceClass($stub, $name);
+        return $this->stub;
     }
 
     /**
@@ -123,24 +139,11 @@ class RequestMakeCommand extends GeneratorCommand
     /**
      * Replace the rules for the given stub.
      *
-     * @param  string  &$stub
      * @return string
      */
     protected function getReplaceRules() : string
     {
-        return (App::make(StubInputsEditor::class, [$this->getNonIdRules(), 'request']))
-            ->getInputString($this->getType());
-    }
-
-    /**
-     * Get the rules without ID columns.
-     *
-     * @return array
-     */
-    protected function getNonIdRules() : array
-    {
-        return array_filter($this->getRules(), function ($rule) {
-            return $rule->name !== 'id';
-        });
+        return $this->getInputsStubEditor('request')
+            ->getInputStrings();
     }
 }

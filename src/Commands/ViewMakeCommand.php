@@ -2,17 +2,24 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\StubEditors\Inputs\StubInputsEditor;
 use Cruddy\Traits\CommandTrait;
+use Cruddy\Traits\ConsoleCommandTrait;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Database\Schema\ColumnDefinition;
-use Illuminate\Support\Facades\App;
+use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Support\Str;
 
 class ViewMakeCommand extends GeneratorCommand
 {
-    use CommandTrait;
+    use CommandTrait, ConsoleCommandTrait;
+
+    /**
+     * The type of stub editor.
+     *
+     * @var string
+     */
+    protected $stubEditorType = 'view';
 
     /**
      * The styling for the end of the Vue data.
@@ -50,11 +57,71 @@ class ViewMakeCommand extends GeneratorCommand
     protected $type = 'Cruddy view';
 
     /**
-     * The stub editor.
+     * The model.
      *
-     * @var \Cruddy\StubEditors\StubEditor|null
+     * @var string
      */
-    protected $stubEditor;
+    protected $model = '';
+
+    /**
+     * The edit URL.
+     *
+     * @var string
+     */
+    protected $editUrl = '';
+
+    /**
+     * The cancel URL.
+     *
+     * @var string
+     */
+    protected $cancelUrl = '';
+
+    /**
+     * The action route.
+     *
+     * @var string
+     */
+    protected $actionRoute = '';
+
+    /**
+     * The inputs string.
+     *
+     * @var string
+     */
+    protected $inputsString = '';
+
+    /**
+     * The Vue data string.
+     *
+     * @var string
+     */
+    protected $vueDataString = '';
+
+    /**
+     * The Vue POST data string.
+     *
+     * @var string
+     */
+    protected $vuePostDataString = '';
+
+    /**
+     * Create a new view make command instance.
+     *
+     * @param  \Illuminate\Filesystem\Filesystem  $files
+     * @return void
+     */
+    public function __construct(Filesystem $files)
+    {
+        parent::__construct($files);
+
+        $this->setInitialVariables()
+            ->setViewType()
+            ->setModel()
+            ->setEditUrl()
+            ->setCancelUrl()
+            ->setVueData();
+    }
 
     /**
      * Build the class with the given name.
@@ -66,51 +133,42 @@ class ViewMakeCommand extends GeneratorCommand
      */
     protected function buildClass($name)
     {
-        $this->setStubEditor('view');
-        $this->setViewType();
-        $stub = $this->getStub();
-        $name = $this->getNameInput();
-        $model = $this->stubEditor->getClassBasename($name);
-        $editUrl = $this->getEditUrl($name);
-        $cancelUrl = '/' . $name;
-        $actionRoute = $this->getActionRoute($name);
-        $inputsString = $this->getInputString();
-        $vueDataString = '';
-        $vuePostDataString = '';
-        if ($this->needsVueFrontend()) {
-            $this->replaceVueData($this->getInputs(), $vueDataString, $vuePostDataString);
-        }
+        $this->stubEditor->replaceInStub($this->stubEditor->inputPlaceholders, $this->inputsString, $this->stub)
+            ->replaceInStub($this->stubEditor->actionPlaceholders, $this->actionRoute, $this->stub)
+            ->replaceInStub($this->stubEditor->editUrlPlaceholders, $this->editUrl, $this->stub)
+            ->replaceInStub($this->stubEditor->variableCollectionPlaceholders, $this->getCamelCasePlural($this->nameInput), $this->stub)
+            ->replaceInStub($this->stubEditor->variableCollectionPlaceholders, '', $this->stub)
+            ->replaceInStub($this->stubEditor->variablePlaceholders, $this->nameInput, $this->stub)
+            ->replaceInStub($this->stubEditor->cancelUrlPlaceholders, $this->cancelUrl, $this->stub)
+            ->replaceInStub($this->stubEditor->modelPlaceholders, $this->model, $this->stub)
+            ->replaceInStub($this->stubEditor->vueComponentPlaceholders, $this->getStudlyComponentName($this->nameInput), $this->stub)
+            ->replaceInStub($this->stubEditor->vueDataPlaceholders, $this->vueDataString, $this->stub)
+            ->replaceInStub($this->stubEditor->vueDataPlaceholders, '', $this->stub)
+            ->replaceInStub($this->stubEditor->vuePostDataPlaceholders, $this->vuePostDataString, $this->stub);
 
-        $this->replaceNamespace($stub, $name);
-        $this->stubEditor->replaceInStub($this->stubEditor->inputPlaceholders, $inputsString, $stub);
-        $this->stubEditor->replaceInStub($this->stubEditor->actionPlaceholders, $actionRoute, $stub);
-        $this->stubEditor->replaceInStub($this->stubEditor->editUrlPlaceholders, $editUrl, $stub);
-        $this->stubEditor->replaceInStub($this->stubEditor->variableCollectionPlaceholders, $this->getCamelCasePlural($name), $stub);
-        $this->stubEditor->replaceInStub($this->stubEditor->variableCollectionPlaceholders, '', $stub);
-        $this->stubEditor->replaceInStub($this->stubEditor->variablePlaceholders, $name, $stub);
-        $this->stubEditor->replaceInStub($this->stubEditor->cancelUrlPlaceholders, $cancelUrl, $stub);
-        $this->stubEditor->replaceInStub($this->stubEditor->modelPlaceholders, $model, $stub);
-        $this->stubEditor->replaceInStub($this->stubEditor->vueComponentPlaceholders, $this->getStudlyComponentName($name), $stub);
-        $this->stubEditor->replaceInStub($this->stubEditor->vueDataPlaceholders, $vueDataString, $stub);
-        $this->stubEditor->replaceInStub($this->stubEditor->vueDataPlaceholders, '', $stub);
-        $this->stubEditor->replaceInStub($this->stubEditor->vuePostDataPlaceholders, $vuePostDataString, $stub);
-        $this->replaceClass($stub, $name);
-
-        return $stub;
+        return $this->stub;
     }
 
     /**
      * Set the type for the stub editor.
      *
-     * @return void
+     * @return self
      */
-    protected function setViewType() : void
+    protected function setViewType() : self
     {
-        if ($this->needsVueFrontend()) {
-            $this->stubEditor->setViewType('page');
-        } else {
-            $this->stubEditor->setViewType($this->getType());
-        }
+        $this->stubEditor->setViewType($this->getViewType());
+
+        return $this;
+    }
+
+    /**
+     * Get the view type.
+     *
+     * @return string
+     */
+    protected function getViewType() : string
+    {
+        return $this->needsVueFrontend() ? 'page' : $this->getType();
     }
 
     /**
@@ -120,10 +178,9 @@ class ViewMakeCommand extends GeneratorCommand
      */
     protected function getInputString() : string
     {
-        return (App::make(StubInputsEditor::class, [$this->getInputs(), 'view']))
-            ->setType($this->getType())
+        return $this->getInputsStubEditor('view')
             ->setNameOfResource($this->getResourceName())
-            ->getInputString();
+            ->getInputStrings();
     }
 
     /**
@@ -181,15 +238,132 @@ class ViewMakeCommand extends GeneratorCommand
         ];
     }
 
+    // /**
+    //  * Get the stub.
+    //  *
+    //  * @return string
+    //  */
+    // protected function getStub() : string
+    // {
+    //     return $this->stubEditor->getStubFile();
+    // }
+
+    // /**
+    //  * Set the stub.
+    //  *
+    //  * @return self
+    //  */
+    // protected function setStub() : self
+    // {
+    //     $this->stub = $this->getStub();
+
+    //     return $this;
+    // }
+
     /**
-     * Get the stub.
+     * Set the model.
      *
-     * @return string
+     * @return self
      */
-    protected function getStub() : string
+    protected function setModel() : self
     {
-        return $this->stubEditor->getStubFile();
+        $this->model = $this->stubEditor->getClassBasename($this->nameInput);
+
+        return $this;
     }
+
+    /**
+     * Set the edit URL.
+     *
+     * @return self
+     */
+    protected function setEditUrl() : self
+    {
+        $this->editUrl = $this->getEditUrl($this->nameInput);
+
+        return $this;
+    }
+
+    /**
+     * Set the cancel URL.
+     *
+     * @return self
+     */
+    protected function setCancelUrl() : self
+    {
+        $this->cancelUrl = '/' . $this->nameInput;
+
+        return $this;
+    }
+
+    // /**
+    //  * Set the name input.
+    //  *
+    //  * @return self
+    //  */
+    // protected function setNameInput() : self
+    // {
+    //     $this->nameInput = $this->getNameInput();
+
+    //     return $this;
+    // }
+
+    /**
+     * Set the action route.
+     *
+     * @return self
+     */
+    protected function setActionRoute() : self
+    {
+        $this->actionRoute = $this->getActionRoute($this->nameInput);
+
+        return $this;
+    }
+
+    /**
+     * Set the input string.
+     *
+     * @return self
+     */
+    protected function setInputString() : self
+    {
+        $this->inputString = $this->getInputString();
+
+        return $this;
+    }
+
+    /**
+     * Update the Vue strings with the needed values.
+     *
+     * @param  array  $inputs = []
+     * @return void
+     */
+    protected function setVueData(array $inputs = []) : void
+    {
+        if ($this->needsVueFrontend()) {
+            foreach ($inputs as $input) {
+                $this->vueDataString .= $this->getVueDataString($input);
+                $this->vuePostDataString .= $this->getVuePostDataString($input);
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Get the default namespace for the class.
@@ -202,21 +376,21 @@ class ViewMakeCommand extends GeneratorCommand
         return $rootNamespace . '\resources\views';
     }
 
-    /**
-     * Replace the Vue strings with the needed values.
-     *
-     * @param  array  $inputs = []
-     * @param  string  &$vueDataString = ''
-     * @param  string  &$vuePostDataString = ''
-     * @return void
-     */
-    protected function replaceVueData(array $inputs = [], string &$vueDataString = '', string &$vuePostDataString = '') : void
-    {
-        foreach ($inputs as $input) {
-            $vueDataString .= $this->getVueDataString($input);
-            $vuePostDataString .= $this->getVuePostDataString($input);
-        }
-    }
+    // /**
+    //  * Replace the Vue strings with the needed values.
+    //  *
+    //  * @param  array  $inputs = []
+    //  * @param  string  &$vueDataString = ''
+    //  * @param  string  &$vuePostDataString = ''
+    //  * @return void
+    //  */
+    // protected function replaceVueData(array $inputs = [], string &$vueDataString = '', string &$vuePostDataString = '') : void
+    // {
+    //     foreach ($inputs as $input) {
+    //         $vueDataString .= $this->getVueDataString($input);
+    //         $vuePostDataString .= $this->getVuePostDataString($input);
+    //     }
+    // }
 
     /**
      * Get the Vue post data needed as a string.

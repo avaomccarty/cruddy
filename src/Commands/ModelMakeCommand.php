@@ -6,14 +6,23 @@ use Cruddy\Exceptions\UnknownRelationshipType;
 use Cruddy\ForeignKeyDefinition;
 use Cruddy\ModelRelationships\ModelRelationship;
 use Cruddy\Traits\CommandTrait;
+use Cruddy\Traits\ConsoleCommandTrait;
 use Illuminate\Database\Schema\ColumnDefinition;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\ModelMakeCommand as ConsoleModelMakeCommand;
 use Illuminate\Support\Facades\App;
 use Symfony\Component\Console\Input\InputArgument;
 
 class ModelMakeCommand extends ConsoleModelMakeCommand
 {
-    use CommandTrait;
+    use CommandTrait, ConsoleCommandTrait;
+
+    /**
+     * The type of stub editor.
+     *
+     * @var string
+     */
+    protected $stubEditorType = 'model';
 
     /**
      * The accptable use statement placeholders.
@@ -58,9 +67,22 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
     /**
      * The stub editor.
      *
-     * @var \Cruddy\StubEditors\StubEditor|null
+     * @var \Cruddy\StubEditors\ModelStubEditor|null
      */
     protected $stubEditor;
+
+    /**
+     * Create a new make command instance.
+     *
+     * @param  \Illuminate\Filesystem\Filesystem  $files
+     * @return void
+     */
+    public function __construct(Filesystem $files)
+    {
+        parent::__construct($files);
+
+        $this->setInitialVariables();
+    }
 
     /**
      * Get the console command arguments.
@@ -96,21 +118,26 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
      */
     protected function buildClass($name)
     {
-        $this->setStubEditor('model');
-        $name = $this->getStudlySingular($this->getArgument('name'));
-        $stub = $this->getStub();
         $foreignKeys = $this->getKeys();
 
         foreach ($foreignKeys as $foreignKey) {
-            $this->updateStubWithForeignKeys($stub, $foreignKey);
+            $this->updateStubWithForeignKeys($this->stub, $foreignKey);
         }
+        
+        $this->stubEditor->replaceInStub($this->stubEditor->inputPlaceholders, $this->getModelInputs(), $this->stub)
+            ->replaceInStub($this->getAllPlaceholders(), '', $this->stub);
 
-        $this->replaceNamespace($stub, $this->qualifyClass($name));
-        $this->stubEditor->replaceInStub($this->stubEditor->inputPlaceholders, $this->getModelInputs(), $stub);
-        $stub = $this->replaceClass($stub, $name);
-        $this->stubEditor->replaceInStub($this->getAllPlaceholders(), '', $stub);
+        return $this->stub;
+    }
 
-        return $stub;
+    /**
+     * Get the name input.
+     *
+     * @return string
+     */
+    protected function getNameInput() : string
+    {
+        return $this->qualifyClass($this->getStudlySingular($this->getArgument('name')));
     }
 
     /**
@@ -176,7 +203,7 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
     /**
      * Get the model relationship.
      *
-     * @param \Cruddy\ForeignKeyDefinition  $foreignKey
+     * @param  \Cruddy\ForeignKeyDefinition  $foreignKey
      * @return \Cruddy\ModelRelationships\ModelRelationship
      *
      * @throws \Cruddy\Exceptions\UnknownRelationshipType
@@ -193,7 +220,7 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
     /**
      * Get the relationship type from the foreign key.
      *
-     * @param \Cruddy\ForeignKeyDefinition  $foreignKey
+     * @param  \Cruddy\ForeignKeyDefinition  $foreignKey
      * @return string
      */
     protected function getForeignKeyRelationshipType(ForeignKeyDefinition $foreignKey) : string

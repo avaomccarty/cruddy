@@ -43,11 +43,15 @@ abstract class StubEditor
     protected $placeholders = [];
 
     /**
-     * The stub to be edited.
+     * The constructor method.
      *
-     * @var string
+     * @param  string  $stub = ''
+     * @return void
      */
-    protected $stub = '';
+    public function __construct(protected string $stub = '')
+    {
+        $this->stub = $stub ?? $this->getStubFile();
+    }
 
     /**
      * Get the default types.
@@ -73,17 +77,6 @@ abstract class StubEditor
     protected function isValidType(string $type = '') : bool
     {
         return in_array($type, $this->getDefaultTypes());
-    }
-
-    /**
-     * The constructor method.
-     *
-     * @param  string  &$stub = ''
-     * @return void
-     */
-    public function __construct(string &$stub = '')
-    {
-        $this->stub = $stub ?? $this->getStubFile();
     }
 
     /**

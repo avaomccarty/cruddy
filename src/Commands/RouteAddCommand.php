@@ -3,12 +3,26 @@
 namespace Cruddy\Commands;
 
 use Cruddy\Traits\CommandTrait;
+use Cruddy\Traits\ConsoleCommandTrait;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
 
 class RouteAddCommand extends Command
 {
-    use CommandTrait;
+    use CommandTrait, ConsoleCommandTrait;
+
+    /**
+     * The type of stub editor.
+     *
+     * @var string
+     */
+    protected $stubEditorType = 'route';
+
+    /**
+     * The name of the new Cruddy resource.
+     *
+     * @var string
+     */
+    protected $name;
 
     /**
      * The name and signature of the console command.
@@ -29,44 +43,21 @@ class RouteAddCommand extends Command
     /**
      * The stub editor.
      *
-     * @var \Cruddy\StubEditors\StubEditor|null
+     * @var \Cruddy\StubEditors\RouteStubEditor|null
      */
     protected $stubEditor;
 
-        /**
-     * The name of the resource.
-     *
-     * @var string
-     */
-    protected $name;
-
     /**
-     * The default resource type.
+     * The constructor method.
      *
-     * @var string
+     * @return void
      */
-    protected $defaultResourceType = 'resource';
+    public function __construct()
+    {
+        parent::__construct();
 
-    /**
-     * The default route file.
-     * 
-     * @var string
-     */
-    protected $defaultRouteFileName = 'web';
-
-    /**
-     * The success message.
-     *
-     * @var string
-     */
-    protected $successMessage = "Cruddy resource routes were added successfully!\n";
-
-    /**
-     * The no routes were added message.
-     *
-     * @var string
-     */
-    protected $noRoutesAddedMessage = "No Cruddy resource routes were added.\n";
+        $this->setStubEditor();
+    }
 
     /**
      * Execute the console command.
@@ -75,63 +66,6 @@ class RouteAddCommand extends Command
      */
     public function handle()
     {
-        $resourceRoute = $this->getResourceRoute();
-        $file = $this->getRouteFile();
-
-        if (File::exists($file)) {
-            if (strpos(File::get($file), $resourceRoute) !== false) {
-                $this->line($this->noRoutesAddedMessage);
-            } else {
-                File::append($file, $resourceRoute);
-                $this->line($this->successMessage);
-            }
-        } else {
-            $this->line($this->noRoutesAddedMessage);
-        }
-    }
-
-    /**
-     * Get resource route.
-     *
-     * @return string
-     */
-    protected function getResourceRoute() : string
-    {
-        $name = $this->getResourceName();
-        $lowerPluralName = $this->getLowerPlural($name);
-        $ucFirstName = ucfirst($name);
-
-        return "\n\n// $ucFirstName Resource\n" . 
-            "Route::" . $this->getResourceType() . "('$lowerPluralName', 'App\Http\Controllers\\" . $ucFirstName . "Controller');";
-    }
-
-    /**
-     * Get the type of route resource needed.
-     *
-     * @return string
-     */
-    protected function getResourceType() : string
-    {
-        return $this->getApi() ? 'apiResource' : $this->defaultResourceType;
-    }
-
-    /**
-     * Get the route file type.
-     *
-     * @return string
-     */
-    protected function getRouteFileName() : string
-    {
-        return $this->getApi() ? 'api' : $this->defaultRouteFileName;
-    }
-
-    /**
-     * Get the route file.
-     *
-     * @return string
-     */
-    protected function getRouteFile() : string
-    {
-        return 'routes/' . $this->getRouteFileName() .  '.php';
+        $this->stubEditor->addResourceRoute();
     }
 }
