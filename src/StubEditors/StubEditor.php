@@ -10,219 +10,347 @@ abstract class StubEditor
 {
     use ConfigTrait, CommandTrait;
 
-    /**
-     * The acceptable input placeholders within a stub.
-     *
-     * @var array
-     */
-    public $inputPlaceholders = [
-        'DummyInputs',
-        '{{ inputs }}',
-        '{{inputs}}'
-    ];
+    // /**
+    //  * The stub to be edited.
+    //  *
+    //  * @var string
+    //  */
+    // protected $stub = '';
 
-    /**
-     * The formatting at the end of the line.
-     *
-     * @var string
-     */
-    protected $endOfLine = "\n\t\t\t\t";
+    // /**
+    //  * The stub location.
+    //  *
+    //  * @var string
+    //  */
+    // protected $stubLocation = '';
 
-    /**
-     * The default end of line formatting.
-     *
-     * @var string
-     */
-    protected $defaultEndOfLine = "\n\t\t";
+    // /**
+    //  * The string needed between values.
+    //  *
+    //  * @var string
+    //  */
+    // protected $spacer = '';
 
-    /**
-     * The placeholders used within the stub.
-     *
-     * @var array
-     */
-    protected $placeholders = [];
+    // /**
+    //  * The default end of line formatting.
+    //  *
+    //  * @var string
+    //  */
+    // protected $defaultSpacer = "\n\t\t";
 
-    /**
-     * The constructor method.
-     *
-     * @param  string  $stub = ''
-     * @return void
-     */
-    public function __construct(protected string $stub = '')
-    {
-        $this->stub = $stub ?? $this->getStubFile();
-    }
+    // /**
+    //  * The acceptable input placeholders within a stub.
+    //  *
+    //  * @var array
+    //  */
+    // public $inputPlaceholders = [
+    //     'DummyInputs',
+    //     '{{ inputs }}',
+    //     '{{inputs}}'
+    // ];
 
-    /**
-     * Get the default types.
-     *
-     * @return array
-     */
-    protected function getDefaultTypes() : array
-    {
-        return [
-            'index',
-            'create',
-            'show',
-            'edit',
-         ];
-    }
+    // /**
+    //  * The placeholders used within the stub.
+    //  *
+    //  * @var array
+    //  */
+    // protected $placeholders = [
+    //     'inputPlaceholders'
+    // ];
 
-    /**
-     * Determine if the type is valid.
-     *
-     * @param  string  $type = ''
-     * @return boolean
-     */
-    protected function isValidType(string $type = '') : bool
-    {
-        return in_array($type, $this->getDefaultTypes());
-    }
+    // /**
+    //  * All placeholders for the stub editor.
+    //  *
+    //  * @var array
+    //  */
+    // protected $allPlaceholders = [];
 
-    /**
-     * Get the stub file.
-     *
-     * @return string
-     */
-    abstract public function getStubFile() : string;
+    // /**
+    //  * The constructor method.
+    //  *
+    //  * @return void
+    //  */
+    // public function __construct()
+    // {
+    //     $this->stub = $this->getStubFile();
+    //     $this->setAllPlaceholders();
+    // }
 
-    /**
-     * Get the stub.
-     *
-     * @return string
-     */
-    public function getStub() : string
-    {
-        return $this->stub;
-    }
+    // /**
+    //  * The destructor method.
+    //  *
+    //  * @return void
+    //  */
+    // public function __destruct()
+    // {
+    //     $this->replaceInStub($this->allPlaceholders, '');
+    //     $this->removeExtraSpacer($this->stub);
+    // }
 
-    /**
-     * Replace the variables with the correct value within the stub.
-     *
-     * @param  array  $variables
-     * @param  string  $value = ''
-     * @param  string  ?&$stub = null
-     * @return self
-     */
-    public function replaceInStub(array $variables, string $value = '', ?string &$stub = null) : self
-    {
-        if (is_null($stub)) {
-            $this->replaceInStubProperty($variables, $value);
-        } else {
-            $this->replaceInProvidedStub($variables, $value, $stub);
-        }
+    // /**
+    //  * Set all the placeholders for this stub.
+    //  *
+    //  * @return self
+    //  */
+    // protected function setAllPlaceholders() : self
+    // {
+    //     foreach ($this->placeholders as $placeholders) {
+    //         array_push($this->allPlaceholders, ...$placeholders);
+    //     }
+
+    //     return $this;
+    // }
+
+    // /**
+    //  * Get the stub.
+    //  *
+    //  * @return string
+    //  */
+    // protected function getStubFile() : string
+    // {
+    //     return File::get($this->getStubLocation());
+    // }
+
+    // /**
+    //  * Get the stub file type. 
+    //  *
+    //  * @return string
+    //  */
+    // protected function getStubFileType() : string
+    // {
+    //     return $this->stubFileType;
+    // }
+
+    // /**
+    //  * Set the stub location.
+    //  *
+    //  * @return self
+    //  */
+    // protected function setStubLocation() : self
+    // {
+    //     $this->stubLocation = $this->getStubLocation();
+    
+    //     return $this;
+    // }
+
+    // /**
+    //  * Get the stub file location.
+    //  *
+    //  * @return string
+    //  */
+    // protected function getStubLocation() : string
+    // {
+    //     return $this->resolveStubPath($this->getStubsLocation() . '/' . $this->getStubFileType() . '.stub');
+    // }
+
+    // /**
+    //  * Get the stub file location.
+    //  *
+    //  * @return string
+    //  */
+    // protected function getStub() : string
+    // {
+    //     return $this->stubLocation;
+    // }
+
+    // /**
+    //  * Get the updated stub.
+    //  *
+    //  * @return string
+    //  */
+    // public function getUpdatedStub() : string
+    // {
+    //     // return $this->updateStub()->stub;
+
+    //     return $this->prepStub()
+    //         ->updateStub()
+    //         ->addStubEnding()
+    //         ->stub;
+    // }
+
+    // /**
+    //  * Get the default types.
+    //  *
+    //  * @return array
+    //  */
+    // protected function getDefaultTypes() : array
+    // {
+    //     return [
+    //         'index',
+    //         'create',
+    //         'show',
+    //         'edit',
+    //      ];
+    // }
+
+    // /**
+    //  * Determine if the type is valid.
+    //  *
+    //  * @param  string  $type = ''
+    //  * @return boolean
+    //  */
+    // protected function isValidType(string $type = '') : bool
+    // {
+    //     return in_array($type, $this->getDefaultTypes());
+    // }
+
+    // /**
+    //  * Replace the variables with the correct value within the stub.
+    //  *
+    //  * @param  array  $variables
+    //  * @param  string  $value = ''
+    //  * @param  string  ?&$stub = null
+    //  * @return self
+    //  */
+    // public function replaceInStub(array $variables, string $value = '', ?string &$stub = null) : self
+    // {
+    //     if (is_null($stub)) {
+    //         $this->replaceInStubProperty($variables, $value);
+    //     } else {
+    //         $this->replaceInProvidedStub($variables, $value, $stub);
+    //     }
 
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    /**
-     * Replace the variables with the correct value within the stub property.
-     *
-     * @param  array  $variables
-     * @param  string  $value
-     * @return 
-     */
-    protected function replaceInStubProperty(array $variables, string $value) : void
-    {
-        $this->stub = str_replace($variables, $value, $this->stub);
-    }
+    // /**
+    //  * Replace the variables with the correct value within the stub property.
+    //  *
+    //  * @param  array  $variables
+    //  * @param  string  $value
+    //  * @return 
+    //  */
+    // protected function replaceInStubProperty(array $variables, string $value) : void
+    // {
+    //     $this->stub = str_replace($variables, $value, $this->stub);
+    // }
 
-    /**
-     * Replace the variables with the correct value within the provided stub.
-     *
-     * @param  array  $variables
-     * @param  string  $value
-     * @param  string  &$stub
-     * @return 
-     */
-    protected function replaceInProvidedStub(array $variables, string $value, string &$stub) : void
-    {
-        $stub = str_replace($variables, $value, $stub);
-    }
+    // /**
+    //  * Replace the variables with the correct value within the provided stub.
+    //  *
+    //  * @param  array  $variables
+    //  * @param  string  $value
+    //  * @param  string  &$stub
+    //  * @return 
+    //  */
+    // protected function replaceInProvidedStub(array $variables, string $value, string &$stub) : void
+    // {
+    //     $stub = str_replace($variables, $value, $stub);
+    // }
 
-    /**
-     * Get the camelcase version of the class from the namespace.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function getClassBasename(string $value) : string
-    {
-        return lcfirst(class_basename($value)) ?? '';
-    }
+    // /**
+    //  * Get the camelcase version of the class from the namespace.
+    //  *
+    //  * @param  string  $value
+    //  * @return string
+    //  */
+    // public function getClassBasename(string $value) : string
+    // {
+    //     return lcfirst(class_basename($value)) ?? '';
+    // }
 
-    /**
-     * Get the end of line formatting.
-     *
-     * @return string
-     */
-    protected function getEndOfLineFormatting() : string
-    {
-        return $this->endOfLine ?? $this->defaultEndOfLine;
-    }
+    // /**
+    //  * Determine if the stub ends in a spacer.
+    //  *
+    //  * @return boolean
+    //  */
+    // protected function endsInSpacer() : bool
+    // {
+    //     return substr($this->stub, -strlen($this->getSpacer())) === $this->getSpacer();
+    // }
 
-    /**
-     * Remove the formatting from the end of the value.
-     *
-     * @param  string  &$value
-     * @return void
-     */
-    public function removeEndOfLineFormatting(string &$value) : void
-    {
-        if ($this->hasEndOfLineFormatting($value)) {
-            $value = substr($value, 0, -strlen($this->getEndOfLineFormatting()));
-        }
-    }
 
-    /**
-     * Add the formatting to the end of the value.
-     *
-     * @param  string  &$value
-     * @return void
-     */
-    protected function addEndOfLineFormatting(string &$value) : void
-    {
-        $this->hasEndOfLineFormatting($value) ?: $value .= $this->getEndOfLineFormatting();
-    }
+    // /**
+    //  * Determine if a spacer is needed.
+    //  *
+    //  * @return boolean
+    //  */
+    // protected function needsSpacer() : bool
+    // {
+    //     return !empty($this->stub) && !$this->endsInSpacer();
+    // }
 
-    /**
-     * Determine if the value need formatting removed from the end.
-     *
-     * @param  string  $value
-     * @return boolean
-     */
-    protected function hasEndOfLineFormatting(string $value) : bool
-    {
-        return substr($value, -strlen($this->getEndOfLineFormatting())) === $this->getEndOfLineFormatting();
-    }
+    // /**
+    //  * Add a spacer within the stub.
+    //  *
+    //  * @return void
+    //  */
+    // protected function addSpacer() : void
+    // {
+    //     $this->stub .= $this->spacer;
+    // }
 
-    /**
-     * Resolve the fully-qualified path to the stub.
-     *
-     * @param  string  $path
-     * @return string
-     */
-    protected function resolveStubPath(string $path) : string
-    {
-        return File::exists($customPath = base_path(trim($path, '/')))
-            ? $customPath
-            : dirname(__DIR__) . '/Commands/' . $path;
-    }
+    // /**
+    //  * Add value to the stub.
+    //  *
+    //  * @param  string  $value
+    //  * @return void
+    //  */
+    // protected function addValue(string $value) : void
+    // {
+    //     if ($this->needsSpacer()) {
+    //         $this->addSpacer();
+    //     }
 
-    /**
-     * Check if the stub already contains the provided string.
-     *
-     * @param  string  $needle
-     * @param  string|null  $stub = null
-     * @return boolean
-     */
-    public function stubContains(string $needle, ?string $stub = null) : bool
-    {
-        if (is_null($stub)) {
-            return str_contains($this->stub, $needle);
-        }
+    //     $this->stub .= $value;
+    // }
 
-        return str_contains($stub, $needle);
-    }
+    // /**
+    //  * Get the spacer.
+    //  *
+    //  * @return string
+    //  */
+    // protected function getSpacer() : string
+    // {
+    //     return empty($this->spacer) ? $this->defaultSpacer : $this->spacer;
+    // }
+
+    // /**
+    //  * Remove the last spacer.
+    //  *
+    //  * @param  string  &$value
+    //  * @return void
+    //  */
+    // public function removeExtraSpacer(string &$value) : void
+    // {
+    //     if ($this->endsInSpacer($value)) {
+    //         $value = substr($value, 0, -strlen($this->getSpacer()));
+    //     }
+    // }
+
+    // /**
+    //  * Resolve the fully-qualified path to the stub.
+    //  *
+    //  * @param  string  $path
+    //  * @return string
+    //  */
+    // protected function resolveStubPath(string $path) : string
+    // {
+    //     return File::exists($customPath = base_path(trim($path, '/')))
+    //         ? $customPath
+    //         : dirname(__DIR__) . '/Commands/' . $path;
+    // }
+
+    // /**
+    //  * Check if the stub already contains the provided string.
+    //  *
+    //  * @param  string  $needle
+    //  * @return boolean
+    //  */
+    // public function stubContains(string $needle) : bool
+    // {
+    //     return str_contains($this->stub, $needle);
+    // }
+
+    // /**
+    //  * Get the input string for the controller.
+    //  *
+    //  * @return string
+    //  */
+    // protected function getStubEditorInputStrings() : string
+    // {
+    //     return $this->getInputsStubEditor($this->stubEditorType)
+    //         ->getInputStrings();
+    // }
 }

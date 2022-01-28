@@ -2,11 +2,11 @@
 
 namespace Cruddy\Tests\Feature;
 
-use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
-use Cruddy\StubEditors\Inputs\Input\Columns\ViewColumnInputStubEditor;
+use Cruddy\StubEditors\Inputs\Input\InputStub;
+use Cruddy\StubEditors\Inputs\Input\Columns\ViewColumnInputStub;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
 use Cruddy\StubEditors\StubEditor;
-use Cruddy\StubEditors\ViewStubEditor;
+use Cruddy\StubEditors\ViewStub;
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\CommandTrait;
 use Illuminate\Support\Facades\App;
@@ -81,7 +81,7 @@ class ViewMakeCommandTest extends TestCase
         }
 
         // Assert the StubEditor is created correctly.
-        $stubEditor = new ViewStubEditor();
+        $stubEditor = new ViewStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['view'])
             ->once()
@@ -122,7 +122,7 @@ class ViewMakeCommandTest extends TestCase
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'view', '', false])
                 ->once()
-                ->andReturn(new ViewColumnInputStubEditor($input));
+                ->andReturn(new ViewColumnInputStub($input));
         }
 
         Config::partialMock();
@@ -215,7 +215,7 @@ class ViewMakeCommandTest extends TestCase
         $mockSubmitInputStub = File::get($inputsLocation  . "submit.stub");
 
         // Assert the StubEditor is created correctly.
-        $stubEditor = new ViewStubEditor();
+        $stubEditor = new ViewStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['view'])
             ->once()
@@ -256,14 +256,14 @@ class ViewMakeCommandTest extends TestCase
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'view', '', true])
                 ->once()
-                ->andReturn(new ViewColumnInputStubEditor($input));
+                ->andReturn(new ViewColumnInputStub($input));
         }
 
         // Assertion for submit input
         App::shouldReceive('make')
             ->with(StubInputEditor::class, [null, 'view', '', true])
             ->once()
-            ->andReturn(new ViewColumnInputStubEditor());
+            ->andReturn(new ViewColumnInputStub());
 
         Config::partialMock();
 
@@ -366,7 +366,7 @@ class ViewMakeCommandTest extends TestCase
         }
 
         // Assert the StubEditor is created correctly.
-        $stubEditor = new ViewStubEditor();
+        $stubEditor = new ViewStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['view'])
             ->once()
@@ -407,7 +407,7 @@ class ViewMakeCommandTest extends TestCase
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'view', '', false])
                 ->once()
-                ->andReturn(new ViewColumnInputStubEditor($input));
+                ->andReturn(new ViewColumnInputStub($input));
         }
 
         Config::partialMock();
@@ -500,7 +500,7 @@ class ViewMakeCommandTest extends TestCase
         $mockSubmitInputStub = File::get($inputsLocation  . "submit.stub");
 
         // Assert the StubEditor is created correctly.
-        $stubEditor = new ViewStubEditor();
+        $stubEditor = new ViewStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['view'])
             ->once()
@@ -541,14 +541,14 @@ class ViewMakeCommandTest extends TestCase
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'view', '', true])
                 ->once()
-                ->andReturn(new ViewColumnInputStubEditor($input));
+                ->andReturn(new ViewColumnInputStub($input));
         }
 
         // Assertion for submit input
         App::shouldReceive('make')
             ->with(StubInputEditor::class, [null, 'view', '', true])
             ->once()
-            ->andReturn(new ViewColumnInputStubEditor());
+            ->andReturn(new ViewColumnInputStub());
 
         Config::partialMock();
 
@@ -651,7 +651,7 @@ class ViewMakeCommandTest extends TestCase
         }
 
         // Assert the StubEditor is created correctly.
-        $stubEditor = new ViewStubEditor();
+        $stubEditor = new ViewStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['view'])
             ->once()
@@ -686,7 +686,7 @@ class ViewMakeCommandTest extends TestCase
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'view', '', false])
                 ->once()
-                ->andReturn(new ViewColumnInputStubEditor($input));
+                ->andReturn(new ViewColumnInputStub($input));
         }
 
         Config::partialMock();
@@ -779,7 +779,7 @@ class ViewMakeCommandTest extends TestCase
         $mockSubmitInputStub = File::get($inputsLocation  . "submit.stub");
 
         // Assert the StubEditor is created correctly.
-        $stubEditor = new ViewStubEditor();
+        $stubEditor = new ViewStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['view'])
             ->once()
@@ -814,14 +814,14 @@ class ViewMakeCommandTest extends TestCase
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'view', '', true])
                 ->once()
-                ->andReturn(new ViewColumnInputStubEditor($input));
+                ->andReturn(new ViewColumnInputStub($input));
         }
 
         // Assertion for submit input
         App::shouldReceive('make')
             ->with(StubInputEditor::class, [null, 'view', '', true])
             ->once()
-            ->andReturn(new ViewColumnInputStubEditor());
+            ->andReturn(new ViewColumnInputStub());
 
         Config::partialMock();
 
@@ -924,7 +924,7 @@ class ViewMakeCommandTest extends TestCase
         }
 
         // Assert the StubEditor is created correctly.
-        $stubEditor = new ViewStubEditor();
+        $stubEditor = new ViewStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['view'])
             ->once()
@@ -959,7 +959,7 @@ class ViewMakeCommandTest extends TestCase
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'view', '', false])
                 ->once()
-                ->andReturn(new ViewColumnInputStubEditor($input));
+                ->andReturn(new ViewColumnInputStub($input));
         }
 
         Config::partialMock();
@@ -1052,7 +1052,7 @@ class ViewMakeCommandTest extends TestCase
         $mockSubmitInputStub = File::get($inputsLocation  . "submit.stub");
 
         // Assert the StubEditor is created correctly.
-        $stubEditor = new ViewStubEditor();
+        $stubEditor = new ViewStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['view'])
             ->once()
@@ -1087,14 +1087,14 @@ class ViewMakeCommandTest extends TestCase
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'view', '', true])
                 ->once()
-                ->andReturn(new ViewColumnInputStubEditor($input));
+                ->andReturn(new ViewColumnInputStub($input));
         }
 
         // Assertion for submit input
         App::shouldReceive('make')
             ->with(StubInputEditor::class, [null, 'view', '', true])
             ->once()
-            ->andReturn(new ViewColumnInputStubEditor());
+            ->andReturn(new ViewColumnInputStub());
 
         Config::partialMock();
 

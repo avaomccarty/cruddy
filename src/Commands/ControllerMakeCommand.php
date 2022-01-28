@@ -13,11 +13,11 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     use CommandTrait, ConsoleCommandTrait;
 
     /**
-     * The formatting at the end of the line.
+     * The string needed between values.
      *
      * @var string
      */
-    protected $endOfLine = "\n\t\t\t\t";
+    protected $spacer = "\n\t\t\t\t";
 
     /**
      * The console command name.
@@ -29,7 +29,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     /**
      * The acceptable model placeholders within a stub.
      *
-     * @var array
+     * @var string[]
      */
     protected $modelPlaceholders = [
         'DummyModelClass',
@@ -40,7 +40,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     /**
      * The acceptable model variable placeholders within a stub.
      *
-     * @var array
+     * @var string[]
      */
     protected $modelVariablePlaceholders = [
         'DummyModelVariable',
@@ -51,7 +51,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     /**
      * The acceptable full model class placeholders within a stub.
      *
-     * @var array
+     * @var string[]
      */
     protected $fullModelClassPlaceholders = [
         'DummyFullModelClass',
@@ -63,7 +63,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     /**
      * The acceptable resource placeholders within a stub.
      *
-     * @var array
+     * @var string[]
      */
     protected $resourcePlaceholders = [
         'DummyResource',
@@ -74,7 +74,7 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     /**
      * The variable placeholder arrays.
      *
-     * @var array
+     * @var string[]
      */
     protected $placeholders = [
         'modelVariablePlaceholders',
@@ -99,9 +99,22 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     /**
      * The stub editor.
      *
-     * @var \Cruddy\StubEditors\ControllerStubEditor|null
+     * @var \Cruddy\StubEditors\ControllerStub|null
      */
     protected $stubEditor;
+
+    /**
+     * The constructor.
+     *
+     * @param  \Illuminate\Filesystem\Filesystem  $files
+     * @return void
+     */
+    public function __construct(Filesystem $files)
+    {
+        parent::__construct($files);
+
+        $this->setInitialVariables();
+    }
 
     /**
      * Get the console command options.
@@ -140,67 +153,22 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
     {
         $this->stubEditor->setIsApi($this->getApi());
 
+        $stub = $this->stubEditor->getUpdatedStub();
+
         if (!empty($this->getModel())) {
-            $this->replaceModel();
+            $this->replaceModel($stub);
         }
 
-        $this->stubEditor->replaceInStub($this->resourcePlaceholders, $this->getResource(), $this->stub);
-        $this->stubEditor->replaceInStub($this->stubEditor->inputPlaceholders, $this->getInputString(), $this->stub);
-
-        return $this->stub;
-    }
-
-    /**
-     * The constructor.
-     *
-     * @param  \Illuminate\Filesystem\Filesystem  $files
-     * @return void
-     */
-    public function __construct(Filesystem $files)
-    {
-        parent::__construct($files);
-
-        $this->setInitialVariables();
-    }
-
-    /**
-     * Get the stub.
-     *
-     * @return string
-     */
-    protected function getStub() : string
-    {
-        return $this->stubEditor->getStubFile();
-    }
-
-
-    /**
-     * Get the input string for the controller.
-     *
-     * @return string
-     */
-    protected function getInputString() : string
-    {
-        return $this->getInputsStubEditor('controller')
-            ->getInputStrings();
-    }
-
-    /**
-     * Get the name for the resource.
-     *
-     * @return string
-     */
-    protected function getResource() : string
-    {
-        return str_ireplace('controller', '', $this->getNameString());
+        return $stub;
     }
 
     /**
      * Replace the model for the given stub.
      *
+     * @param  string  &$stub
      * @return self
      */
-    protected function replaceModel() : self
+    protected function replaceModel(string &$stub) : self
     {
         $modelClass = $this->parseModel($this->getModel());
 
@@ -215,9 +183,9 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
 
         $modelClassName = $this->stubEditor->getClassBasename($modelClass);
         
-        $this->stubEditor->replaceInStub($this->modelPlaceholders, $modelClassName, $this->stub);
-        $this->stubEditor->replaceInStub($this->modelVariablePlaceholders, $modelClassName, $this->stub);
-        $this->stubEditor->replaceInStub($this->fullModelClassPlaceholders, $modelClass, $this->stub);
+        $this->stubEditor->replaceInStub($this->modelPlaceholders, $modelClassName, $stub)
+            ->replaceInStub($this->modelVariablePlaceholders, $modelClassName, $stub)
+            ->replaceInStub($this->fullModelClassPlaceholders, $modelClass, $stub);
 
         return $this;
     }

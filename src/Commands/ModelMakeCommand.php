@@ -2,15 +2,10 @@
 
 namespace Cruddy\Commands;
 
-use Cruddy\Exceptions\UnknownRelationshipType;
-use Cruddy\ForeignKeyDefinition;
-use Cruddy\ModelRelationships\ModelRelationship;
 use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\ConsoleCommandTrait;
-use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\ModelMakeCommand as ConsoleModelMakeCommand;
-use Illuminate\Support\Facades\App;
 use Symfony\Component\Console\Input\InputArgument;
 
 class ModelMakeCommand extends ConsoleModelMakeCommand
@@ -27,7 +22,7 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
     /**
      * The accptable use statement placeholders.
      *
-     * @var array
+     * @var string[]
      */
     protected $useStatementPlaceholders = [
         'DummyUseStatement',
@@ -38,7 +33,7 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
     /**
      * The acceptable model placeholders within a stub.
      *
-     * @var array
+     * @var string[]
      */
     protected $modelRelationshipPlaceholders = [
         'DummyRelationships',
@@ -50,7 +45,7 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
     /**
      * The variable placeholder arrays.
      *
-     * @var array
+     * @var string[]
      */
     protected $placeholderArrays = [
         'useStatementPlaceholders',
@@ -67,7 +62,7 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
     /**
      * The stub editor.
      *
-     * @var \Cruddy\StubEditors\ModelStubEditor|null
+     * @var \Cruddy\StubEditors\ModelStub|null
      */
     protected $stubEditor;
 
@@ -82,6 +77,9 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
         parent::__construct($files);
 
         $this->setInitialVariables();
+        
+        $this->stubEditor->setIsPivot($this->option('pivot'))
+            ->setInputs($this->getInputs());
     }
 
     /**
@@ -118,16 +116,18 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
      */
     protected function buildClass($name)
     {
-        $foreignKeys = $this->getKeys();
+        // $foreignKeys = $this->getKeys();
 
-        foreach ($foreignKeys as $foreignKey) {
-            $this->updateStubWithForeignKeys($this->stub, $foreignKey);
-        }
+        // foreach ($foreignKeys as $foreignKey) {
+        //     $this->updateStubWithForeignKeys($this->stub, $foreignKey);
+        // }
         
-        $this->stubEditor->replaceInStub($this->stubEditor->inputPlaceholders, $this->getModelInputs(), $this->stub)
-            ->replaceInStub($this->getAllPlaceholders(), '', $this->stub);
+        // $this->stubEditor->replaceInStub($this->stubEditor->inputPlaceholders, $this->getModelInputs(), $this->stub)
+        //     ->replaceInStub($this->getAllPlaceholders(), '', $this->stub);
 
-        return $this->stub;
+        // return $this->stub;
+
+        return $this->stubEditor->getUpdatedStub();
     }
 
     /**
@@ -140,27 +140,27 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
         return $this->qualifyClass($this->getStudlySingular($this->getArgument('name')));
     }
 
-    /**
-     * Update the stub with the foreign keys information.
-     *
-     * @param  string  &$stub
-     * @param \Cruddy\ForeignKeyDefinition  $foreignKey
-     * @return void
-     */
-    protected function updateStubWithForeignKeys(string &$stub, ForeignKeyDefinition $foreignKey) : void
-    {
-        $modelRelationshipClass = $this->getModelRelationship($foreignKey);
-        $modelUseStatement = $this->getModelUseStatement($modelRelationshipClass);
-        $modelRelationship = $this->getModelRelationshipStub($modelRelationshipClass);
+    // /**
+    //  * Update the stub with the foreign keys information.
+    //  *
+    //  * @param  string  &$stub
+    //  * @param \Cruddy\ForeignKeyDefinition  $foreignKey
+    //  * @return void
+    //  */
+    // protected function updateStubWithForeignKeys(string &$stub, ForeignKeyDefinition $foreignKey) : void
+    // {
+    //     $modelRelationshipClass = $this->getModelRelationship($foreignKey);
+    //     $modelUseStatement = $this->getModelUseStatement($modelRelationshipClass);
+    //     $modelRelationship = $this->getModelRelationshipStub($modelRelationshipClass);
 
-        if (!$this->stubEditor->stubContains($modelRelationship, $stub)) {
-            $this->stubEditor->replaceInStub($this->modelRelationshipPlaceholders, $modelRelationship, $stub);
-        }
+    //     if (!$this->stubEditor->stubContains($modelRelationship, $stub)) {
+    //         $this->stubEditor->replaceInStub($this->modelRelationshipPlaceholders, $modelRelationship, $stub);
+    //     }
 
-        if (!$this->stubEditor->stubContains($modelUseStatement, $stub)) {
-            $this->stubEditor->replaceInStub($this->useStatementPlaceholders, $modelUseStatement, $stub);
-        }
-    }
+    //     if (!$this->stubEditor->stubContains($modelUseStatement, $stub)) {
+    //         $this->stubEditor->replaceInStub($this->useStatementPlaceholders, $modelUseStatement, $stub);
+    //     }
+    // }
 
     /**
      * Get the stub.
@@ -172,81 +172,81 @@ class ModelMakeCommand extends ConsoleModelMakeCommand
         return $this->stubEditor->getStubFile();
     }
 
-    /**
-     * Get the model inputs string.
-     *
-     * @return string
-     */
-    protected function getModelInputs() : string
-    {
-        $inputs = $this->getInputs();
-        $output = '';
+    // /**
+    //  * Get the model inputs string.
+    //  *
+    //  * @return string
+    //  */
+    // protected function getModelInputs() : string
+    // {
+    //     $inputs = $this->getInputs();
+    //     $output = '';
 
-        foreach ($inputs as $input) {
-            $output .= $this->getModelInputsString($input);
-        }
+    //     foreach ($inputs as $input) {
+    //         $output .= $this->getModelInputsString($input);
+    //     }
 
-        return $output;
-    }
+    //     return $output;
+    // }
 
-    /**
-     * Get the model input as a string.
-     *
-     * @param  \Illuminate\Database\Schema\ColumnDefinition  $input
-     * @return string
-     */
-    protected function getModelInputsString(ColumnDefinition $input) : string
-    {
-        return "'$input->name',\n\t\t";
-    }
+    // /**
+    //  * Get the model input as a string.
+    //  *
+    //  * @param  \Illuminate\Database\Schema\ColumnDefinition  $input
+    //  * @return string
+    //  */
+    // protected function getModelInputsString(ColumnDefinition $input) : string
+    // {
+    //     return "'$input->name',\n\t\t";
+    // }
 
-    /**
-     * Get the model relationship.
-     *
-     * @param  \Cruddy\ForeignKeyDefinition  $foreignKey
-     * @return \Cruddy\ModelRelationships\ModelRelationship
-     *
-     * @throws \Cruddy\Exceptions\UnknownRelationshipType
-     */
-    protected function getModelRelationship(ForeignKeyDefinition $foreignKey) : ModelRelationship
-    {
-        if (!ModelRelationship::isValidRelationshipType($this->getForeignKeyRelationshipType($foreignKey))) {
-            throw new UnknownRelationshipType();
-        }
+    // /**
+    //  * Get the model relationship.
+    //  *
+    //  * @param  \Cruddy\ForeignKeyDefinition  $foreignKey
+    //  * @return \Cruddy\ModelRelationships\ModelRelationship
+    //  *
+    //  * @throws \Cruddy\Exceptions\UnknownRelationshipType
+    //  */
+    // protected function getModelRelationship(ForeignKeyDefinition $foreignKey) : ModelRelationship
+    // {
+    //     if (!ModelRelationship::isValidRelationshipType($this->getForeignKeyRelationshipType($foreignKey))) {
+    //         throw new UnknownRelationshipType();
+    //     }
 
-        return App::make(ModelRelationship::class, [$foreignKey]);
-    }
+    //     return App::make(ModelRelationship::class, [$foreignKey]);
+    // }
 
-    /**
-     * Get the relationship type from the foreign key.
-     *
-     * @param  \Cruddy\ForeignKeyDefinition  $foreignKey
-     * @return string
-     */
-    protected function getForeignKeyRelationshipType(ForeignKeyDefinition $foreignKey) : string
-    {
-        return $foreignKey->relationship ?? '';
-    }
+    // /**
+    //  * Get the relationship type from the foreign key.
+    //  *
+    //  * @param  \Cruddy\ForeignKeyDefinition  $foreignKey
+    //  * @return string
+    //  */
+    // protected function getForeignKeyRelationshipType(ForeignKeyDefinition $foreignKey) : string
+    // {
+    //     return $foreignKey->relationship ?? '';
+    // }
 
-    /**
-     * Get the model relationship.
-     *
-     * @param  \Cruddy\ModelRelationships\ModelRelationship  $modelRelationship
-     * @return string
-     */
-    protected function getModelRelationshipStub(ModelRelationship $modelRelationship) : string
-    {
-        return $modelRelationship->getModelRelationshipStub() . $this->modelRelationshipPlaceholders[0];
-    }
+    // /**
+    //  * Get the model relationship.
+    //  *
+    //  * @param  \Cruddy\ModelRelationships\ModelRelationship  $modelRelationship
+    //  * @return string
+    //  */
+    // protected function getModelRelationshipStub(ModelRelationship $modelRelationship) : string
+    // {
+    //     return $modelRelationship->getModelRelationshipStub() . $this->modelRelationshipPlaceholders[0];
+    // }
 
-    /**
-     * Get the model relationship.
-     *
-     * @param  \Cruddy\ModelRelationships\ModelRelationship  $modelRelationship
-     * @return string
-     */
-    protected function getModelUseStatement(ModelRelationship $modelRelationship) : string
-    {
-        return $modelRelationship->getUseStatement() . $this->useStatementPlaceholders[0];
-    }
+    // /**
+    //  * Get the model relationship.
+    //  *
+    //  * @param  \Cruddy\ModelRelationships\ModelRelationship  $modelRelationship
+    //  * @return string
+    //  */
+    // protected function getModelUseStatement(ModelRelationship $modelRelationship) : string
+    // {
+    //     return $modelRelationship->getUseStatement() . $this->useStatementPlaceholders[0];
+    // }
 }

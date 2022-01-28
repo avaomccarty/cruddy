@@ -2,13 +2,13 @@
 
 namespace Cruddy\Tests\Unit\StubEditors;
 
-use Cruddy\StubEditors\ViewStubEditor;
+use Cruddy\StubEditors\ViewStub;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
-class ViewStubEditorTest extends TestCase
+class ViewStubTest extends TestCase
 {
     /**
      * A test to get the page view stub file for Vue frontend scaffolding.
@@ -22,7 +22,7 @@ class ViewStubEditorTest extends TestCase
         $type = 'page';
         $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub');
 
-        $mock = $this->partialMock(ViewStubEditor::class, function (MockInterface $mock) {
+        $mock = $this->partialMock(ViewStub::class, function (MockInterface $mock) {
             $mock->shouldAllowMockingProtectedMethods();
         });
 
@@ -52,7 +52,7 @@ class ViewStubEditorTest extends TestCase
         $type = 'index';
         $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub');
 
-        $mock = $this->partialMock(ViewStubEditor::class, function (MockInterface $mock) use ($type) {
+        $mock = $this->partialMock(ViewStub::class, function (MockInterface $mock) use ($type) {
             $mock->shouldAllowMockingProtectedMethods();
         });
 
@@ -82,7 +82,7 @@ class ViewStubEditorTest extends TestCase
         $type = 'create';
         $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub');
 
-        $mock = $this->partialMock(ViewStubEditor::class, function (MockInterface $mock) use ($type) {
+        $mock = $this->partialMock(ViewStub::class, function (MockInterface $mock) use ($type) {
             $mock->shouldAllowMockingProtectedMethods();
         });
 
@@ -112,7 +112,7 @@ class ViewStubEditorTest extends TestCase
         $type = 'show';
         $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub');
 
-        $mock = $this->partialMock(ViewStubEditor::class, function (MockInterface $mock) use ($type) {
+        $mock = $this->partialMock(ViewStub::class, function (MockInterface $mock) use ($type) {
             $mock->shouldAllowMockingProtectedMethods();
         });
 
@@ -142,7 +142,7 @@ class ViewStubEditorTest extends TestCase
         $type = 'edit';
         $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub');
 
-        $mock = $this->partialMock(ViewStubEditor::class, function (MockInterface $mock) use ($type) {
+        $mock = $this->partialMock(ViewStub::class, function (MockInterface $mock) use ($type) {
             $mock->shouldAllowMockingProtectedMethods();
 
         });
@@ -172,7 +172,7 @@ class ViewStubEditorTest extends TestCase
         $type = 'page';
         $expectedResultComparison = dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/views/' . $frontendScaffolding . '/' . $type . '.stub';
 
-        $mock = $this->partialMock(ViewStubEditor::class, function (MockInterface $mock) use ($type) {
+        $mock = $this->partialMock(ViewStub::class, function (MockInterface $mock) use ($type) {
             $mock->shouldAllowMockingProtectedMethods();
 
         });

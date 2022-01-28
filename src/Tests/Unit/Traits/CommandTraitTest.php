@@ -2,7 +2,7 @@
 
 namespace Cruddy\Tests\Unit\Traits;
 
-use Cruddy\StubEditors\Inputs\Input\Columns\ControllerColumnInputStubEditor;
+use Cruddy\StubEditors\Inputs\Input\Columns\ControllerColumnInputStub;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
 use Cruddy\StubEditors\StubEditor;
 use Cruddy\Tests\TestTrait;
@@ -19,7 +19,7 @@ class CommandTraitTest extends TestCase
     /**
      * The acceptable types.
      *
-     * @var array
+     * @var string[]
      */
     protected $types = [
         'create',

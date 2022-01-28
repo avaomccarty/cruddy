@@ -2,16 +2,14 @@
 
 namespace Cruddy\StubEditors\Inputs\Input\ForeignKeys;
 
-class HasOneInput extends ForeignKeyInputStubEditor
+class HasOneInput extends ForeignKeyInputStub
 {
     /**
-     * Get the input as a string.
+     * Get the stub value.
      *
-     * @param  string  $type = 'index'
-     * @param  string  $name = ''
      * @return string
      */
-    public function getInputString(string $type = 'index', string $name = '') : string
+    protected function getInitialStubValue() : string
     {
         return $this->column->name;
     }

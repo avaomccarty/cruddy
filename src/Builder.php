@@ -15,7 +15,7 @@ class Builder extends BaseBuilder
     /**
      * The console command signature.
      *
-     * @var array
+     * @var string[]
      */
     protected $views = [
         'index',
@@ -48,14 +48,14 @@ class Builder extends BaseBuilder
     /**
      * The migration columns.
      *
-     * @var array
+     * @var \Illuminate\Database\Schema\ColumnDefinition[]
      */
     protected $columns;
 
     /**
      * The migration commands.
      *
-     * @var array
+     * @var \Cruddy\ForeignKeyDefinition[]
      */
     protected $commands;
 

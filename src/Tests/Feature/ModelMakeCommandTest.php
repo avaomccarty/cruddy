@@ -5,7 +5,7 @@ namespace Cruddy\Tests\Feature;
 use Cruddy\Exceptions\UnknownRelationshipType;
 use Cruddy\ForeignKeyDefinition;
 use Cruddy\ModelRelationships\ModelRelationship;
-use Cruddy\StubEditors\ModelStubEditor;
+use Cruddy\StubEditors\ModelStub;
 use Cruddy\StubEditors\StubEditor;
 use Cruddy\Tests\TestTrait;
 use Cruddy\Traits\CommandTrait;
@@ -37,7 +37,7 @@ class ModelMakeCommandTest extends TestCase
         $expectedBladeFile = File::get(dirname(__DIR__) . '/stubs/models/expectedFile.stub');
         $expectedBladeFileName = $expectedBladeFileLocation . '/name.php';
 
-        $stubeditor = new ModelStubEditor();
+        $stubeditor = new ModelStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, [$type])
             ->once()

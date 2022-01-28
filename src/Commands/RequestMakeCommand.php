@@ -2,13 +2,13 @@
 
 namespace Cruddy\Commands;
 
+use Cruddy\CruddyGeneratorCommand;
 use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\ConsoleCommandTrait;
-use Illuminate\Console\GeneratorCommand;
 use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 
-class RequestMakeCommand extends GeneratorCommand
+class RequestMakeCommand extends CruddyGeneratorCommand
 {
     use CommandTrait, ConsoleCommandTrait;
 
@@ -46,7 +46,7 @@ class RequestMakeCommand extends GeneratorCommand
     /**
      * The stub editor.
      *
-     * @var \Cruddy\StubEditors\RequestStubEditor|null
+     * @var \Cruddy\StubEditors\RequestStub|null
      */
     protected $stubEditor;
 
@@ -73,9 +73,7 @@ class RequestMakeCommand extends GeneratorCommand
      */
     protected function buildClass($name)
     {
-        $this->stubEditor->replaceInStub($this->stubEditor->rulesPlaceholders, $this->getReplaceRules(), $this->stub);
-
-        return $this->stub;
+        return $this->stubEditor->getUpdatedStub();
     }
 
     /**
@@ -105,7 +103,7 @@ class RequestMakeCommand extends GeneratorCommand
     /**
      * The acceptable types of requests.
      *
-     * @var array
+     * @var string[]
      */
     protected $types = [
         'update',
@@ -134,16 +132,5 @@ class RequestMakeCommand extends GeneratorCommand
         $name = $this->getResourceName();
 
         return $this->getStudlySingular($type) . $this->getStudlySingular($name);
-    }
-
-    /**
-     * Replace the rules for the given stub.
-     *
-     * @return string
-     */
-    protected function getReplaceRules() : string
-    {
-        return $this->getInputsStubEditor('request')
-            ->getInputStrings();
     }
 }

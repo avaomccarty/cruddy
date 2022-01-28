@@ -3,11 +3,11 @@
 namespace Cruddy\Tests\Feature;
 
 use Cruddy\ForeignKeyDefinition;
-use Cruddy\ForeignKeyValidation\ForeignKeyValidation;
-use Cruddy\StubEditors\Inputs\Input\Columns\RequestColumnInputStubEditor;
-use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
+use Cruddy\StubEditors\Validation\ForeignKeyValidationStub;
+use Cruddy\StubEditors\Inputs\Input\Columns\RequestColumnInputStub;
+use Cruddy\StubEditors\Inputs\Input\InputStub;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
-use Cruddy\StubEditors\RequestStubEditor;
+use Cruddy\StubEditors\RequestStub;
 use Cruddy\StubEditors\StubEditor;
 use Cruddy\Tests\TestTrait;
 use Illuminate\Database\Schema\ColumnDefinition;
@@ -77,7 +77,7 @@ class RequestMakeCommandTest extends TestCase
         $expectedRequestFile = $this->getExpectedRequestFile($type);
 
         // Assert the StubEditor is created correctly.
-        $stubEditor = new RequestStubEditor();
+        $stubEditor = new RequestStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['request'])
             ->once()
@@ -111,14 +111,14 @@ class RequestMakeCommandTest extends TestCase
                 App::shouldReceive('make')
                     ->with(StubInputEditor::class, [$rule, 'request', '', false])
                     ->once()
-                    ->andReturn(new RequestColumnInputStubEditor($rule));
+                    ->andReturn(new RequestColumnInputStub($rule));
                 $columnCount++;
             }
             if (is_a($rule, ForeignKeyDefinition::class)) {
                 App::shouldReceive('make')
-                    ->with(ForeignKeyValidation::class, [$rule])
+                    ->with(ForeignKeyValidationStub::class, [$rule])
                     ->once()
-                    ->andReturn(new ForeignKeyValidation($rule));
+                    ->andReturn(new ForeignKeyValidationStub($rule));
             }
         }
 

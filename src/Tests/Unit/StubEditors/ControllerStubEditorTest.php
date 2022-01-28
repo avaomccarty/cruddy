@@ -2,13 +2,13 @@
 
 namespace Cruddy\Tests\Unit\StubEditors;
 
-use Cruddy\StubEditors\ControllerStubEditor;
+use Cruddy\StubEditors\ControllerStub;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
-class ControllerStubEditorTest extends TestCase
+class ControllerStubTest extends TestCase
 {
     /**
      * A test to get the controller API stub file.
@@ -21,7 +21,7 @@ class ControllerStubEditorTest extends TestCase
         $stubsLocation = 'stubs';
         $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/controller.api.stub');
 
-        $mock = $this->partialMock(ControllerStubEditor::class, function (MockInterface $mock) use ($isApi, $stubsLocation) {
+        $mock = $this->partialMock(ControllerStub::class, function (MockInterface $mock) use ($isApi, $stubsLocation) {
             $mock->shouldAllowMockingProtectedMethods();
         });
 
@@ -49,7 +49,7 @@ class ControllerStubEditorTest extends TestCase
         $stubsLocation = 'stubs';
         $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/controller.stub');
 
-        $mock = $this->partialMock(ControllerStubEditor::class, function (MockInterface $mock) use ($isApi, $stubsLocation) {
+        $mock = $this->partialMock(ControllerStub::class, function (MockInterface $mock) use ($isApi, $stubsLocation) {
             $mock->shouldAllowMockingProtectedMethods();
         });
 

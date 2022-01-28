@@ -3,11 +3,11 @@
 namespace Cruddy\Tests\Feature;
 
 use Cruddy\ModelRelationships\ModelRelationship;
-use Cruddy\StubEditors\ControllerStubEditor;
-use Cruddy\StubEditors\Inputs\Input\Columns\ControllerColumnInputStubEditor;
-use Cruddy\StubEditors\Inputs\Input\InputStubEditor;
+use Cruddy\StubEditors\ControllerStub;
+use Cruddy\StubEditors\Inputs\Input\Columns\ControllerColumnInputStub;
+use Cruddy\StubEditors\Inputs\Input\InputStub;
 use Cruddy\StubEditors\Inputs\StubInputsEditor;
-use Cruddy\StubEditors\ModelStubEditor;
+use Cruddy\StubEditors\ModelStub;
 use Cruddy\StubEditors\StubEditor;
 use Cruddy\Tests\TestTrait;
 use Illuminate\Support\Facades\App;
@@ -40,7 +40,7 @@ class ControllerMakeCommandTest extends TestCase
         $expectedBladeFileName = $expectedBladeFileLocation . '/name.php';
 
         foreach ($inputs as $input) {
-            $stubInputEditor = new ControllerColumnInputStubEditor($input);
+            $stubInputEditor = new ControllerColumnInputStub($input);
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'controller', '', false])
                 ->once()
@@ -55,13 +55,13 @@ class ControllerMakeCommandTest extends TestCase
                 ->andReturn($modelRelationship);
         }
 
-        $stubEditor = new ControllerStubEditor();
+        $stubEditor = new ControllerStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['controller'])
             ->once()
             ->andReturn($stubEditor);
 
-        $stubEditor = new ModelStubEditor();
+        $stubEditor = new ModelStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['model'])
             ->once()
@@ -136,7 +136,7 @@ class ControllerMakeCommandTest extends TestCase
         $expectedBladeFileName = $expectedBladeFileLocation . '/name.php';
 
         foreach ($inputs as $input) {
-            $stubInputEditor = new ControllerColumnInputStubEditor($input);
+            $stubInputEditor = new ControllerColumnInputStub($input);
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'controller', '', false])
                 ->once()
@@ -151,13 +151,13 @@ class ControllerMakeCommandTest extends TestCase
                 ->andReturn($modelRelationship);
         }
 
-        $stubEditor = new ControllerStubEditor();
+        $stubEditor = new ControllerStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['controller'])
             ->once()
             ->andReturn($stubEditor);
 
-        $stubEditor = new ModelStubEditor();
+        $stubEditor = new ModelStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['model'])
             ->once()
@@ -232,14 +232,14 @@ class ControllerMakeCommandTest extends TestCase
         $expectedBladeFileName = $expectedBladeFileLocation . '/name.php';
 
         foreach ($inputs as $input) {
-            $stubInputEditor = new ControllerColumnInputStubEditor($input);
+            $stubInputEditor = new ControllerColumnInputStub($input);
             App::shouldReceive('make')
                 ->with(StubInputEditor::class, [$input, 'controller', '', false])
                 ->once()
                 ->andReturn($stubInputEditor);
         }
 
-        $stubEditor = new ControllerStubEditor();
+        $stubEditor = new ControllerStub();
         App::shouldReceive('make')
             ->with(StubEditor::class, ['controller'])
             ->once()

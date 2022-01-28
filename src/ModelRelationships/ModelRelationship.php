@@ -3,19 +3,19 @@
 namespace Cruddy\ModelRelationships;
 
 use Cruddy\ForeignKeyDefinition;
-use Cruddy\StubEditors\StubEditor;
+use Cruddy\StubEditors\EmptyPlaceholderStubEditor;
 use Cruddy\Traits\CommandTrait;
 
-class ModelRelationship extends StubEditor
+class ModelRelationship extends EmptyPlaceholderStubEditor
 {
     use CommandTrait;
 
     /**
-     * The formatting at the end of the line.
+     * The string needed between values.
      *
      * @var string
      */
-    protected $endOfLine = "\n\t";
+    protected $spacer = "\n\t";
 
     /**
      * The relationship string.
@@ -62,7 +62,7 @@ class ModelRelationship extends StubEditor
     /**
      * The placeholders for the camel-case class name.
      *
-     * @var array
+     * @var string[]
      */
     protected $camelClassNamePlaceholders = [
         'DummyCamelClassName',
@@ -80,7 +80,7 @@ class ModelRelationship extends StubEditor
     /**
      * The acceptable types of relationships.
      *
-     * @var array
+     * @var string[]
      */
     protected static $relationshipTypes = [
         'default',
@@ -100,14 +100,14 @@ class ModelRelationship extends StubEditor
     /**
      * The classes used within the relationship.
      *
-     * @var array
+     * @var string[]
      */
     protected $classes = [];
 
     /**
      * The keys used within the relationship.
      *
-     * @var array
+     * @var \Cruddy\ForeignKeyDefinition[]
      */
     protected $keys = [];
 
@@ -133,16 +133,6 @@ class ModelRelationship extends StubEditor
         $this->addValuesToReturnValue($this->foreignKey->keys ?? [], 'getKeyString');
         $this->convertRelationshipArrayToString();
         $this->replaceInStub($this->camelClassNamePlaceholders, $this->getClassBasename($this->foreignKey->on), $this->relationshipString);
-    }
-
-    /**
-     * Get the stub file.
-     *
-     * @return string
-     */
-    public function getStubFile() : string
-    {
-        return $this->stub;
     }
 
     /**

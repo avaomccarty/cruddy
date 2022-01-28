@@ -2,12 +2,12 @@
 
 namespace Cruddy\Tests\Unit\StubEditors;
 
-use Cruddy\StubEditors\RequestStubEditor;
+use Cruddy\StubEditors\RequestStub;
 use Illuminate\Support\Facades\File;
 use Mockery\MockInterface;
 use Orchestra\Testbench\TestCase;
 
-class RequestStubEditorTest extends TestCase
+class RequestStubTest extends TestCase
 {
     // Todo: add unit tests to handle the $endOfLine for each stub editor that hs the property
 
@@ -22,7 +22,7 @@ class RequestStubEditorTest extends TestCase
         $stubsLocation = 'stubs';
         $expectedResult = File::get(dirname(dirname(dirname(__DIR__))) . '/Commands/' . $stubsLocation . '/request.stub');
 
-        $mock = $this->partialMock(RequestStubEditor::class, function (MockInterface $mock) use ($stubsLocation) {
+        $mock = $this->partialMock(RequestStub::class, function (MockInterface $mock) use ($stubsLocation) {
             $mock->shouldAllowMockingProtectedMethods();
             $mock->shouldReceive('getStubsLocation')
                 ->once()

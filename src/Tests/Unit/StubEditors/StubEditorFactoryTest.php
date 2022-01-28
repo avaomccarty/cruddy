@@ -3,11 +3,11 @@
 namespace Cruddy\Tests\Unit\StubEditors;
 
 use Cruddy\Exceptions\UnknownStubEditorType;
-use Cruddy\StubEditors\ControllerStubEditor;
-use Cruddy\StubEditors\ModelStubEditor;
-use Cruddy\StubEditors\RequestStubEditor;
+use Cruddy\StubEditors\ControllerStub;
+use Cruddy\StubEditors\ModelStub;
+use Cruddy\StubEditors\RequestStub;
 use Cruddy\StubEditors\StubEditorFactory;
-use Cruddy\StubEditors\ViewStubEditor;
+use Cruddy\StubEditors\ViewStub;
 use Orchestra\Testbench\TestCase;
 
 class StubEditorFactoryTest extends TestCase
@@ -24,7 +24,7 @@ class StubEditorFactoryTest extends TestCase
         $result = (new StubEditorFactory($stubEditor))
             ->get();
 
-        $this->assertInstanceOf(ControllerStubEditor::class, $result);
+        $this->assertInstanceOf(ControllerStub::class, $result);
     }
 
     /**
@@ -39,7 +39,7 @@ class StubEditorFactoryTest extends TestCase
         $result = (new StubEditorFactory($stubEditor))
             ->get();
 
-        $this->assertInstanceOf(ModelStubEditor::class, $result);
+        $this->assertInstanceOf(ModelStub::class, $result);
     }
 
     /**
@@ -54,7 +54,7 @@ class StubEditorFactoryTest extends TestCase
         $result = (new StubEditorFactory($stubEditor))
             ->get();
 
-        $this->assertInstanceOf(RequestStubEditor::class, $result);
+        $this->assertInstanceOf(RequestStub::class, $result);
     }
 
     /**
@@ -69,7 +69,7 @@ class StubEditorFactoryTest extends TestCase
         $result = (new StubEditorFactory($stubEditor))
             ->get();
 
-        $this->assertInstanceOf(ViewStubEditor::class, $result);
+        $this->assertInstanceOf(ViewStub::class, $result);
     }
 
     /**
@@ -82,7 +82,7 @@ class StubEditorFactoryTest extends TestCase
         $result = (new StubEditorFactory())
             ->get();
 
-        $this->assertInstanceOf(ControllerStubEditor::class, $result);
+        $this->assertInstanceOf(ControllerStub::class, $result);
     }
 
     /**

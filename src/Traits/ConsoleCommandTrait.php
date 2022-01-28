@@ -8,13 +8,6 @@ use Illuminate\Support\Facades\App;
 trait ConsoleCommandTrait
 {
     /**
-     * The stub.
-     *
-     * @var string
-     */
-    protected $stub = '';
-
-    /**
      * The type of stub editor.
      *
      * @var string
@@ -36,16 +29,6 @@ trait ConsoleCommandTrait
     protected $nameInput = '';
 
     /**
-     * Get the stub.
-     *
-     * @return string
-     */
-    protected function getStub() : string
-    {
-        return $this->stubEditor->getStubFile();
-    }
-
-    /**
      * Set the stub editor.
      *
      * @return self
@@ -53,8 +36,8 @@ trait ConsoleCommandTrait
     protected function setStubEditor() : self
     {
         $this->stubEditor = App::make(StubEditor::class, [
-            $this->stubEditorType,
-            $this->stub,
+            $this->getStubEditorType(),
+            $this->nameInput,
         ]);
 
         return $this;
@@ -101,11 +84,11 @@ trait ConsoleCommandTrait
      */
     protected function setInitialVariables() : self
     {
-        $this->setStubEditor($this->getStubEditorType())
-            ->setStub();
+        $this->setNameInput()
+            ->setStubEditor();
 
-        $this->stub = $this->replaceClass($this->stub, $this->nameInput);
-        $this->replaceNamespace($this->stub, $this->nameInput);
+        // $this->stub = $this->replaceClass($this->stub, $this->nameInput);
+        // $this->replaceNamespace($this->stub, $this->nameInput);
 
         return $this;
     }

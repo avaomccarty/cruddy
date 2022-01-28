@@ -3,13 +3,13 @@
 namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input\Columns;
 
 use Cruddy\ForeignKeyDefinition;
-use Cruddy\ForeignKeyValidation\ForeignKeyValidation;
-use Cruddy\StubEditors\Inputs\Input\Columns\RequestColumnInputStubEditor;
+use Cruddy\StubEditors\Validation\ForeignKeyValidationStub;
+use Cruddy\StubEditors\Inputs\Input\Columns\RequestColumnInputStub;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Support\Facades\App;
 use Orchestra\Testbench\TestCase;
 
-class RequestColumnInputStubEditorTest extends TestCase
+class RequestColumnInputStubTest extends TestCase
 {
     /**
      * A test to get the input string.
@@ -42,16 +42,16 @@ class RequestColumnInputStubEditorTest extends TestCase
             $otherForeignKey,
         ];
 
-        $foreignKeyValidation = new ForeignKeyValidation($expectedForeignKey);
+        $foreignKeyValidation = new ForeignKeyValidationStub($expectedForeignKey);
         App::shouldReceive('make')
-            ->with(ForeignKeyValidation::class, [$expectedForeignKey])
+            ->with(ForeignKeyValidationStub::class, [$expectedForeignKey])
             ->once()
             ->andReturn($foreignKeyValidation);
         App::shouldReceive('make')
-            ->with(ForeignKeyValidation::class, [$otherForeignKey])
+            ->with(ForeignKeyValidationStub::class, [$otherForeignKey])
             ->never();
 
-        $result = (new RequestColumnInputStubEditor($column))
+        $result = (new RequestColumnInputStub($column))
             ->setForeignKeys($foreignKeys)
             ->getInputString();
 
@@ -75,7 +75,7 @@ class RequestColumnInputStubEditorTest extends TestCase
         App::shouldReceive('make')
             ->never();
 
-        $result = (new RequestColumnInputStubEditor($column))
+        $result = (new RequestColumnInputStub($column))
             ->getInputString();
 
         $this->assertSame($expectedResult, $result);
@@ -90,9 +90,9 @@ class RequestColumnInputStubEditorTest extends TestCase
     {
         $column = new ColumnDefinition();
 
-        $result = (new RequestColumnInputStubEditor($column))
+        $result = (new RequestColumnInputStub($column))
             ->setForeignKeys([]);
 
-        $this->assertInstanceOf(RequestColumnInputStubEditor::class, $result);
+        $this->assertInstanceOf(RequestColumnInputStub::class, $result);
     }
 }

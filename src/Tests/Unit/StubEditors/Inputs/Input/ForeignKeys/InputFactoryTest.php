@@ -4,12 +4,12 @@ namespace Cruddy\Tests\Unit\StubEditors\Inputs\Input\ForeignKeys;
 
 use Cruddy\Exceptions\UnknownRelationshipType;
 use Cruddy\ForeignKeyDefinition;
-use Cruddy\StubEditors\Inputs\Input\ForeignKeys\ForeignKeyInputStubEditorFactory;
+use Cruddy\StubEditors\Inputs\Input\ForeignKeys\ForeignKeyInputStubFactory;
 use Cruddy\StubEditors\Inputs\Input\ForeignKeys\HasOneInput;
 use Cruddy\Tests\TestTrait;
 use Orchestra\Testbench\TestCase;
 
-class ForeignKeyInputStubEditorFactoryTest extends TestCase
+class ForeignKeyInputStubFactoryTest extends TestCase
 {
     use TestTrait;
 
@@ -24,7 +24,7 @@ class ForeignKeyInputStubEditorFactoryTest extends TestCase
             'relationship' => 'hasOne'
         ]);
         
-        $result = (new ForeignKeyInputStubEditorFactory($foreignKey))
+        $result = (new ForeignKeyInputStubFactory($foreignKey))
             ->get();
 
         $this->assertInstanceOf(HasOneInput::class, $result);
@@ -43,7 +43,7 @@ class ForeignKeyInputStubEditorFactoryTest extends TestCase
             'relationship' => 'invalid-relationship-type'
         ]);
         
-        (new ForeignKeyInputStubEditorFactory($foreignKey))
+        (new ForeignKeyInputStubFactory($foreignKey))
             ->get();
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace Cruddy\Tests\Unit\ForeignKeyValidation;
+namespace Cruddy\Tests\Unit\ForeignKeyValidationStub;
 
-use Cruddy\ForeignKeyValidation\ForeignKeyValidation;
+use Cruddy\StubEditors\Validation\ForeignKeyValidationStub;
 use Cruddy\Tests\TestTrait;
 use Orchestra\Testbench\TestCase;
 
-class ForeignKeyValidationTest extends TestCase
+class ForeignKeyValidationStubTest extends TestCase
 {
     use TestTrait;
 
@@ -19,8 +19,8 @@ class ForeignKeyValidationTest extends TestCase
     {
         $foreignKey = $this->getMockCommands()[0];
 
-        $result = (new ForeignKeyValidation($foreignKey))
-            ->getForeignKeyValidation();
+        $result = (new ForeignKeyValidationStub($foreignKey))
+            ->getForeignKeyValidationStub();
 
         $this->assertSame('exists:users,id', $result);
     }

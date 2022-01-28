@@ -12,10 +12,10 @@ class StubEditorFactory extends Factory
      * The constructor method.
      *
      * @param  string  $stubEditor = 'controller'
-     * @param  string  &$stub = ''
+     * @param  string  $nameInput = ''
      * @return void
      */
-    public function __construct(protected string $stubEditor = 'controller', protected string &$stub)
+    public function __construct(protected string $stubEditor = 'controller', protected string $nameInput = '')
     {
         parent::__construct();
     }
@@ -28,7 +28,7 @@ class StubEditorFactory extends Factory
     protected function setParameters() : void
     {
         $this->parameters = [
-            $this->stub
+            $this->nameInput
         ];
     }
 
@@ -37,23 +37,23 @@ class StubEditorFactory extends Factory
      *
      * @return \Cruddy\StubEditors\StubEditor
      *
-     * @throws \Cruddy\Exceptions\UnknownStubEditorType
+     * @throws \Cruddy\Exceptions\UnknownStubEditorType 
      */
     public function get() : StubEditor
     {
         switch ($this->stubEditor) {
             case 'controller':
-                return $this->makeClass(ControllerStubEditor::class);
+                return $this->makeClass(ControllerStub::class);
             case 'model':
-                return $this->makeClass(ModelStubEditor::class);
+                return $this->makeClass(ModelStub::class);
             case 'request':
-                return $this->makeClass(RequestStubEditor::class);
+                return $this->makeClass(RequestStub::class);
             case 'route':
                 return $this->makeClass(RouteStubEditor::class);
             case 'vue':
                 return $this->makeClass(VueStubEditor::class);
             case 'view':
-                return $this->makeClass(ViewStubEditor::class);
+                return $this->makeClass(ViewStub::class);
             default:
                 throw new UnknownStubEditorType();
         }

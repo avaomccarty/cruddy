@@ -2,7 +2,8 @@
 
 namespace Cruddy\Traits;
 
-use Cruddy\StubEditors\Inputs\InputsStubEditorInteractor;
+use Cruddy\StubEditors\Inputs\InputsStubInteractor;
+use Cruddy\StubEditors\Inputs\InputsStubInteractor;
 use Cruddy\StubEditors\StubEditor;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
@@ -239,19 +240,31 @@ trait CommandTrait
         return $this;
     }
 
+
+    /**
+     * Set the inputs stub editor.
+     *
+     * @return self
+     */
+    protected function setInputsStubEditor() : self
+    {
+        $this->inputsStubEditor = $this->getInputsStubEditor($this->inputsStubEditorType, $this->getResourceName());
+
+        return $this;
+    }
+
     /**
      * Set the stub editor.
      *
      * @param  string  $type = 'controller'
      * @param  string  $nameOfResource = ''
-     * @return \Cruddy\StubEditors\Inputs\InputsStubEditorInteractor
+     * @return \Cruddy\StubEditors\Inputs\InputsStubInteractor
      */
-    protected function getInputsStubEditor(string $type = 'controller', string $nameOfResource = '') : InputsStubEditorInteractor
+    protected function getInputsStubEditor(string $type = 'controller', string $nameOfResource = '') : InputsStubInteractor
     {
-        $inputsStubInteractor = App::make(InputsStubEditorInteractor::class, [
+        $inputsStubInteractor = App::make(InputsStubInteractor::class, [
             $this->getInputsForType($type),
             $type,
-            $this->getStubFile(),
         ]);
 
         if (!empty($nameOfResource)) {
@@ -269,8 +282,6 @@ trait CommandTrait
      */
     protected function getInputsForType(string $type) : array
     {
-        return $type === 'controller' ? $this->getInputsOption() : $this->getInputs();
-
         switch ($type) {
             case 'controller':
                 return $this->getInputsOption();
@@ -293,21 +304,21 @@ trait CommandTrait
         });
     }
 
-    /**
-     * Get all the placeholders for this stub.
-     *
-     * @return array
-     */
-    protected function getAllPlaceholders() : array
-    {
-        $allPlaceholders = [];
+    // /**
+    //  * Get all the placeholders for this stub.
+    //  *
+    //  * @return array
+    //  */
+    // protected function getAllPlaceholders() : array
+    // {
+    //     $allPlaceholders = [];
 
-        foreach ($this->placeholderArrays as $placeholderArray) {
-            foreach ($this->$placeholderArray as $placeholder) {
-                $allPlaceholders[] = $placeholder;
-            }
-        }
+    //     foreach ($this->placeholderArrays as $placeholderArray) {
+    //         foreach ($this->$placeholderArray as $placeholder) {
+    //             $allPlaceholders[] = $placeholder;
+    //         }
+    //     }
 
-        return $allPlaceholders;
-    }
+    //     return $allPlaceholders;
+    // }
 }

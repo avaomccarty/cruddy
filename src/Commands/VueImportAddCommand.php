@@ -2,11 +2,11 @@
 
 namespace Cruddy\Commands;
 
+use Cruddy\CruddyCommand;
 use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\ConsoleCommandTrait;
-use Illuminate\Console\Command;
 
-class VueImportAddCommand extends Command
+class VueImportAddCommand extends CruddyCommand
 {
     use CommandTrait, ConsoleCommandTrait;
 
@@ -34,38 +34,9 @@ class VueImportAddCommand extends Command
     protected $description = 'Add new Cruddy Vue import statements';
 
     /**
-     * The name of the new Cruddy resource.
+     * The success message.
      *
      * @var string
      */
-    protected $name;
-
-    /**
-     * The stub editor.
-     *
-     * @var \Cruddy\StubEditors\VueStubEditor|null
-     */
-    protected $stubEditor;
-
-    /**
-     * The constructor method.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->setStubEditor();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     */
-    public function handle()
-    {
-        $this->stubEditor->updateFile();
-    }
+    protected $successMessage = "Cruddy Vue import statements added successfully!\n";
 }

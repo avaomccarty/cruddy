@@ -5,22 +5,8 @@ namespace Cruddy\StubEditors;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
-class VueStubEditor extends StubEditor
+class VueStubEditor extends HasPlaceholderStub
 {
-    /**
-     * The stub location.
-     *
-     * @var string
-     */
-    protected $stubLocation = '';
-
-    /**
-     * The stub.
-     *
-     * @var string
-     */
-    protected $stub = '';
-
     /**
      * Determine if there is a stub file.
      *
@@ -56,22 +42,22 @@ class VueStubEditor extends StubEditor
      */
     public function __construct()
     {
-        $this->setHasStubFile()
-            ->setImportFileLocation()
-            ->setImportFile()
+        $this->setHasPlaceholderStubFile()
+            ->setStubLocation()
             ->setImportStatement()
-            ->setComponentStatement()
-        ;
+            ->setComponentStatement();
     }
 
     /**
-     * Get the stub.
+     * Set the placeholder value map.
      *
-     * @return string
+     * @return self
      */
-    public function getStubFile() : string
+    protected function setPlaceholderValueMap() : self
     {
-        return File::get($this->stubLocation);
+        $this->placeholderValueMap = [];
+
+        return $this;
     }
 
     /**
@@ -81,7 +67,7 @@ class VueStubEditor extends StubEditor
      */
     protected function setImportFile() : self
     {
-        $this->importFile = $this->getStubFile();
+        $this->stub = $this->getStubFile();
     
         return $this;
     }
@@ -117,7 +103,7 @@ class VueStubEditor extends StubEditor
      */
     protected function hasComponentStatement() : bool
     {
-        return strpos($this->importFile, $this->componentStatement) === false;
+        return strpos($this->stub, $this->componentStatement) === false;
     }
 
     /**
@@ -127,7 +113,7 @@ class VueStubEditor extends StubEditor
      */
     protected function hasImportStatement() : bool
     {
-        return strpos($this->importFile, $this->importStatement) === false;
+        return strpos($this->stub, $this->importStatement) === false;
     }
 
     /**
@@ -189,7 +175,7 @@ class VueStubEditor extends StubEditor
      *
      * @return self
      */
-    protected function setHasStubFile() : self
+    protected function setHasPlaceholderStubFile() : self
     {
         $this->hasStubFile = File::exists($this->stubLocation);
 
@@ -203,7 +189,7 @@ class VueStubEditor extends StubEditor
      */
     protected function componentSearchPosition()
     {
-        return strpos($this->importFile, $this->componentSearch);
+        return strpos($this->stub, $this->componentSearch);
     }
 
     /**
@@ -214,32 +200,32 @@ class VueStubEditor extends StubEditor
      */
     protected function updateImportFile(string $updatedFile) : void
     {
-        File::put($this->getVueImportFileLocation(), $updatedFile);
+        File::put($this->getStubLocation(), $updatedFile);
     }
 
     /**
-     * Set the import file location.
+     * Get the stub file location.
      *
-     * @return self
+     * @return string
      */
-    protected function setImportFileLocation() : self
+    protected function getStubLocation() : string
     {
-        $this->stubLocation = $this->getVueImportFileLocation();
-    
-        return $this;
+        return $this->getVueImportFileLocation();
     }
 
     /**
      * Update the stub file.
      *
-     * @return void
+     * @return self
      */
-    public function updateFile() : void
+    protected function updateStub() : self
     {
         if ($this->hasStubFile) {
             $this->addImportStatement();
             $this->addComponentStatement();
         }
+
+        return $this;
     }
 
     /**
@@ -264,7 +250,7 @@ class VueStubEditor extends StubEditor
         $positionInFile = $this->componentSearchPosition();
 
         if (is_numeric($positionInFile)) {
-            $updatedFile = substr_replace($this->importFile, $this->componentStatement, $positionInFile, 0);
+            $updatedFile = substr_replace($this->stub, $this->componentStatement, $positionInFile, 0);
             $this->updateImportFile($updatedFile);
         }
     }

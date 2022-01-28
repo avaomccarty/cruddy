@@ -2,11 +2,11 @@
 
 namespace Cruddy\Commands;
 
+use Cruddy\CruddyCommand;
 use Cruddy\Traits\CommandTrait;
 use Cruddy\Traits\ConsoleCommandTrait;
-use Illuminate\Console\Command;
 
-class RouteAddCommand extends Command
+class RouteAddCommand extends CruddyCommand
 {
     use CommandTrait, ConsoleCommandTrait;
 
@@ -16,13 +16,6 @@ class RouteAddCommand extends Command
      * @var string
      */
     protected $stubEditorType = 'route';
-
-    /**
-     * The name of the new Cruddy resource.
-     *
-     * @var string
-     */
-    protected $name;
 
     /**
      * The name and signature of the console command.
@@ -48,16 +41,18 @@ class RouteAddCommand extends Command
     protected $stubEditor;
 
     /**
-     * The constructor method.
+     * The success message.
      *
-     * @return void
+     * @var string
      */
-    public function __construct()
-    {
-        parent::__construct();
+    protected $successMessage = "Cruddy resource routes were added successfully!\n";
 
-        $this->setStubEditor();
-    }
+    /**
+     * The no routes were added message.
+     *
+     * @var string
+     */
+    protected $noRoutesAddedMessage = "No Cruddy resource routes were added.\n";
 
     /**
      * Execute the console command.
@@ -66,6 +61,12 @@ class RouteAddCommand extends Command
      */
     public function handle()
     {
-        $this->stubEditor->addResourceRoute();
+        if ($this->hasResourceRoute()) {
+            $this->line($this->noRoutesAddedMessage);
+
+            return 1;
+        }
+        
+        parent::handle();
     }
 }
