@@ -1,1 +1,0 @@
-<input type="number" name="{{ name }}" {{ data }} class="input my-2">

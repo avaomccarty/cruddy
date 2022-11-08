@@ -1,1 +1,0 @@
-<input type="text" name="{{ name }}" {{ data }} class="input my-2" placeholder="{{ name }}" v-model="{{ vModelName }}">
