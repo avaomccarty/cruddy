@@ -27,17 +27,42 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot()
     {
-        // Publish config file
+        $this->publishConfigFile();
+        $this->publishStubFolder();
+        $this->addDatabaseConnection();
+    }
+
+    /**
+     * Publish the config file within the Laravel application.
+     *
+     * @return void
+     */
+    protected function publishConfigFile() : void
+    {
         $this->publishes([
             __DIR__ . '/config/cruddy.php' => config_path('cruddy.php'),
         ]);
+    }
 
-        // Publish stub files
+    /**
+     * Publish the stubs folder within the Laravel application.
+     *
+     * @return void
+     */
+    protected function publishStubFolder() : void
+    {
         $this->publishes([
             __DIR__ . '/stubs/' => base_path('/stubs/cruddy/'),
         ]);
+    }
 
-        // Add new Cruddy database configuration to the config.
+    /**
+     * Add new Cruddy database configuration to the config.
+     *
+     * @return void
+     */
+    protected function addDatabaseConnection() : void
+    {
         $ignoredAppEnvs = [
             'testing',
             'local',
@@ -46,6 +71,5 @@ class ServiceProvider extends BaseServiceProvider
         if (!in_array(env('APP_ENV'), $ignoredAppEnvs)) {
             $this->setDatabaseConnection();
         }
-
     }
 }
