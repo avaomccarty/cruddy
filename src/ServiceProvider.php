@@ -34,7 +34,7 @@ class ServiceProvider extends BaseServiceProvider
 
         // Publish stub files
         $this->publishes([
-            __DIR__ . '/Commands/stubs/' => base_path('/stubs/cruddy/'),
+            __DIR__ . '/stubs/' => base_path('/stubs/cruddy/'),
         ]);
 
         // Add new Cruddy database configuration to the config.
