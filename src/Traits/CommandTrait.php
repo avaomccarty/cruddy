@@ -3,7 +3,6 @@
 namespace Cruddy\Traits;
 
 use Cruddy\StubEditors\Inputs\InputsStubInteractor;
-use Cruddy\StubEditors\Inputs\InputsStubInteractor;
 use Cruddy\StubEditors\StubEditor;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
