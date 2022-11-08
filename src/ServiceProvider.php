@@ -39,8 +39,6 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
-    // use ConfigTrait;
-
     /**
      * Register services.
      *
