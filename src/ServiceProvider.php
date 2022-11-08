@@ -29,7 +29,7 @@ class ServiceProvider extends BaseServiceProvider
     {
         // Publish config file
         $this->publishes([
-            __DIR__ . '/../config/cruddy.php' => config_path('cruddy.php'),
+            __DIR__ . '/config/cruddy.php' => config_path('cruddy.php'),
         ]);
 
         // Publish stub files
