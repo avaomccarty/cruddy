@@ -79,16 +79,16 @@ class ServiceProvider extends BaseServiceProvider
             $this->setDatabaseConnection();
         }
 
-        // Include commands
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                ControllerMakeCommand::class,
-                RequestMakeCommand::class,
-                RouteAddCommand::class,
-                ViewMakeCommand::class,
-                VueImportAddCommand::class,
-                ModelMakeCommand::class,
-            ]);
-        }
+        // // Include commands
+        // if ($this->app->runningInConsole()) {
+        //     $this->commands([
+        //         ControllerMakeCommand::class,
+        //         RequestMakeCommand::class,
+        //         RouteAddCommand::class,
+        //         ViewMakeCommand::class,
+        //         VueImportAddCommand::class,
+        //         ModelMakeCommand::class,
+        //     ]);
+        // }
     }
 }
