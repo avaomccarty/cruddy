@@ -34,6 +34,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->publishConfigFile();
         $this->publishStubFolder();
         $this->addDatabaseConnection();
+        $this->addCommands();
     }
 
     /**
