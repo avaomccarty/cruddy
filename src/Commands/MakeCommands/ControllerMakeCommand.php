@@ -1,24 +1,15 @@
 <?php
 
-namespace Cruddy\Commands;
+namespace Cruddy\Commands\MakeCommands;
 
 use Cruddy\Traits\CommandTrait;
-use Cruddy\Traits\ConsoleCommandTrait;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Routing\Console\ControllerMakeCommand as BaseControllerMakeCommand;
 use Symfony\Component\Console\Input\InputOption;
-use Cruddy\Commands\Placeholders;
 
 class ControllerMakeCommand extends BaseControllerMakeCommand
 {
-    use CommandTrait, ConsoleCommandTrait, Placeholders;
-
-    /**
-     * The string needed between values.
-     *
-     * @var string
-     */
-    protected $spacer = "\n\t\t\t\t";
+    use CommandTrait;
 
     /**
      * The console command name.

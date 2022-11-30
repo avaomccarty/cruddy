@@ -1,34 +1,9 @@
 <?php
 
-namespace Cruddy\Commands;
+namespace Cruddy\Traits;
 
-trait Placeholders
+trait PlaceholdersTrait
 {
-    protected $placeholders = [];
-    
-    /**
-     * Get the placeholders.
-     *
-     * @return array
-     */
-    protected function getPlaceholders() : array
-    {
-        return (array)$this->placeholders;
-    }
-
-    /**
-     * Set the placeholders for the command.
-     *
-     * @param  array  $placeholders
-     * @return self
-     */
-    protected function setPlaceholders(array $placeholders) : self
-    {
-        $this->placeholders = $placeholders;
-    
-        return $this;
-    }
-
     /**
      * The acceptable model placeholders within a stub.
      *
@@ -72,5 +47,27 @@ trait Placeholders
         'DummyResource',
         '{{ resource }}',
         '{{resource}}'
+    ];
+
+    /**
+     * The accptable use statement placeholders.
+     *
+     * @var string[]
+     */
+    protected $useStatementPlaceholders = [
+        'DummyUseStatement',
+        '{{ useStatement }}',
+        '{{useStatement}}',
+    ];
+
+    /**
+     * The acceptable model placeholders within a stub.
+     *
+     * @var string[]
+     */
+    protected $modelRelationshipPlaceholders = [
+        'DummyRelationships',
+        '{{ relationships }}',
+        '{{relationships}}'
     ];
 }

@@ -5,12 +5,11 @@ namespace Cruddy;
 use Illuminate\Database\Schema\Builder as BaseBuilder;
 use Closure;
 use Cruddy\Traits\CommandTrait;
-use Cruddy\Traits\ConfigTrait;
 use Illuminate\Support\Facades\Artisan;
 
 class Builder extends BaseBuilder
 {
-    use ConfigTrait, CommandTrait;
+    use CommandTrait;
 
     /**
      * The console command signature.

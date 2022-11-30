@@ -4,7 +4,6 @@ namespace Cruddy;
 
 use Illuminate\Database\Schema\Blueprint as BaseBlueprint;
 
-
 class Blueprint extends BaseBlueprint
 {
     /**
@@ -14,7 +13,7 @@ class Blueprint extends BaseBlueprint
      * @param  string|null  $name
      * @return \Illuminate\Database\Schema\ForeignKeyDefinition
      */
-    public function foreign($columns, $name = null)
+    public function foreign($columns, $name = null) : ForeignKeyDefinition
     {
         $command = new ForeignKeyDefinition(
             $this->indexCommand('foreign', $columns, $name)->getAttributes()

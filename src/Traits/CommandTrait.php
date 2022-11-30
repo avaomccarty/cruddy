@@ -4,12 +4,13 @@ namespace Cruddy\Traits;
 
 use Cruddy\StubEditors\Inputs\InputsStubInteractor;
 use Cruddy\StubEditors\StubEditor;
+use Cruddy\Traits\ConfigTrait;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
 trait CommandTrait
 {
-    use ConfigTrait;
+    use ConfigTrait, PlaceholdersTrait;
 
     /**
      * Get an argument from the command.
@@ -226,18 +227,21 @@ trait CommandTrait
         return (string)$this->option('model') ?? '';
     }
 
-    /**
-     * Set the stub editor.
-     *
-     * @param  string  $type = 'controller'
-     * @return self
-     */
-    protected function setStubEditor(string $type = 'controller') : self
-    {
-        $this->stubEditor = App::make(StubEditor::class, [$type]);
 
-        return $this;
-    }
+    // Note: not sure if this is needed, but it conflicts with another method in this file (11/30)
+
+    // /**
+    //  * Set the stub editor.
+    //  *
+    //  * @param  string  $type = 'controller'
+    //  * @return self
+    //  */
+    // protected function setStubEditor(string $type = 'controller') : self
+    // {
+    //     $this->stubEditor = App::make(StubEditor::class, [$type]);
+
+    //     return $this;
+    // }
 
 
     /**
@@ -303,21 +307,99 @@ trait CommandTrait
         });
     }
 
-    // /**
-    //  * Get all the placeholders for this stub.
-    //  *
-    //  * @return array
-    //  */
-    // protected function getAllPlaceholders() : array
-    // {
-    //     $allPlaceholders = [];
+    /**
+     * The type of stub editor.
+     *
+     * @var string
+     */
+    protected $stubEditorType = 'controller';
 
-    //     foreach ($this->placeholderArrays as $placeholderArray) {
-    //         foreach ($this->$placeholderArray as $placeholder) {
-    //             $allPlaceholders[] = $placeholder;
-    //         }
-    //     }
+    /**
+     * The stub editor.
+     *
+     * @var \Cruddy\StubEditors\StubEditor|null
+     */
+    protected $stubEditor;
 
-    //     return $allPlaceholders;
-    // }
+    /**
+     * The name input.
+     *
+     * @var string
+     */
+    protected $nameInput = '';
+
+    /**
+     * Set the stub editor.
+     *
+     * @return self
+     */
+    protected function setStubEditor() : self
+    {
+        $this->stubEditor = App::make(StubEditor::class, [
+            $this->getStubEditorType(),
+            $this->nameInput,
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * Set the stub.
+     *
+     * @return self
+     */
+    protected function setStub() : self
+    {
+        $this->stub = $this->getStub();
+
+        return $this;
+    }
+
+    /**
+     * Set the name input.
+     *
+     * @return self
+     */
+    protected function setNameInput() : self
+    {
+        $this->nameInput = $this->getNameInput() ?? $this->getDefaultNameInput();
+
+        return $this;
+    }
+
+    /**
+     * Get the name input.
+     *
+     * @return string
+     */
+    protected function getDefaultNameInput() : string
+    {
+        return parent::getNameInput();
+    }
+
+    /**
+     * Set the initial variables for the class.
+     *
+     * @return self
+     */
+    protected function setInitialVariables() : self
+    {
+        $this->setNameInput()
+            ->setStubEditor();
+
+        // $this->stub = $this->replaceClass($this->stub, $this->nameInput);
+        // $this->replaceNamespace($this->stub, $this->nameInput);
+
+        return $this;
+    }
+
+    /**
+     * Get the stub editor type.
+     *
+     * @return string
+     */
+    protected function getStubEditorType() : string
+    {
+        return $this->stubEditorType;
+    }
 }
