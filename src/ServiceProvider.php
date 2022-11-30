@@ -2,11 +2,14 @@
 
 namespace Cruddy;
 
+use Cruddy\Traits\ConfigTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
+    use ConfigTrait;
+    
     /**
      * Register services.
      *
