@@ -2,6 +2,7 @@
 
 namespace Cruddy;
 
+use Cruddy\Commands\ControllerMakeCommand;
 use Cruddy\Traits\ConfigTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
@@ -9,7 +10,7 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 class ServiceProvider extends BaseServiceProvider
 {
     use ConfigTrait;
-    
+
     /**
      * Register services.
      *
@@ -73,6 +74,27 @@ class ServiceProvider extends BaseServiceProvider
 
         if (!in_array(env('APP_ENV'), $ignoredAppEnvs)) {
             $this->setDatabaseConnection();
+        }
+    }
+
+    /**
+     * Include the Cruddy commands.
+     *
+     * @return void
+     */
+    protected function addCommands()
+    {
+        
+        // Include commands
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                ControllerMakeCommand::class,
+                // RequestMakeCommand::class,
+                // RouteAddCommand::class,
+                // ViewMakeCommand::class,
+                // VueImportAddCommand::class,
+                // ModelMakeCommand::class,
+            ]);
         }
     }
 }
