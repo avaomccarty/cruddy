@@ -7,10 +7,11 @@ use Cruddy\Traits\ConsoleCommandTrait;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Routing\Console\ControllerMakeCommand as BaseControllerMakeCommand;
 use Symfony\Component\Console\Input\InputOption;
+use Cruddy\Commands\Placeholders;
 
 class ControllerMakeCommand extends BaseControllerMakeCommand
 {
-    use CommandTrait, ConsoleCommandTrait;
+    use CommandTrait, ConsoleCommandTrait, Placeholders;
 
     /**
      * The string needed between values.
@@ -25,62 +26,6 @@ class ControllerMakeCommand extends BaseControllerMakeCommand
      * @var string
      */
     protected $name = 'cruddy:controller';
-
-    /**
-     * The acceptable model placeholders within a stub.
-     *
-     * @var string[]
-     */
-    protected $modelPlaceholders = [
-        'DummyModelClass',
-        '{{ model }}',
-        '{{model}}'
-    ];
-
-    /**
-     * The acceptable model variable placeholders within a stub.
-     *
-     * @var string[]
-     */
-    protected $modelVariablePlaceholders = [
-        'DummyModelVariable',
-        '{{ modelVariable }}',
-        '{{modelVariable}}'
-    ];
-
-    /**
-     * The acceptable full model class placeholders within a stub.
-     *
-     * @var string[]
-     */
-    protected $fullModelClassPlaceholders = [
-        'DummyFullModelClass',
-        '{{ namespacedModel }}',
-        '{{namespacedModel}}'
-    ];
-
-
-    /**
-     * The acceptable resource placeholders within a stub.
-     *
-     * @var string[]
-     */
-    protected $resourcePlaceholders = [
-        'DummyResource',
-        '{{ resource }}',
-        '{{resource}}'
-    ];
-
-    /**
-     * The variable placeholder arrays.
-     *
-     * @var string[]
-     */
-    protected $placeholders = [
-        'modelVariablePlaceholders',
-        'fullModelClassPlaceholders',
-        'resourcePlaceholders',
-    ];
 
     /**
      * The console command description.
