@@ -20,7 +20,7 @@ trait CommandTrait
      */
     protected function getArgument(string $argument) : mixed
     {
-        if (method_exists(self::class, 'argument')) {
+        if (method_exists(self::class, 'argument') && !empty($argument)) {
             return $this->argument($argument);
         }
 
