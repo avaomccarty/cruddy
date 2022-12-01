@@ -15,13 +15,13 @@ trait CommandTrait
     /**
      * Get an argument from the command.
      *
-     * @param  string  $argument
+     * @param  string  $argument = ''
      * @return mixed
      */
     protected function getArgument(string $argument = '') : mixed
     {
         if (method_exists(self::class, 'argument') && !empty($argument) && !is_null($argument)) {
-            return $this->argument($argument);
+            // return $this->argument($argument);
         }
 
         return null;
