@@ -62,7 +62,7 @@ class ServiceProvider extends BaseServiceProvider
     protected function publishStubFolder() : void
     {
         $this->publishes([
-            __DIR__ . '/stubs/' => base_path('/stubs/cruddy/'),
+            __DIR__ . '/OutputStubs/' => base_path('/stubs/cruddy/'),
         ]);
     }
 
