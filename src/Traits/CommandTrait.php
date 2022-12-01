@@ -18,9 +18,9 @@ trait CommandTrait
      * @param  string  $argument
      * @return mixed
      */
-    protected function getArgument(string $argument) : mixed
+    protected function getArgument(string $argument = '') : mixed
     {
-        if (method_exists(self::class, 'argument') && !empty($argument)) {
+        if (method_exists(self::class, 'argument') && !empty($argument) && !is_null($argument)) {
             return $this->argument($argument);
         }
 
