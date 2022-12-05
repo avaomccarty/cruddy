@@ -21,7 +21,7 @@ trait CommandTrait
     protected function getArgument(string $argument = '') : mixed
     {
         if (method_exists(self::class, 'argument') && !empty($argument) && !is_null($argument)) {
-            // return $this->argument($argument);
+            return $this->argument($argument);
         }
 
         return null;
@@ -30,12 +30,12 @@ trait CommandTrait
     /**
      * Get an option from the command.
      *
-     * @param  string  $option
+     * @param  string  $option = ''
      * @return mixed
      */
-    protected function getOption(string $option) : mixed
+    protected function getOption(string $option = '') : mixed
     {
-        if (method_exists(self::class, 'option')) {
+        if (method_exists(self::class, 'option') && !empty($option) && !is_null($option)) {
             return $this->option($option);
         }
 
